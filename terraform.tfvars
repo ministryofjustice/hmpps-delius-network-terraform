@@ -16,7 +16,6 @@ terragrunt = {
   terraform {
     extra_arguments "common_vars" {
       commands = [
-        "apply",
         "destroy",
         "plan",
         "import",
