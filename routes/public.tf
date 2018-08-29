@@ -1,7 +1,7 @@
 resource "aws_route_table" "public" {
   count  = "${length(var.az_list)}"
   vpc_id = "${data.aws_vpc.vpc.id}"
-  tags   = "${merge(var.tags, map("Name", "${local.environment_name}_public_${element(var.az_list, count.index)}"))}"
+  tags   = "${merge(var.tags, map("Name", "${local.environment_name}-public-${element(var.az_list, count.index)}"))}"
 }
 
 resource "aws_route" "public_internet" {
