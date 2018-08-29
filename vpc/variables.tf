@@ -21,3 +21,11 @@ variable "environment_type" {
   description = "The environment type - e.g. dev"
   type        = "string"
 }
+
+variable "bastion_account_id" {
+  type = "string"
+}
+
+variable "bastion_vpc_id" {
+  type = "string"
+}
