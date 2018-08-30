@@ -29,6 +29,6 @@ data "aws_subnet_ids" "public_subnets" {
   vpc_id = "${data.aws_vpc.vpc.id}"
 
   tags = {
-    Name = "${local.environment_name}_public"
+    Type = "public"
   }
 }
