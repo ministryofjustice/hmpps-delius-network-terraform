@@ -19,9 +19,17 @@ data "aws_vpc" "vpc" {
   }
 }
 
+data "aws_vpc_peering_connection" "bastion_peering" {
+  vpc_id = "${data.aws_vpc.vpc.id}"
+
+  tags {
+    Name = "${local.environment_name}-to-bastion-vpc"
+  }
+}
+
 data "aws_internet_gateway" "igw" {
   tags {
-    Name = "${local.environment_name}_igw"
+    Name = "${local.environment_name}-igw"
   }
 }
 
@@ -30,5 +38,21 @@ data "aws_subnet_ids" "public_subnets" {
 
   tags = {
     Type = "public"
+  }
+}
+
+data "aws_subnet_ids" "private_subnets" {
+  vpc_id = "${data.aws_vpc.vpc.id}"
+
+  tags = {
+    Type = "private"
+  }
+}
+
+data "aws_subnet_ids" "db_subnets" {
+  vpc_id = "${data.aws_vpc.vpc.id}"
+
+  tags = {
+    Type = "db"
   }
 }
