@@ -16,7 +16,6 @@ terragrunt = {
   terraform {
     extra_arguments "common_vars" {
       commands = [
-        "apply",
         "destroy",
         "plan",
         "import",
@@ -26,7 +25,7 @@ terragrunt = {
 
       arguments = [
         "-var-file=${get_parent_tfvars_dir()}/env_configs/common.tfvars",
-        "-var-file=${get_parent_tfvars_dir()}/env_configs/${get_env("TG_PROJECT", "integration")}_${get_env("TG_ENVIRONMENT_TYPE", "ENVIRONMENT")}.tfvars",
+        "-var-file=${get_parent_tfvars_dir()}/env_configs/${get_env("TG_PROJECT", "integration")}-${get_env("TG_ENVIRONMENT_TYPE", "ENVIRONMENT")}.tfvars",
       ]
     }
   }

@@ -21,3 +21,7 @@ variable "az_list" {
 variable "tags" {
   type = "map"
 }
+
+variable "bastion_cidrs" {
+  type = "list"
+}
