@@ -4,6 +4,6 @@ terragrunt = {
   }
 
   dependencies {
-    paths = ["../vpc", "../subnets", "../gateways"]
+    paths = ["../vpc", "../gateways"]
   }
 }
