@@ -29,6 +29,7 @@ export TG_REMOTE_STATE_BUCKET="${TG_ENVIRONMENT_IDENTIFIER}-remote-state"
 # TERRAFORM VARIABLES
 # ###################
 
+export TF_VAR_role_arn=${TERRAGRUNT_IAM_ROLE}
 export TF_VAR_environment_type=${TG_ENVIRONMENT_TYPE}
 export TF_VAR_region=${TG_REGION}
 export TF_VAR_project_name=${TG_PROJECT}

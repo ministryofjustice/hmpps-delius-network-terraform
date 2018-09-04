@@ -7,6 +7,10 @@ variable "vpc_supernet" {
   type        = "string"
 }
 
+variable "role_arn" {
+  type        = "string"
+}
+
 variable "region" {
   description = "AWS Region"
   type        = "string"

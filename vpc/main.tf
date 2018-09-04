@@ -12,3 +12,8 @@ provider "aws" {
 locals {
   environment_name = "${var.project_name}-${var.environment_type}"
 }
+
+#-------------------------------------------------------------
+### Getting the current running account id
+#-------------------------------------------------------------
+data "aws_caller_identity" "current" {}
