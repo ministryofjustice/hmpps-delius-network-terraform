@@ -33,3 +33,25 @@ variable "bastion_account_id" {
 variable "bastion_vpc_id" {
   type = "string"
 }
+
+### Subnets
+variable "public_subnet" {
+  type = "string"
+}
+
+variable "private_subnet" {
+  type = "string"
+}
+
+variable "db_subnet" {
+  type = "string"
+}
+
+variable "az_list" {
+  description = "List of the three AZs we want to use"
+  type        = "list"
+}
+
+variable "availability_zone" {
+  type        = "map"
+}
