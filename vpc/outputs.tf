@@ -144,3 +144,43 @@ output "vpc_db-subnet-az3-cidr_block" {
 output "vpc_db-subnet-az3-availability_zone" {
   value = "${module.db_subnet_az3.availability_zone}"
 }
+
+## routetables
+# public
+output "vpc_public-routetable-az1" {
+  value = "${module.public_subnet_az1.routetableid}"
+}
+
+output "vpc_public-routetable-az2" {
+  value = "${module.public_subnet_az2.routetableid}"
+}
+
+output "vpc_public-routetable-az3" {
+  value = "${module.public_subnet_az3.routetableid}"
+}
+
+# private
+output "vpc_private-routetable-az1" {
+  value = "${module.private_subnet_az1.routetableid}"
+}
+
+output "vpc_private-routetable-az2" {
+  value = "${module.private_subnet_az2.routetableid}"
+}
+
+output "vpc_private-routetable-az3" {
+  value = "${module.private_subnet_az3.routetableid}"
+}
+
+# db
+output "vpc_db-routetable-az1" {
+  value = "${module.db_subnet_az1.routetableid}"
+}
+
+output "vpc_db-routetable-az2" {
+  value = "${module.db_subnet_az2.routetableid}"
+}
+
+output "vpc_db-routetable-az3" {
+  value = "${module.db_subnet_az3.routetableid}"
+}
