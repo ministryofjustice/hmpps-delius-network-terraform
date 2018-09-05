@@ -1,3 +1,7 @@
+variable "environment_name" {
+  type = "string"
+}
+
 variable "tags" {
   type = "map"
 }
@@ -25,6 +29,16 @@ variable "environment_type" {
   description = "The environment type - e.g. dev"
   type        = "string"
 }
+# vpc
+variable "route53_domain_private" {
+  type = "string"
+}
+
+variable "aws_nameserver" {
+  type = "string"
+}
+
+# peering
 
 variable "bastion_account_id" {
   type = "string"

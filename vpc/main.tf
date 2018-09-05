@@ -9,9 +9,9 @@ provider "aws" {
   version = "~> 1.16"
 }
 
-locals {
-  environment_name = "${var.project_name}-${var.environment_type}"
-}
+# locals {
+#   environment_name = "${var.project_name}-${var.environment_type}"
+# }
 
 #-------------------------------------------------------------
 ### Getting the current running account id
