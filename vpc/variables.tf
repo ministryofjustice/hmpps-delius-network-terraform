@@ -12,7 +12,7 @@ variable "vpc_supernet" {
 }
 
 variable "role_arn" {
-  type        = "string"
+  type = "string"
 }
 
 variable "region" {
@@ -29,22 +29,13 @@ variable "environment_type" {
   description = "The environment type - e.g. dev"
   type        = "string"
 }
+
 # vpc
 variable "route53_domain_private" {
   type = "string"
 }
 
 variable "aws_nameserver" {
-  type = "string"
-}
-
-# peering
-
-variable "bastion_account_id" {
-  type = "string"
-}
-
-variable "bastion_vpc_id" {
   type = "string"
 }
 
@@ -67,5 +58,5 @@ variable "az_list" {
 }
 
 variable "availability_zone" {
-  type        = "map"
+  type = "map"
 }

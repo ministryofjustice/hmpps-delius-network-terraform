@@ -1,5 +1,5 @@
 output "tags" {
-  value = ["${var.tags}"]
+  value = "${var.tags}"
 }
 
 output "environment_name" {
@@ -14,22 +14,14 @@ output "vpc_cidr_block" {
   value = "${module.vpc.vpc_cidr}"
 }
 
-# output "bastion_peering_id" {
-#   value = "${aws_vpc_peering_connection.bastion_peering.id}"
-# }
-#
-# output "bastion_peering_id_string" {
-#   value = "${aws_vpc_peering_connection.bastion_peering.id},${aws_vpc.vpc.cidr_block},${local.environment_name}"
-# }
-#
-# output "vpc_account_id" {
-#   value = "${data.aws_caller_identity.current.account_id}"
-# }
-#
-# output "vpc_role_arn" {
-#   value = "${var.role_arn}"
-# }
-#
+output "vpc_account_id" {
+  value = "${data.aws_caller_identity.current.account_id}"
+}
+
+output "vpc_role_arn" {
+  value = "${var.role_arn}"
+}
+
 ### subnets
 # public
 
@@ -68,6 +60,7 @@ output "vpc_public-subnet-az3-cidr_block" {
 output "vpc_public-subnet-az3-availability_zone" {
   value = "${module.public_subnet_az3.availability_zone}"
 }
+
 #
 # # private
 
