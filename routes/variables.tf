@@ -22,6 +22,6 @@ variable "tags" {
   type = "map"
 }
 
-variable "bastion_cidrs" {
-  type = "list"
-}
+# variable "bastion_cidrs" {
+#   type = "list"
+# }
