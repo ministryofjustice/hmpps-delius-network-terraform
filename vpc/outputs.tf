@@ -22,6 +22,10 @@ output "vpc_role_arn" {
   value = "${var.role_arn}"
 }
 
+output "vpc_remote_state_bucket_name" {
+  value = "${var.remote_state_bucket_name}"
+}
+
 ### subnets
 # public
 
