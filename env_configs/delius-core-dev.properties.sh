@@ -62,3 +62,12 @@ infrastructure-support = \"${INFRASTRUCTURE_SUPPORT}\", \
 region = \"${TG_REGION}\", \
 provisioned-with  = \"Terraform\" \
 }"
+
+# Inspec testing
+export attributes_dir="$(pwd)/attributes"
+
+export attributes_file="${attributes_dir}/${TG_ENVIRONMENT_IDENTIFIER}.yml"
+
+export inspec_profile="inspec_profiles/aws-inspec-profile"
+
+export attributes_list="vpc"
