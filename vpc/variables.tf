@@ -34,6 +34,23 @@ variable "environment_type" {
   type        = "string"
 }
 
+## remote states
+variable "eng_remote_state_bucket_name" {
+  description = "Terraform remote state bucket name for engineering platform vpc"
+}
+
+variable "bastion_remote_state_bucket_name" {
+  description = "Terraform remote state bucket name for bastion vpc"
+}
+
+variable "eng_role_arn" {
+  description = "arn to use for engineering platform terraform"
+}
+
+variable "bastion_role_arn" {
+  description = "arn to use for bastion terraform"
+}
+
 # vpc
 variable "route53_domain_private" {
   type = "string"

@@ -1,8 +1,8 @@
 # Engineering VPC PEER CONNECTION
 
 resource "aws_vpc_peering_connection" "peering-eng-vpc" {
-  peer_owner_id = "${data.terraform_remote_state.eng_remote_vpc.account_id}"
-  peer_vpc_id   = "${data.terraform_remote_state.eng_remote_vpc.vpc_id}"
+  peer_owner_id = "${data.terraform_remote_state.vpc.eng_vpc_account_id}"
+  peer_vpc_id   = "${data.terraform_remote_state.vpc.eng_vpc_id}"
   vpc_id        = "${data.terraform_remote_state.vpc.vpc_id}"
   tags          = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}-to-eng-vpc"))}"
 }
@@ -22,7 +22,7 @@ module "route-to-eng" {
     "${data.terraform_remote_state.vpc.vpc_db-routetable-az3}",
   ]
 
-  destination_cidr_block = "${data.terraform_remote_state.eng_remote_vpc.vpc_cidr}"
+  destination_cidr_block = "${data.terraform_remote_state.vpc.eng_vpc_cidr}"
   vpc_peer_id            = "${aws_vpc_peering_connection.peering-eng-vpc.id}"
   create                 = 1
 }
