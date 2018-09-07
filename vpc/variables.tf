@@ -73,11 +73,7 @@ variable "db_subnet" {
   type = "string"
 }
 
-variable "az_list" {
-  description = "List of the three AZs we want to use"
-  type        = "list"
-}
-
 variable "availability_zone" {
+  description = "List of the three AZs we want to use"
   type = "map"
 }
