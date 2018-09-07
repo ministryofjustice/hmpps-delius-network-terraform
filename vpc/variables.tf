@@ -1,3 +1,7 @@
+variable "environment_name" {
+  type = "string"
+}
+
 variable "tags" {
   type = "map"
 }
@@ -5,6 +9,14 @@ variable "tags" {
 variable "vpc_supernet" {
   description = "Supernet for the whole VPC that all subnets will be in"
   type        = "string"
+}
+
+variable "role_arn" {
+  type = "string"
+}
+
+variable "remote_state_bucket_name" {
+  description = "Terraform remote state bucket name"
 }
 
 variable "region" {
@@ -22,10 +34,46 @@ variable "environment_type" {
   type        = "string"
 }
 
-variable "bastion_account_id" {
+## remote states
+variable "eng_remote_state_bucket_name" {
+  description = "Terraform remote state bucket name for engineering platform vpc"
+}
+
+variable "bastion_remote_state_bucket_name" {
+  description = "Terraform remote state bucket name for bastion vpc"
+}
+
+variable "eng_role_arn" {
+  description = "arn to use for engineering platform terraform"
+}
+
+variable "bastion_role_arn" {
+  description = "arn to use for bastion terraform"
+}
+
+# vpc
+variable "route53_domain_private" {
   type = "string"
 }
 
-variable "bastion_vpc_id" {
+variable "aws_nameserver" {
   type = "string"
+}
+
+### Subnets
+variable "public_subnet" {
+  type = "string"
+}
+
+variable "private_subnet" {
+  type = "string"
+}
+
+variable "db_subnet" {
+  type = "string"
+}
+
+variable "availability_zone" {
+  description = "List of the three AZs we want to use"
+  type = "map"
 }

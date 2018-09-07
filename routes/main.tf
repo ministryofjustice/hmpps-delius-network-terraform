@@ -1,7 +1,6 @@
 terraform {
   # The configuration for this backend will be filled in by Terragrunt
-  backend          "s3"             {}
-  required_version = "~> 0.11"
+  backend "s3" {}
 }
 
 provider "aws" {
@@ -9,50 +8,97 @@ provider "aws" {
   version = "~> 1.16"
 }
 
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+
+  config {
+    bucket = "${var.remote_state_bucket_name}"
+    key    = "vpc/terraform.tfstate"
+    region = "${var.region}"
+  }
+}
+
+data "terraform_remote_state" "natgateway" {
+  backend = "s3"
+
+  config {
+    bucket = "${var.remote_state_bucket_name}"
+    key    = "natgateway/terraform.tfstate"
+    region = "${var.region}"
+  }
+}
+
+data "terraform_remote_state" "internetgateway" {
+  backend = "s3"
+
+  config {
+    bucket = "${var.remote_state_bucket_name}"
+    key    = "internetgateway/terraform.tfstate"
+    region = "${var.region}"
+  }
+}
+
+#
 locals {
-  environment_name = "${var.project_name}-${var.environment_type}"
+  route_table_public_ids = [
+    "${data.terraform_remote_state.vpc.vpc_public-routetable-az1}",
+    "${data.terraform_remote_state.vpc.vpc_public-routetable-az2}",
+    "${data.terraform_remote_state.vpc.vpc_public-routetable-az3}",
+  ]
+
+  route_table_private_ids = [
+    "${data.terraform_remote_state.vpc.vpc_private-routetable-az1}",
+    "${data.terraform_remote_state.vpc.vpc_private-routetable-az2}",
+    "${data.terraform_remote_state.vpc.vpc_private-routetable-az3}",
+  ]
+
+  route_table_db_ids = [
+    "${data.terraform_remote_state.vpc.vpc_db-routetable-az1}",
+    "${data.terraform_remote_state.vpc.vpc_db-routetable-az2}",
+    "${data.terraform_remote_state.vpc.vpc_db-routetable-az3}",
+  ]
+
+  nat_gateway_ids = [
+    "${data.terraform_remote_state.natgateway.natgateway_common-nat-id-az1}",
+    "${data.terraform_remote_state.natgateway.natgateway_common-nat-id-az2}",
+    "${data.terraform_remote_state.natgateway.natgateway_common-nat-id-az3}",
+  ]
+
+  destination_cidr_blocks = [
+    "0.0.0.0/0",
+    "0.0.0.0/0",
+    "0.0.0.0/0",
+  ]
 }
 
-data "aws_vpc" "vpc" {
-  tags = {
-    Name = "${local.environment_name}"
-  }
+############################
+# MODULES
+############################
+module "route-to-internet" {
+  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//routes//internetgateway"
+  route_table_id         = "${local.route_table_public_ids}"
+  destination_cidr_block = "${local.destination_cidr_blocks}"
+  gateway_id             = "${data.terraform_remote_state.internetgateway.internetgateway_env_igw_id}"
 }
 
-data "aws_vpc_peering_connection" "bastion_peering" {
-  vpc_id = "${data.aws_vpc.vpc.id}"
-
-  tags {
-    Name = "${local.environment_name}-to-bastion-vpc"
-  }
+# ## TODO The following exists to assist with debug or development
+# ## it is not to be applied to production and this block should
+# ## be deleted.
+# # PRIVATE NETWORK
+module "route-private-to-nat" {
+  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//routes//natgateway"
+  route_table_id         = "${local.route_table_private_ids}"
+  destination_cidr_block = "${local.destination_cidr_blocks}"
+  nat_gateway_id         = "${local.nat_gateway_ids}"
 }
 
-data "aws_internet_gateway" "igw" {
-  tags {
-    Name = "${local.environment_name}-igw"
-  }
-}
-
-data "aws_subnet_ids" "public_subnets" {
-  vpc_id = "${data.aws_vpc.vpc.id}"
-
-  tags = {
-    Type = "public"
-  }
-}
-
-data "aws_subnet_ids" "private_subnets" {
-  vpc_id = "${data.aws_vpc.vpc.id}"
-
-  tags = {
-    Type = "private"
-  }
-}
-
-data "aws_subnet_ids" "db_subnets" {
-  vpc_id = "${data.aws_vpc.vpc.id}"
-
-  tags = {
-    Type = "db"
-  }
+# ## TODO The following exists to assist with debug or development
+# ## it is not to be applied to production and this block should
+# ## be deleted.
+# # DB NETWORK
+module "route-db-to-nat" {
+  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//routes//natgateway"
+  route_table_id         = "${local.route_table_db_ids}"
+  destination_cidr_block = "${local.destination_cidr_blocks}"
+  nat_gateway_id         = "${local.nat_gateway_ids}"
 }

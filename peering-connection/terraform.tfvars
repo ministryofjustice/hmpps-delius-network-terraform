@@ -5,7 +5,7 @@ terragrunt = {
   }
 
   dependencies {
-    paths = ["../vpc","../internetgateway","../natgateway"]
+    paths = ["../vpc"]
   }
 
 
