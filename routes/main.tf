@@ -85,20 +85,20 @@ module "route-to-internet" {
 # ## it is not to be applied to production and this block should
 # ## be deleted.
 # # PRIVATE NETWORK
-# module "route-private-to-nat" {
-#   source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//routes//natgateway"
-#   route_table_id         = "${local.route_table_private_ids}"
-#   destination_cidr_block = "${local.destination_cidr_blocks}"
-#   nat_gateway_id         = "${local.nat_gateway_ids}"
-# }
-#
+module "route-private-to-nat" {
+  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//routes//natgateway"
+  route_table_id         = "${local.route_table_private_ids}"
+  destination_cidr_block = "${local.destination_cidr_blocks}"
+  nat_gateway_id         = "${local.nat_gateway_ids}"
+}
+
 # ## TODO The following exists to assist with debug or development
 # ## it is not to be applied to production and this block should
 # ## be deleted.
 # # DB NETWORK
-# module "route-db-to-nat" {
-#   source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//routes//natgateway"
-#   route_table_id         = "${local.route_table_db_ids}"
-#   destination_cidr_block = "${local.destination_cidr_blocks}"
-#   nat_gateway_id         = "${local.nat_gateway_ids}"
-# }
+module "route-db-to-nat" {
+  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//routes//natgateway"
+  route_table_id         = "${local.route_table_db_ids}"
+  destination_cidr_block = "${local.destination_cidr_blocks}"
+  nat_gateway_id         = "${local.nat_gateway_ids}"
+}
