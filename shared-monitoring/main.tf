@@ -54,6 +54,16 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
+data "terraform_remote_state" "bastion_vpc" {
+  backend = "s3"
+
+  config {
+    bucket = "${var.bastion_remote_state_bucket_name}"
+    key    = "bastion-vpc/terraform.tfstate"
+    region = "${var.region}"
+  }
+}
+
 locals {
   availability_zones      = [
     "${data.terraform_remote_state.vpc.vpc_private-subnet-az1}",
@@ -63,9 +73,11 @@ locals {
   instance_type           = "t2.large"
   ebs_device_volume_size  = "2048"
   docker_image_tag        = "latest"
+  route53_sub_domain      = "${var.project_name}-${var.environment_type}"
 }
+
 module "create_elastic_cluster" {
-  source = "./elasticsearch-cluster"
+  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=refactorMonitoringIntoModule//modules/monitoring/elasticsearch-cluster"
 
   app_name                      = "elasticsearch-cluster"
   instance_type                 = "${local.instance_type}"
@@ -73,16 +85,16 @@ module "create_elastic_cluster" {
   docker_image_tag              = "${local.docker_image_tag}"
   availability_zones            = "${local.availability_zones}"
   short_environment_identifier  = "${var.short_environment_identifier}"
-  bastion_client_sg_id          = "${var.bastion_client_sg_id}"
+  bastion_client_sg_id          = "${data.terraform_remote_state.bastion_vpc.bastion_client_sg_id}"
   environment_identifier        = "${var.environment_identifier}"
   region                        = "${var.region}"
   terraform_remote_state_vpc    = "${data.terraform_remote_state.vpc}"
-  route53_sub_domain            = "${var.route53_sub_domain}"
+  route53_sub_domain            = "${local.route53_sub_domain}"
   amazon_ami_id                 = "${data.aws_ami.amazon_ami.id}"
 }
 
 module "create_monitoring_instance" {
-  source = "./monitoring-server"
+  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=refactorMonitoringIntoModule//modules/monitoring/monitoring-server"
 
   app_name                      = "monitoring-server"
   terraform_remote_state_vpc    = "${data.terraform_remote_state.vpc}"
@@ -95,10 +107,10 @@ module "create_monitoring_instance" {
   docker_image_tag              = "${local.docker_image_tag}"
   availability_zones            = "${local.availability_zones}"
   short_environment_identifier  = "${var.short_environment_identifier}"
-  bastion_client_sg_id          = "${var.bastion_client_sg_id}"
+  bastion_client_sg_id          = "${data.terraform_remote_state.bastion_vpc.bastion_client_sg_id}"
   environment_identifier        = "${var.environment_identifier}"
   region                        = "${var.region}"
-  route53_sub_domain            = "${var.route53_sub_domain}"
+  route53_sub_domain            = "${local.route53_sub_domain}"
   route53_domain_private        = "${var.route53_domain_private}"
   route53_hosted_zone_id        = "${var.route53_hosted_zone_id}"
   public_ssl_arn                = "${var.public_ssl_arn}"
