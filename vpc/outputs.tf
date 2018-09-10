@@ -181,3 +181,4 @@ output "vpc_db-routetable-az2" {
 output "vpc_db-routetable-az3" {
   value = "${module.db_subnet_az3.routetableid}"
 }
+
