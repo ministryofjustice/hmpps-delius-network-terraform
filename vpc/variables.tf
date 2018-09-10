@@ -77,3 +77,5 @@ variable "availability_zone" {
   description = "List of the three AZs we want to use"
   type = "map"
 }
+
+variable "environment_identifier" {}
