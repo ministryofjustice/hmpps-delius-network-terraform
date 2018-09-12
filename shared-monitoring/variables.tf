@@ -36,3 +36,5 @@ variable "route53_hosted_zone_id" {}
 variable "project_name" {}
 
 variable "environment_type" {}
+
+variable "bastion_role_arn" {}
