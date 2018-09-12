@@ -153,7 +153,7 @@ module "create_monitoring_instance" {
   region                              = "${var.region}"
   route53_sub_domain                  = "${local.route53_sub_domain}"
   route53_domain_private              = "${var.route53_domain_private}"
-  route53_hosted_zone_id              = "${var.route53_hosted_zone_id}"
+  route53_hosted_zone_id              = "${data.terraform_remote_state.vpc.public_zone_id}"
   public_ssl_arn                      = "${var.public_ssl_arn}"
   bastion_origin_cidr                 = "${data.terraform_remote_state.bastion_remote_vpc.bastion_vpc_cidr}"
   bastion_origin_sgs                  = "${local.bastion_origin_sgs}"

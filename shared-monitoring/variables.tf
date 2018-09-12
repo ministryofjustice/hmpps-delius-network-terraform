@@ -31,8 +31,6 @@ variable "short_environment_identifier" {}
 
 variable "public_ssl_arn" {}
 
-variable "route53_hosted_zone_id" {}
-
 variable "project_name" {}
 
 variable "environment_type" {}
