@@ -1,5 +1,6 @@
 locals {
   route53_internal_domain = "${var.project_name}-${var.environment_type}.internal"
+  public_domain           = "${var.environment_type}.${var.project_name}.${var.route53_domain_private}"
 }
 
 # Private internal zone for easier lookups
@@ -9,5 +10,5 @@ resource "aws_route53_zone" "internal_zone" {
 }
 
 data "aws_route53_zone" "public_hosted_zone" {
-  name = "${var.environment_type}.${var.project_name}.${var.route53_domain_private}"
+  name = "${local.public_domain}"
 }
