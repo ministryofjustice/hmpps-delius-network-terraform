@@ -21,7 +21,7 @@ terragrunt = {
         "import",
         "push",
         "refresh",
-        "apply"
+        "apply",
       ]
 
       arguments = [

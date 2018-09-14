@@ -50,3 +50,4 @@ fabric.properties
 
 env_configs/inspec*.properties
 attributes/*
+run.sh
