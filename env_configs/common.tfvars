@@ -18,3 +18,5 @@ eng_role_arn = "arn:aws:iam::895523100917:role/terraform"
 bastion_role_arn = "arn:aws:iam::895523100917:role/terraform"
 
 alfresco_app_name = "alfresco"
+
+spg_app_name = "spg"

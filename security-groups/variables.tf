@@ -19,3 +19,9 @@ variable "alfresco_app_name" {
   description = "label for Alfresco"
   default     = "alfresco_app_name"
 }
+
+# SPG vars
+variable "spg_app_name" {
+  description = "label for spg"
+  default     = "spg"
+}
