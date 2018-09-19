@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-OUTPUT_FILE="env_configs/inspec-creds.properties"
+OUTPUT_FILE="${baseDir}/env_configs/inspec-creds.properties"
 
 temp_role=$(aws sts assume-role --role-arn ${TERRAGRUNT_IAM_ROLE} --role-session-name testing --duration-seconds 900)
 

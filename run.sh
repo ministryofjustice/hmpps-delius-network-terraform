@@ -1,12 +1,13 @@
-#!/bin/sh
-,,,
+#!/usr/bin/env bash
+
 set -e
 
 #Usage
-# Scripts takes 2 arguments: environment_type and action
-# environment_type: target environment example dev prod
-# ACTION_TYPE: task to complete example plan apply test clean
-# AWS_TOKEN: token to use when running locally eg hmpps-token
+# Scripts takes four (4) arguments:
+# 1) environment_name : eg same as the env's config file name delius-core-dev delius-perf alfresco-dev
+# 2) action | ACTION_TYPE: task to complete example plan apply test clean
+# 3) component | eg vpc security-groups application (name of subdir where resources are defined in Terraform)
+# 4*) optional AWS_TOKEN: token to use when running locally eg hmpps-token
 
 # Error handler function
 exit_on_error() {
@@ -19,25 +20,40 @@ exit_on_error() {
 }
 
 cleanUp() {
-  #rm -rf .terraform
+  echo "cleanUp"
+  echo "${ENVIRONMENT_NAME}"
+  if [[ -f "${tfstate}" ]]
+  then
+    if grep --quiet "${ENVIRONMENT_NAME}" "${tfstate}"
+    then
+      echo "state for env"
+    else
+      echo "not state for env - cleaning up"
+      rm -rf "${baseDir}/${COMPONENT}/.terraform"
+      sleep 5
+    fi
+  fi
   rm -rf ${HOME}/data/env_configs/inspec.properties
 }
 
-env_config_dir="${HOME}/data/env_configs"
+ENVIRONMENT_NAME=${1}
+ACTION_TYPE=${2}
+COMPONENT=${3}
+AWS_TOKEN=${4}
 
-TG_ENVIRONMENT_TYPE=$1
-ACTION_TYPE=$2
-AWS_TOKEN=$3
-COMPONENT=${4}
+baseDir=$(pwd)
+env_config_dir="${baseDir}/env_configs"
+tfstate="${baseDir}/${COMPONENT}/.terraform/terraform.tfstate"
 
 
-if [ -z "${TG_ENVIRONMENT_TYPE}" ]
+
+if [ -z "${ENVIRONMENT_NAME}" ]
 then
-    echo "environment_type argument not supplied, please provide an argument!"
+    echo "ENVIRONMENT_NAME argument not supplied, please provide an argument!"
     exit 1
 fi
 
-echo "Output -> environment_type set to: ${TG_ENVIRONMENT_TYPE}"
+echo "Output -> ENVIRONMENT_NAME set to: ${ENVIRONMENT_NAME}"
 
 if [ -z "${ACTION_TYPE}" ]
 then
@@ -48,6 +64,12 @@ fi
 
 echo "Output -> ACTION_TYPE set to: ${ACTION_TYPE}"
 
+if [ -z "${COMPONENT}" ]
+then
+    echo "COMPONENT argument not supplied."
+    echo "--> Defaulting to common component"
+    COMPONENT="common"
+fi
 
 if [ ! -z "${AWS_TOKEN}" ]
 then
@@ -57,33 +79,26 @@ then
     echo "Output ---> input stage complete"
 fi
 
-if [ -z "${COMPONENT}" ]
-then
-    echo "COMPONENT argument not supplied."
-    echo "--> Defaulting to common component"
-    COMPONENT="common"
-fi
-
 # Commands
-tg_planCmd="terragrunt plan -detailed-exitcode --out ${TG_ENVIRONMENT_TYPE}.plan"
-tg_applyCmd="terragrunt apply ${TG_ENVIRONMENT_TYPE}.plan"
-workDir=$(pwd)
-runCmd="docker run -it --rm -v ${workDir}:/home/tools/data \
+tg_planCmd="terragrunt plan -detailed-exitcode --out ${ENVIRONMENT_NAME}.plan"
+
+tg_applyCmd="terragrunt apply ${ENVIRONMENT_NAME}.plan"
+
+runCmd="docker run -it --rm -v $(pwd):/home/tools/data \
     -v ${HOME}/.aws:/home/tools/.aws \
-    ${TOKEN_ARGS} -e RUNNING_IN_CONTAINER=True hmpps/terraform-builder:latest sh run.sh ${TG_ENVIRONMENT_TYPE} ${ACTION_TYPE} ${COMPONENT}"
+    ${TOKEN_ARGS} -e RUNNING_IN_CONTAINER=True hmpps/terraform-builder:latest sh run.sh ${ENVIRONMENT_NAME} ${ACTION_TYPE} ${COMPONENT}"
 
 #check env vars for RUNNING_IN_CONTAINER switch
 if [[ ${RUNNING_IN_CONTAINER} == True ]]
 then
-    workDirContainer=${3}
     echo "Output -> environment stage"
-    source ${env_config_dir}/${TG_ENVIRONMENT_TYPE}.properties
+    source ${env_config_dir}/${ENVIRONMENT_NAME}.properties
     exit_on_error $? !!
     echo "Output ---> set environment stage complete"
     # set runCmd
     ACTION_TYPE="docker-${ACTION_TYPE}"
-    cd ${workDirContainer}
-    echo "Output -> Container workDir: $(pwd)"
+    cd ${COMPONENT}
+    echo "Output -> Component Container working Dir: $(pwd)"
 fi
 
 case ${ACTION_TYPE} in
@@ -98,7 +113,7 @@ case ${ACTION_TYPE} in
     echo "Running docker plan action"
     terragrunt init
     exit_on_error $? !!
-    terragrunt plan -detailed-exitcode --out ${TG_ENVIRONMENT_TYPE}.plan
+    terragrunt plan -detailed-exitcode --out ${ENVIRONMENT_NAME}.plan
     exit_on_error $? !!
     ;;
   apply)
@@ -110,7 +125,7 @@ case ${ACTION_TYPE} in
     ;;
   docker-apply)
     echo "Running docker apply action"
-    terragrunt apply ${TG_ENVIRONMENT_TYPE}.plan
+    terragrunt apply ${ENVIRONMENT_NAME}.plan
     exit_on_error $? !!
     ;;
   destroy)
@@ -133,14 +148,14 @@ case ${ACTION_TYPE} in
     exit_on_error $? !!
     ;;
   docker-test)
-    echo "Running docker apply action"
-    sh scripts/generate-terraform-outputs.sh
+    echo "Running docker test action"
+    . "${baseDir}/scripts/generate-terraform-outputs-component.sh"
     exit_on_error $? !!
-    sh scripts/aws-get-temp-creds.sh
+    . "${baseDir}/scripts/aws-get-temp-creds.sh"
+     exit_on_error $? !!
+    . "${baseDir}/env_configs/inspec-creds.properties"
     exit_on_error $? !!
-    source env_configs/inspec-creds.properties
-    exit_on_error $? !!
-    inspec exec ${inspec_profile} -t aws://${TG_REGION}
+    inspec exec "${inspec_profile_dir}/${COMPONENT}" -t aws://${TG_REGION}
     exit_on_error $? !!
     ;;
   output)
