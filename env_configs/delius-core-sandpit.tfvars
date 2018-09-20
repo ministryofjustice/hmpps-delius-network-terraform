@@ -1,4 +1,4 @@
-vpc_supernet = "10.161.4.0/22"
+vpc_supernet = "10.161.4.0/20"
 
 aws_nameserver = "10.161.20.2"
 
