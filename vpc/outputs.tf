@@ -6,6 +6,10 @@ output "environment_name" {
   value = "${var.environment_name}"
 }
 
+output "bastion_inventory" {
+  value = "${var.bastion_inventory}"
+}
+
 output "vpc_id" {
   value = "${module.vpc.vpc_id}"
 }
