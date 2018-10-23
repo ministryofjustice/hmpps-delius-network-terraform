@@ -34,6 +34,11 @@ variable "environment_type" {
   type        = "string"
 }
 
+variable "bastion_inventory" {
+  description = "The bastion inventory eg dev"
+  type        = "string"
+}
+
 ## remote states
 variable "eng_remote_state_bucket_name" {
   description = "Terraform remote state bucket name for engineering platform vpc"
