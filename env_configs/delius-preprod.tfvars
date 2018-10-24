@@ -1,6 +1,5 @@
-instance_type_weblogic = "t2.large"
+pc_supernet = "10.160.0.0/20"
 
-instance_type_db = "t2.large"
+aws_nameserver = "10.160.0.2"
 
-egress_443 = true
-egress_80 = true
+public_ssl_arn = ""
