@@ -5,15 +5,41 @@ This will create the base VPC, Subnets and Routes for any Delius environment.
 
 ## Environment configurations
 
-The environment configurations live in the `env_configs` directory.
+The environment configurations are to be copied into a directory named `env_configs` with the following example structure:
 
-In here the convention is
+```
+env_configs
+├── common
+│   ├── common.properties
+│   └── common.tfvars
+└── delius-core-dev
+    ├── delius-core-dev.credentials.yml
+    ├── delius-core-dev.properties
+    └── delius-core-dev.tfvars
+```
 
-$project + _ + $environment_name
+An example method of obtaining the configs would be:
+```
+CONFIG_BRANCH=master
+ENVIRONMENT_NAME=delius-core-dev
 
-As you can see for one of the examples is the Sandpit environment for Delius Core named as
+mkdir -p env_configs/common
 
-`delius-core_sandpit.tfvars` and `delius-core_sandpit.properties.sh`
+wget "https://raw.githubusercontent.com/ministryofjustice/hmpps-env-configs/${CONFIG_BRANCH}/common/common.properties" --output-document="env_configs/common/common.properties"
+wget "https://raw.githubusercontent.com/ministryofjustice/hmpps-env-configs/${CONFIG_BRANCH}/common/common.tfvars" --output-document="env_configs/common/common.tfvars"
+wget "https://raw.githubusercontent.com/ministryofjustice/hmpps-env-configs/${CONFIG_BRANCH}/${ENVIRONMENT_NAME}/${ENVIRONMENT_NAME}.properties" --output-document="env_configs/${ENVIRONMENT_NAME}/${ENVIRONMENT_NAME}.properties"
+wget "https://raw.githubusercontent.com/ministryofjustice/hmpps-env-configs/${CONFIG_BRANCH}/${ENVIRONMENT_NAME}/${ENVIRONMENT_NAME}.tfvars" --output-document="env_configs/${ENVIRONMENT_NAME}/${ENVIRONMENT_NAME}.tfvars"
+
+source env_configs/${ENVIRONMENT_NAME}/${ENVIRONMENT_NAME}.properties
+```
+
+or
+```
+CONFIG_BRANCH=master
+TARGET_DIR=env_configs
+
+git clone --depth 1 -b "${CONFIG_BRANCH}" git@github.com:ministryofjustice/hmpps-env-configs.git "${TARGET_DIR}"
+```
 
 ## Network
 
