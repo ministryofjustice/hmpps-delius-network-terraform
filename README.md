@@ -41,6 +41,20 @@ TARGET_DIR=env_configs
 git clone --depth 1 -b "${CONFIG_BRANCH}" git@github.com:ministryofjustice/hmpps-env-configs.git "${TARGET_DIR}"
 ```
 
+## Run order
+
+Start with VPC
+then
+```
+└── vpc
+    ├── peering-connection
+    ├── internetgateway
+    │   └── natgateway
+    │       └── routes
+    └── security-groups
+        └── shared-monitoring
+```
+
 ## Network
 
 The subnets are not allocated linearly. The private subnets have much more addresses than the public and database subnets.
