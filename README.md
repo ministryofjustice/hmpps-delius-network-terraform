@@ -2,6 +2,8 @@
 Delius Network repo for creating VPC/subnets and shared things for environments.
 
 This will create the base VPC, Subnets and Routes for any Delius environment.
+This project has a dependecy on:
+https://github.com/ministryofjustice/hmpps-env-configs
 
 ## Environment configurations
 
