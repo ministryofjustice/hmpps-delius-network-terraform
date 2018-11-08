@@ -21,7 +21,7 @@ data "aws_ami" "amazon_ami" {
 
   filter {
     name   = "name"
-    values = ["HMPPS Base CentOS master *"]
+    values = ["HMPPS Base Docker Centos master *"]
   }
 
   filter {
@@ -136,6 +136,7 @@ module "create_elastic_cluster" {
   vpc_id                        = "${data.terraform_remote_state.vpc.vpc_id}"
   vpc_cidr                      = "${data.terraform_remote_state.vpc.vpc_cidr_block}"
   s3-config-bucket              = "${var.remote_state_bucket_name}"
+  bastion_inventory             =  "${var.bastion_inventory}"
 }
 
 module "create_monitoring_instance" {
@@ -170,4 +171,5 @@ module "create_monitoring_instance" {
   s3-config-bucket                    = "${var.remote_state_bucket_name}"
   elasticsearch_cluster_name          = "${module.create_elastic_cluster.elasticsearch_cluster_name}"
   elasticsearch_cluster_sg_client_id  = "${module.create_elastic_cluster.elasticsearch_cluster_sg_client_id}"
+  bastion_inventory                   =  "${var.bastion_inventory}"
 }
