@@ -36,3 +36,5 @@ variable "project_name" {}
 variable "environment_type" {}
 
 variable "bastion_role_arn" {}
+
+variable "bastion_inventory" {}
