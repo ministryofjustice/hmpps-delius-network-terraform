@@ -8,9 +8,6 @@ provider "aws" {
   version = "~> 1.16"
 }
 
-locals {
-  bastion_remote_state_bucket_name = "tf-eu-west-2-hmpps-bastion-${var.bastion_inventory}-remote-state"
-}
 #-------------------------------------------------------------
 ### Getting aws_caller_identity
 #-------------------------------------------------------------
@@ -64,10 +61,10 @@ data "terraform_remote_state" "bastion_remote_vpc" {
   backend = "s3"
 
   config {
-    bucket   = "${local.bastion_remote_state_bucket_name}"
+    bucket   = "${data.terraform_remote_state.vpc.bastion_remote_state_bucket_name}"
     key      = "bastion-vpc/terraform.tfstate"
     region   = "${var.region}"
-    role_arn = "${var.bastion_role_arn}"
+    role_arn = "${data.terraform_remote_state.vpc.bastion_role_arn}"
   }
 }
 
@@ -123,7 +120,7 @@ module "create_elastic_cluster" {
   docker_image_tag              = "${local.docker_image_tag}"
   availability_zones            = "${local.availability_zones}"
   short_environment_identifier  = "${var.short_environment_identifier}"
-  bastion_origin_cidr           = "${data.terraform_remote_state.bastion_remote_vpc.bastion_vpc_cidr}"
+  bastion_origin_cidr           = "${data.terraform_remote_state.vpc.bastion_vpc_cidr}"
   environment_identifier        = "${var.environment_identifier}"
   region                        = "${var.region}"
   route53_sub_domain            = "${local.route53_sub_domain}"
