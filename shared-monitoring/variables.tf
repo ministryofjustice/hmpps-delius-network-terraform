@@ -29,8 +29,6 @@ variable "bastion_remote_state_bucket_name" {
 
 variable "short_environment_identifier" {}
 
-variable "public_ssl_arn" {}
-
 variable "project_name" {}
 
 variable "environment_type" {}
