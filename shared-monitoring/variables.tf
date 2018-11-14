@@ -23,16 +23,10 @@ variable "whitelist_monitoring_ips" {
   type = "list"
 }
 
-variable "bastion_remote_state_bucket_name" {
-  description = "our remote tf bucket for bastion"
-}
-
 variable "short_environment_identifier" {}
 
 variable "project_name" {}
 
 variable "environment_type" {}
-
-variable "bastion_role_arn" {}
 
 variable "bastion_inventory" {}

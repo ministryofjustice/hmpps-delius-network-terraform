@@ -8,6 +8,9 @@ provider "aws" {
   version = "~> 1.16"
 }
 
+locals {
+  bastion_remote_state_bucket_name = "tf-eu-west-2-hmpps-bastion-${var.bastion_inventory}-remote-state"
+}
 #-------------------------------------------------------------
 ### Getting aws_caller_identity
 #-------------------------------------------------------------
@@ -61,7 +64,7 @@ data "terraform_remote_state" "bastion_remote_vpc" {
   backend = "s3"
 
   config {
-    bucket   = "${var.bastion_remote_state_bucket_name}"
+    bucket   = "${local.bastion_remote_state_bucket_name}"
     key      = "bastion-vpc/terraform.tfstate"
     region   = "${var.region}"
     role_arn = "${var.bastion_role_arn}"
