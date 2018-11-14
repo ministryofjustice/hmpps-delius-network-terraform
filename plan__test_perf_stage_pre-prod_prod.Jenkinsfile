@@ -63,50 +63,38 @@ pipeline {
         // delius-test
         stage('Delius Test VPC') {
           parallel {
-            stage('Plan vpc')                 { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'vpc')}}}
-            stage('Plan peering-connection')  { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'peering-connection')}}}
-            stage('Plan internetgateway')     { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'internetgateway')}}}
-            stage('Plan natgateway')          { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'natgateway')}}}
-            stage('Plan routes')              { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'routes')}}}
-            stage('Plan security-groups')     { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'security-groups')}}}
-            stage('Monitoring placeholder')   { steps { script {sh '''
-            #!/usr/env/bin bash
-            echo "delius-test VPC Shared Monitoring - placeholder"
-            '''}}}
-            //stage('Plan shared-monitoring')   { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'shared-monitoring')}}}
+            stage('Plan Delius Test vpc')                 { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'vpc')}}}
+            stage('Plan Delius Test peering-connection')  { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'peering-connection')}}}
+            stage('Plan Delius Test internetgateway')     { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'internetgateway')}}}
+            stage('Plan Delius Test natgateway')          { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'natgateway')}}}
+            stage('Plan Delius Test routes')              { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'routes')}}}
+            stage('Plan Delius Test security-groups')     { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'security-groups')}}}
+            stage('Plan Delius Test shared-monitoring')   { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'shared-monitoring')}}}
           }
         }
         // delius-perf
         stage('Delius Perf VPC') {
           parallel {
-            stage('Plan vpc')                 { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'vpc')}}}
-            stage('Plan peering-connection')  { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'peering-connection')}}}
-            stage('Plan internetgateway')     { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'internetgateway')}}}
-            stage('Plan natgateway')          { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'natgateway')}}}
-            stage('Plan routes')              { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'routes')}}}
-            stage('Plan security-groups')     { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'security-groups')}}}
-            stage('Monitoring placeholder')   { steps { script {sh '''
-            #!/usr/env/bin bash
-            echo "delius-perf VPC Shared Monitoring - placeholder"
-            '''}}}
-            //stage('Plan shared-monitoring')   { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'shared-monitoring')}}}
+            stage('Plan Delius Perf vpc')                 { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'vpc')}}}
+            stage('Plan Delius Perf peering-connection')  { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'peering-connection')}}}
+            stage('Plan Delius Perf internetgateway')     { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'internetgateway')}}}
+            stage('Plan Delius Perf natgateway')          { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'natgateway')}}}
+            stage('Plan Delius Perf routes')              { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'routes')}}}
+            stage('Plan Delius Perf security-groups')     { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'security-groups')}}}
+            stage('Plan Delius Perf shared-monitoring')   { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'shared-monitoring')}}}
           }
         }
 
         // delius-stage
         stage('Delius Stage VPC') {
           parallel {
-            stage('Plan vpc')                 { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'vpc')}}}
-            stage('Plan peering-connection')  { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'peering-connection')}}}
-            stage('Plan internetgateway')     { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'internetgateway')}}}
-            stage('Plan natgateway')          { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'natgateway')}}}
-            stage('Plan routes')              { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'routes')}}}
-            stage('Plan security-groups')     { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'security-groups')}}}
-            stage('Monitoring placeholder')   { steps { script {sh '''
-            #!/usr/env/bin bash
-            echo "delius-stage VPC Shared Monitoring - placeholder"
-            '''}}}
-            //stage('Plan shared-monitoring')   { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'shared-monitoring')}}}
+            stage('Plan Delius Stage vpc')                 { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'vpc')}}}
+            stage('Plan Delius Stage peering-connection')  { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'peering-connection')}}}
+            stage('Plan Delius Stage internetgateway')     { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'internetgateway')}}}
+            stage('Plan Delius Stage natgateway')          { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'natgateway')}}}
+            stage('Plan Delius Stage routes')              { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'routes')}}}
+            stage('Plan Delius Stage security-groups')     { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'security-groups')}}}
+            stage('Plan Delius Stage shared-monitoring')   { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'shared-monitoring')}}}
           }
         }
 

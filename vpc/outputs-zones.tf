@@ -13,3 +13,11 @@ output "public_zone_id" {
 output "public_zone_name" {
   value = "${local.public_domain}"
 }
+
+output "public_ssl_arn" {
+  value = "${data.aws_acm_certificate.ssl_certificate_details.arn}"
+}
+
+output "public_ssl_domain" {
+  value = "${data.aws_acm_certificate.ssl_certificate_details.domain}"
+}

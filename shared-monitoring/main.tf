@@ -61,10 +61,10 @@ data "terraform_remote_state" "bastion_remote_vpc" {
   backend = "s3"
 
   config {
-    bucket   = "${var.bastion_remote_state_bucket_name}"
+    bucket   = "${data.terraform_remote_state.vpc.bastion_remote_state_bucket_name}"
     key      = "bastion-vpc/terraform.tfstate"
     region   = "${var.region}"
-    role_arn = "${var.bastion_role_arn}"
+    role_arn = "${data.terraform_remote_state.vpc.bastion_role_arn}"
   }
 }
 
@@ -108,6 +108,7 @@ locals {
   docker_image_tag        = "latest"
   route53_sub_domain      = "${var.environment_type}.${var.project_name}"
   account_id              = "${data.aws_caller_identity.current.account_id}"
+  public_ssl_arn          = "${data.terraform_remote_state.vpc.public_ssl_arn}"
 }
 
 module "create_elastic_cluster" {
@@ -119,7 +120,7 @@ module "create_elastic_cluster" {
   docker_image_tag              = "${local.docker_image_tag}"
   availability_zones            = "${local.availability_zones}"
   short_environment_identifier  = "${var.short_environment_identifier}"
-  bastion_origin_cidr           = "${data.terraform_remote_state.bastion_remote_vpc.bastion_vpc_cidr}"
+  bastion_origin_cidr           = "${data.terraform_remote_state.vpc.bastion_vpc_cidr}"
   environment_identifier        = "${var.environment_identifier}"
   region                        = "${var.region}"
   route53_sub_domain            = "${local.route53_sub_domain}"
@@ -155,7 +156,7 @@ module "create_monitoring_instance" {
   route53_sub_domain                  = "${local.route53_sub_domain}"
   route53_domain_private              = "${var.route53_domain_private}"
   route53_hosted_zone_id              = "${data.terraform_remote_state.vpc.public_zone_id}"
-  public_ssl_arn                      = "${var.public_ssl_arn}"
+  public_ssl_arn                      = "${local.public_ssl_arn}"
   bastion_origin_cidr                 = "${data.terraform_remote_state.bastion_remote_vpc.bastion_vpc_cidr}"
   bastion_origin_sgs                  = "${local.bastion_origin_sgs}"
 
