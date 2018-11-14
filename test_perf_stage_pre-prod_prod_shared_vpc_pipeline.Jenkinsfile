@@ -136,34 +136,34 @@ pipeline {
           }
         }
         // delius-perf
-        stage('Delius Perf VPC') {
-          steps {
-            script {
-              do_terraform(project.config, 'delius-perf', project.network, 'vpc')
-              do_terraform(project.config, 'delius-perf', project.network, 'peering-connection')
-              do_terraform(project.config, 'delius-perf', project.network, 'internetgateway')
-              do_terraform(project.config, 'delius-perf', project.network, 'natgateway')
-              do_terraform(project.config, 'delius-perf', project.network, 'routes')
-              do_terraform(project.config, 'delius-perf', project.network, 'security-groups')
-              do_terraform(project.config, 'delius-perf', project.network, 'shared-monitoring')
-            }
-          }
-        }
-
-        // delius-stage
-        stage('Delius Stage VPC') {
-          steps {
-            script {
-              do_terraform(project.config, 'delius-stage', project.network, 'vpc')
-              do_terraform(project.config, 'delius-stage', project.network, 'peering-connection')
-              do_terraform(project.config, 'delius-stage', project.network, 'internetgateway')
-              do_terraform(project.config, 'delius-stage', project.network, 'natgateway')
-              do_terraform(project.config, 'delius-stage', project.network, 'routes')
-              do_terraform(project.config, 'delius-stage', project.network, 'security-groups')
-              do_terraform(project.config, 'delius-stage', project.network, 'shared-monitoring')
-            }
-          }
-        }
+//        stage('Delius Perf VPC') {
+//          steps {
+//            script {
+//              do_terraform(project.config, 'delius-perf', project.network, 'vpc')
+//              do_terraform(project.config, 'delius-perf', project.network, 'peering-connection')
+//              do_terraform(project.config, 'delius-perf', project.network, 'internetgateway')
+//              do_terraform(project.config, 'delius-perf', project.network, 'natgateway')
+//              do_terraform(project.config, 'delius-perf', project.network, 'routes')
+//              do_terraform(project.config, 'delius-perf', project.network, 'security-groups')
+//              do_terraform(project.config, 'delius-perf', project.network, 'shared-monitoring')
+//            }
+//          }
+//        }
+//
+//        // delius-stage
+//        stage('Delius Stage VPC') {
+//          steps {
+//            script {
+//              do_terraform(project.config, 'delius-stage', project.network, 'vpc')
+//              do_terraform(project.config, 'delius-stage', project.network, 'peering-connection')
+//              do_terraform(project.config, 'delius-stage', project.network, 'internetgateway')
+//              do_terraform(project.config, 'delius-stage', project.network, 'natgateway')
+//              do_terraform(project.config, 'delius-stage', project.network, 'routes')
+//              do_terraform(project.config, 'delius-stage', project.network, 'security-groups')
+//              do_terraform(project.config, 'delius-stage', project.network, 'shared-monitoring')
+//            }
+//          }
+//        }
 
         // // delius-preprod
         stage('Delius PreProd VPC') {
