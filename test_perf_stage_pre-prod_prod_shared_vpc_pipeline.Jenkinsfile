@@ -131,11 +131,7 @@ pipeline {
               do_terraform(project.config, 'delius-test', project.network, 'natgateway')
               do_terraform(project.config, 'delius-test', project.network, 'routes')
               do_terraform(project.config, 'delius-test', project.network, 'security-groups')
-              sh '''
-              #!/usr/env/bin bash
-              echo "delius-test VPC Shared Monitoring - placeholder"
-              '''
-              // do_terraform(project.config, 'delius-test', project.network, 'shared-monitoring')
+              do_terraform(project.config, 'delius-test', project.network, 'shared-monitoring')
             }
           }
         }
@@ -149,11 +145,7 @@ pipeline {
               do_terraform(project.config, 'delius-perf', project.network, 'natgateway')
               do_terraform(project.config, 'delius-perf', project.network, 'routes')
               do_terraform(project.config, 'delius-perf', project.network, 'security-groups')
-              sh '''
-              #!/usr/env/bin bash
-              echo "delius-perf VPC Shared Monitoring - placeholder"
-              '''
-              // do_terraform(project.config, 'delius-perf', project.network, 'shared-monitoring')
+              do_terraform(project.config, 'delius-perf', project.network, 'shared-monitoring')
             }
           }
         }
@@ -168,11 +160,7 @@ pipeline {
               do_terraform(project.config, 'delius-stage', project.network, 'natgateway')
               do_terraform(project.config, 'delius-stage', project.network, 'routes')
               do_terraform(project.config, 'delius-stage', project.network, 'security-groups')
-              sh '''
-              #!/usr/env/bin bash
-              echo "delius-stage VPC Shared Monitoring - placeholder"
-              '''
-              // do_terraform(project.config, 'delius-stage', project.network, 'shared-monitoring')
+              do_terraform(project.config, 'delius-stage', project.network, 'shared-monitoring')
             }
           }
         }
