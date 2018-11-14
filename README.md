@@ -26,6 +26,7 @@ CONFIG_BRANCH=master
 ENVIRONMENT_NAME=delius-core-dev
 
 mkdir -p env_configs/common
+mkdir -p env_configs/${ENVIRONMENT_NAME}
 
 wget "https://raw.githubusercontent.com/ministryofjustice/hmpps-env-configs/${CONFIG_BRANCH}/common/common.properties" --output-document="env_configs/common/common.properties"
 wget "https://raw.githubusercontent.com/ministryofjustice/hmpps-env-configs/${CONFIG_BRANCH}/common/common.tfvars" --output-document="env_configs/common/common.tfvars"
