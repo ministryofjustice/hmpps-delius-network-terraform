@@ -21,3 +21,13 @@ resource "aws_security_group_rule" "ssh_bastion_in" {
   to_port           = "22"
   cidr_blocks       = [ "${values(data.terraform_remote_state.vpc.bastion_vpc_public_cidr)}" ]
 }
+
+#to allow sshing to docker containers with port 2222 exposed on the docker host
+resource "aws_security_group_rule" "alt_ssh_bastion_in" {
+  security_group_id = "${aws_security_group.ssh_bastion_in.id}"
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = "2222"
+  to_port           = "2222"
+  cidr_blocks       = [ "${values(data.terraform_remote_state.vpc.bastion_vpc_public_cidr)}" ]
+}
