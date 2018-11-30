@@ -2,6 +2,10 @@ variable "environment_name" {
   type = "string"
 }
 
+variable "tags" {
+  type = "map"
+}
+
 variable "region" {
   description = "The AWS region."
 }

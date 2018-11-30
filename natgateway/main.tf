@@ -22,19 +22,19 @@ module "common-nat-az1" {
   source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//natgateway"
   az     = "${var.environment_name}-az1"
   subnet = "${data.terraform_remote_state.vpc.vpc_public-subnet-az1}"
-  tags   = "${data.terraform_remote_state.vpc.tags}"
+  tags   = "${var.tags}"
 }
 
 module "common-nat-az2" {
   source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//natgateway"
   az     = "${var.environment_name}-az2"
   subnet = "${data.terraform_remote_state.vpc.vpc_public-subnet-az2}"
-  tags   = "${data.terraform_remote_state.vpc.tags}"
+  tags   = "${var.tags}"
 }
 
 module "common-nat-az3" {
   source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//natgateway"
   az     = "${var.environment_name}-az3"
   subnet = "${data.terraform_remote_state.vpc.vpc_public-subnet-az3}"
-  tags   = "${data.terraform_remote_state.vpc.tags}"
+  tags   = "${var.tags}"
 }
