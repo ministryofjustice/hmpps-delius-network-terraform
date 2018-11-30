@@ -75,15 +75,15 @@ pipeline {
             }
         }
         // delius-test
-        stage('Delius' + environment_name + 'VPC') {
+        stage('Delius VPC') {
           parallel {
-            stage('Plan Delius ' + environment_name + ' vpc')                 { steps { script {plan_submodule(project.config, environment_name, project.network, 'vpc')}}}
-            stage('Plan Delius ' + environment_name + ' peering-connection')  { steps { script {plan_submodule(project.config, environment_name, project.network, 'peering-connection')}}}
-            stage('Plan Delius ' + environment_name + ' internetgateway')     { steps { script {plan_submodule(project.config, environment_name, project.network, 'internetgateway')}}}
-            stage('Plan Delius ' + environment_name + ' natgateway')          { steps { script {plan_submodule(project.config, environment_name, project.network, 'natgateway')}}}
-            stage('Plan Delius ' + environment_name + ' routes')              { steps { script {plan_submodule(project.config, environment_name, project.network, 'routes')}}}
-            stage('Plan Delius ' + environment_name + ' security-groups')     { steps { script {plan_submodule(project.config, environment_name, project.network, 'security-groups')}}}
-            // stage('Plan Delius ' + environment_name + ' shared-monitoring')   { steps { script {plan_submodule(project.config, environment_name, project.network, 'shared-monitoring')}}}
+            stage('Plan Delius vpc')                 { steps { script {plan_submodule(project.config, environment_name, project.network, 'vpc')}}}
+            stage('Plan Delius peering-connection')  { steps { script {plan_submodule(project.config, environment_name, project.network, 'peering-connection')}}}
+            stage('Plan Delius internetgateway')     { steps { script {plan_submodule(project.config, environment_name, project.network, 'internetgateway')}}}
+            stage('Plan Delius natgateway')          { steps { script {plan_submodule(project.config, environment_name, project.network, 'natgateway')}}}
+            stage('Plan Delius routes')              { steps { script {plan_submodule(project.config, environment_name, project.network, 'routes')}}}
+            stage('Plan Delius security-groups')     { steps { script {plan_submodule(project.config, environment_name, project.network, 'security-groups')}}}
+            // stage('Plan Delius shared-monitoring')   { steps { script {plan_submodule(project.config, environment_name, project.network, 'shared-monitoring')}}}
           }
         }
     }
