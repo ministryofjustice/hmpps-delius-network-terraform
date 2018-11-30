@@ -4,7 +4,7 @@ resource "aws_vpc_peering_connection" "peering-eng-vpc" {
   peer_owner_id = "${data.terraform_remote_state.vpc.eng_vpc_account_id}"
   peer_vpc_id   = "${data.terraform_remote_state.vpc.eng_vpc_id}"
   vpc_id        = "${data.terraform_remote_state.vpc.vpc_id}"
-  tags          = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}-to-eng-vpc"))}"
+  tags          = "${merge(var.tags, map("Name", "${var.environment_name}-to-eng-vpc"))}"
 }
 
 module "route-to-eng" {

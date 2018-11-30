@@ -22,5 +22,5 @@ module "env_igw" {
   source       = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//internetgateway"
   gateway_name = "${var.environment_name}"
   vpc_id       = "${data.terraform_remote_state.vpc.vpc_id}"
-  tags         = "${data.terraform_remote_state.vpc.tags}"
+  tags         = "${var.tags}"
 }
