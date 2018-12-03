@@ -12,3 +12,9 @@ resource "aws_route53_zone" "internal_zone" {
 data "aws_route53_zone" "public_hosted_zone" {
   name = "${local.public_domain}"
 }
+
+data "aws_acm_certificate" "ssl_certificate_details" {
+  domain      = "*.${local.public_domain}"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}

@@ -1,4 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
+
+## important ignore due to centralised config
+**/env_configs/*
+**/tmp_config/*
+
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -50,3 +55,4 @@ fabric.properties
 
 env_configs/inspec*.properties
 attributes/*
+run.sh

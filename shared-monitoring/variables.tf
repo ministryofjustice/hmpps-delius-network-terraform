@@ -2,6 +2,10 @@ variable "environment_name" {
   type = "string"
 }
 
+variable "tags" {
+  type = "map"
+}
+
 variable "region" {
   description = "The AWS region."
 }
@@ -23,16 +27,10 @@ variable "whitelist_monitoring_ips" {
   type = "list"
 }
 
-variable "bastion_remote_state_bucket_name" {
-  description = "our remote tf bucket for bastion"
-}
-
 variable "short_environment_identifier" {}
-
-variable "public_ssl_arn" {}
 
 variable "project_name" {}
 
 variable "environment_type" {}
 
-variable "bastion_role_arn" {}
+variable "bastion_inventory" {}

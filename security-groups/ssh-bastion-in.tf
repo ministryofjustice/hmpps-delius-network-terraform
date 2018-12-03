@@ -2,7 +2,7 @@ resource "aws_security_group" "ssh_bastion_in" {
   name        = "${var.environment_name}-ssh-bastion-in"
   vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
   description = "SSH bastion in"
-  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}-ssh-bastion-in", "Type", "SSH"))}"
+  tags        = "${merge(var.tags, map("Name", "${var.environment_name}-ssh-bastion-in", "Type", "SSH"))}"
 
   lifecycle {
     create_before_destroy = true
