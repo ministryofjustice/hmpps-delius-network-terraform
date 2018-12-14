@@ -107,6 +107,9 @@ module "nfs-server" {
   route53_sub_domain            = "${local.route53_sub_domain}"
 }
 
+### ------------------------------------
+# This below is an example of how to connect to the nfs service
+### ------------------------------------
 
 data "aws_ami" "example_instance_ami" {
   count = "${local.example_instance_count}"
@@ -155,20 +158,37 @@ data "template_file" "example_client_user_data"  {
 }
 
 
+resource "aws_security_group_rule" "nfs_example_http_out" {
+  count = "${local.example_instance_count}"
+
+  from_port = 80
+  protocol = "tcp"
+  security_group_id = "${aws_security_group.nfs_example_out.id}"
+  to_port = 80
+  type = "egress"
+
+  description = "${var.environment_identifier}-nfs-client-http-out"
+}
+
+resource "aws_security_group_rule" "nfs_example_https_out" {
+  count = "${local.example_instance_count}"
+
+  from_port = 443
+  protocol = "tcp"
+  security_group_id = "${aws_security_group.nfs_example_out.id}"
+  to_port = 443
+  type = "egress"
+
+  description = "${var.environment_identifier}-nfs-client-https-out"
+}
+
 resource "aws_security_group" "nfs_example_out" {
   count         = "${local.example_instance_count}"
 
-  egress {
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
 
-  description   = "test-instance-allow-all"
-  name          = "test-instance-allow-all"
+  description   = "${var.environment_identifier}-nfs-client-instance-out"
+  name          = "${var.environment_identifier}-nfs-client-instance-out"
 }
 
 resource "aws_instance" "nfs_example_client" {
@@ -190,6 +210,6 @@ resource "aws_instance" "nfs_example_client" {
 
   tags = "${merge(
     var.tags,
-    map("Name", "${var.environment_identifier}-nfs-client")
+    map("Name", "${var.environment_identifier}-nfs-example-client")
   )}"
 }
