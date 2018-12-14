@@ -84,7 +84,7 @@ locals {
   account_id              = "${data.aws_caller_identity.current.account_id}"
   public_ssl_arn          = "${data.terraform_remote_state.vpc.public_ssl_arn}"
 
-  example_instance_count     = 0
+  example_instance_count  = 0
 }
 
 module "nfs-server" {
@@ -168,6 +168,8 @@ resource "aws_security_group_rule" "nfs_example_http_out" {
   type = "egress"
 
   description = "${var.environment_identifier}-nfs-client-http-out"
+
+  cidr_blocks = ["${data.terraform_remote_state.vpc.vpc_cidr_block}"]
 }
 
 resource "aws_security_group_rule" "nfs_example_https_out" {
@@ -180,15 +182,21 @@ resource "aws_security_group_rule" "nfs_example_https_out" {
   type = "egress"
 
   description = "${var.environment_identifier}-nfs-client-https-out"
+
+  cidr_blocks = ["${data.terraform_remote_state.vpc.vpc_cidr_block}"]
 }
 
 resource "aws_security_group" "nfs_example_out" {
   count         = "${local.example_instance_count}"
 
-  vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id        = "${data.terraform_remote_state.vpc.vpc_id}"
 
   description   = "${var.environment_identifier}-nfs-client-instance-out"
   name          = "${var.environment_identifier}-nfs-client-instance-out"
+  tags          = "${merge(
+    var.tags,
+    map("Name", "${var.environment_identifier}-nfs-client-instance-out")
+  )}"
 }
 
 resource "aws_instance" "nfs_example_client" {
