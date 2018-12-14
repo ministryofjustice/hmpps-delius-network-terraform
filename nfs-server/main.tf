@@ -83,6 +83,8 @@ locals {
   route53_sub_domain      = "${var.environment_type}.${var.project_name}"
   account_id              = "${data.aws_caller_identity.current.account_id}"
   public_ssl_arn          = "${data.terraform_remote_state.vpc.public_ssl_arn}"
+
+  example_instance_count     = 0
 }
 
 module "nfs-server" {
@@ -105,3 +107,89 @@ module "nfs-server" {
   route53_sub_domain            = "${local.route53_sub_domain}"
 }
 
+
+data "aws_ami" "example_instance_ami" {
+  count = "${local.example_instance_count}"
+
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["HMPPS Base CentOS master *"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name = "root-device-type"
+    values = ["ebs"]
+  }
+}
+
+data "template_file" "example_client_user_data"  {
+  count = "${local.example_instance_count}"
+
+  template = "${file("${path.module}/user_data/client.sh")}"
+
+  vars {
+    // Variables Below are for bootstrapping
+    app_name              = "nfs-client"
+    env_identifier        = "${var.environment_identifier}"
+    short_env_identifier  = "${var.short_environment_identifier}"
+    route53_sub_domain    = "${local.route53_sub_domain}"
+    private_domain        = "${data.terraform_remote_state.vpc.private_zone_name}"
+    account_id            = "${data.terraform_remote_state.vpc.vpc_account_id}"
+    internal_domain       = "${data.terraform_remote_state.vpc.private_zone_name}"
+    bastion_inventory     = "${var.bastion_inventory}"
+
+    nfs_mount_dir           = "/srv/data"
+  }
+}
+
+
+resource "aws_security_group" "nfs_example_out" {
+  count         = "${local.example_instance_count}"
+
+  egress {
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
+
+  description   = "test-instance-allow-all"
+  name          = "test-instance-allow-all"
+}
+
+resource "aws_instance" "nfs_example_client" {
+  count   = "${local.example_instance_count}"
+  ami     = "${data.aws_ami.example_instance_ami.id}"
+  instance_type = "t2.micro"
+
+  subnet_id = "${local.private_subnet_ids[0]}"
+
+  vpc_security_group_ids = [
+    "${aws_security_group.nfs_example_out.id}",
+    "${data.terraform_remote_state.vpc_security_groups.sg_ssh_bastion_in_id}",
+    "${module.nfs-server.nfs_client_sg_id}"
+  ]
+
+  user_data = "${data.template_file.example_client_user_data.rendered}"
+
+  key_name = "${data.terraform_remote_state.vpc.ssh_deployer_key}"
+
+  tags = "${merge(
+    var.tags,
+    map("Name", "${var.environment_identifier}-nfs-client")
+  )}"
+}
