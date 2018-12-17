@@ -31,7 +31,6 @@ variable "spg_app_name" {
 }
 
 variable "jenkins_access_cidr_blocks" {
-  type = "list"
-  description = "jenkins access cidr blocks"
-
+  description = "CIDRS for Jenkins to access"
+  type        = "list"
 }

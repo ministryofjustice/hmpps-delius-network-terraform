@@ -78,6 +78,7 @@ resource "aws_security_group_rule" "ssh_jenkins_in" {
   from_port         = "2222"
   to_port           = "2222"
   cidr_blocks       = ["${var.jenkins_access_cidr_blocks}"]
+  description       = "TF - ssh_jenkins_in"
 }
 
 
@@ -107,4 +108,3 @@ output "sg_spg_internal_lb_in" {
 output "sg_spg_api_in" {
   value = "${aws_security_group.spg_api_in.id}"
 }
-
