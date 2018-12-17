@@ -59,6 +59,28 @@ resource "aws_security_group" "spg_api_in" {
   }
 }
 
+resource "aws_security_group" "ssh_jenkins_in" {
+  name        = "${var.environment_name}-delius-core-${var.spg_app_name}-ssh-jenkins-in"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "ssh access from jenkins"
+  tags        = "${merge(var.tags, map("Name", "${var.environment_name}_${var.spg_app_name}_ssh_jenkins_in", "Type", "API"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+
+resource "aws_security_group_rule" "ssh_jenkins_in" {
+  security_group_id = "${aws_security_group.ssh_jenkins_in.id}"
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = "2222"
+  to_port           = "2222"
+  cidr_blocks       = ["${var.jenkins_access_cidr_blocks}"]
+}
+
+
 # OUTPUTS
 # define security groups only for spg outputs
 # External
@@ -85,3 +107,4 @@ output "sg_spg_internal_lb_in" {
 output "sg_spg_api_in" {
   value = "${aws_security_group.spg_api_in.id}"
 }
+

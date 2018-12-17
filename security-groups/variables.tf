@@ -29,3 +29,9 @@ variable "spg_app_name" {
   description = "label for spg"
   default     = "spg"
 }
+
+variable "jenkins_access_cidr_blocks" {
+  type = "list"
+  description = "jenkins access cidr blocks"
+
+}
