@@ -1,5 +1,5 @@
-name: aws-inspec-profile
-title: MOJ HMPPS Shared VPC
+name: security-groups
+title: MOJ HMPPS Shared Security Groups
 maintainer: moj-aws-migration
 copyright: MOJ
 copyright_email: moj@moj.local

@@ -1,8 +1,67 @@
 {
+    "bastion_vpc_account_id": {
+        "sensitive": false,
+        "type": "string",
+        "value": "895523100917"
+    },
+    "bastion_vpc_id": {
+        "sensitive": false,
+        "type": "string",
+        "value": "vpc-00d48e9851c261b47"
+    },
+    "bastion_vpc_public_cidr": {
+        "sensitive": false,
+        "type": "map",
+        "value": {
+            "az1": "10.161.98.0/28",
+            "az2": "10.161.98.16/28",
+            "az3": "10.161.98.32/28"
+        }
+    },
+    "eng_vpc_account_id": {
+        "sensitive": false,
+        "type": "string",
+        "value": "895523100917"
+    },
+    "eng_vpc_cidr": {
+        "sensitive": false,
+        "type": "string",
+        "value": "10.161.96.0/24"
+    },
+    "eng_vpc_id": {
+        "sensitive": false,
+        "type": "string",
+        "value": "vpc-02321f288159e5d0e"
+    },
     "environment_name": {
         "sensitive": false,
         "type": "string",
         "value": "delius-core-dev"
+    },
+    "private_zone_id": {
+        "sensitive": false,
+        "type": "string",
+        "value": "Z1OW4IAZF5V2A2"
+    },
+    "private_zone_name": {
+        "sensitive": false,
+        "type": "string",
+        "value": "delius-core-dev.internal"
+    },
+    "public_zone_id": {
+        "sensitive": false,
+        "type": "string",
+        "value": "Z2QF2SEPISTMNB"
+    },
+    "public_zone_name": {
+        "sensitive": false,
+        "type": "string",
+        "value": "dev.delius-core.probation.hmpps.dsd.io"
+    },
+    "ssh_deployer_key": {
+        "sensitive": false,
+        "type": "string",
+        "value": "tf-eu-west-2-hmpps-delius-core-dev-ssh-key"
     },
     "tags": {
         "sensitive": false,
@@ -213,6 +272,11 @@
         "sensitive": false,
         "type": "string",
         "value": "10.161.20.192/26"
+    },
+    "vpc_remote_state_bucket_name": {
+        "sensitive": false,
+        "type": "string",
+        "value": "tf-eu-west-2-hmpps-delius-core-dev-remote-state"
     },
     "vpc_role_arn": {
         "sensitive": false,
