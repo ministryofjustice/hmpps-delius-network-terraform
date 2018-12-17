@@ -46,7 +46,7 @@ describe aws_subnets.where( vpc_id: vpc_id) do
   its('subnet_ids') { should include private_subnet_az3 }
   its('subnet_ids') { should include db_subnet_az1 }
   its('subnet_ids') { should include db_subnet_az2 }
-  its('subnet_ids') { should include db_subnet_az3 }  
+  its('subnet_ids') { should include db_subnet_az3 }
 end
 
 # availability_zone
@@ -123,6 +123,10 @@ end
 
 #tags
 control 'check_environment_tags' do
+  title 'Check environment tags'
+  desc '
+  All tags should have a value and exist
+  '
   describe params['tags']['value'] do
     its(['application']) { should_not eq nil }
     its(['business-unit']) { should_not eq nil }
@@ -137,6 +141,10 @@ control 'check_environment_tags' do
 end
 
 control 'check_vpc_role_arn' do
+  title 'Check VPC Role ARN'
+  desc '
+  VPC should have a Role ARN and exist
+  '
   describe params['vpc_role_arn'] do
     its(['value']) { should_not eq nil }
   end

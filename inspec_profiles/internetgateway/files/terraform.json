@@ -1,0 +1,7 @@
+{
+    "internetgateway_env_igw_id": {
+        "sensitive": false,
+        "type": "string",
+        "value": "igw-06046df1870a4a810"
+    }
+}
