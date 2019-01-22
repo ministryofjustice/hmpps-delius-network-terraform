@@ -77,7 +77,7 @@ resource "aws_security_group_rule" "ssh_jenkins_in" {
   protocol          = "tcp"
   from_port         = "2222"
   to_port           = "2222"
-  cidr_blocks       = ["${var.jenkins_access_cidr_blocks}"]
+  cidr_blocks       = [ "${data.terraform_remote_state.vpc.eng_vpc_cidr}" ]
   description       = "TF - ssh_jenkins_in"
 }
 
