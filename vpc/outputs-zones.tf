@@ -1,5 +1,5 @@
 output "private_zone_name" {
-  value = "${aws_route53_zone.internal_zone.name}"
+  value = "${local.route53_internal_domain}"
 }
 
 output "private_zone_id" {
