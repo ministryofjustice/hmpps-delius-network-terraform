@@ -34,3 +34,9 @@ variable "jenkins_access_cidr_blocks" {
   description = "CIDRS for Jenkins to access"
   type        = "list"
 }
+
+# MIS vars
+variable "mis_app_name" {
+  description = "label for spg"
+  default     = "mis"
+}
