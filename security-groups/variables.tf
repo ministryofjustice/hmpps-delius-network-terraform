@@ -40,3 +40,9 @@ variable "mis_app_name" {
   description = "label for spg"
   default     = "mis"
 }
+
+# IAPS vars
+variable "iaps_app_name" {
+  description = "label for IAPS"
+  default     = "iaps"
+}
