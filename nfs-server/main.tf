@@ -88,7 +88,7 @@ locals {
 }
 
 module "nfs-server" {
-  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=nfsModule//modules/nfs-server"
+  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules/nfs-server"
 
   region                        = "${var.region}"
   remote_state_bucket_name      = "${var.remote_state_bucket_name}"
