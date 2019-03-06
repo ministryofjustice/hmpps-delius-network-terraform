@@ -3,6 +3,8 @@
 ## important ignore due to centralised config
 **/env_configs/*
 **/tmp_config/*
+./env_configs/
+env_configs/
 
 .DS_Store
 .AppleDouble
