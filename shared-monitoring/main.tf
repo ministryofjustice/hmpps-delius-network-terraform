@@ -120,7 +120,6 @@ module "create_elastic_cluster" {
   docker_image_tag              = "${local.docker_image_tag}"
   availability_zones            = "${local.availability_zones}"
   short_environment_identifier  = "${var.short_environment_identifier}"
-//  bastion_origin_cidr           = "${data.terraform_remote_state.vpc.bastion_vpc_cidr}"
   environment_identifier        = "${var.environment_identifier}"
   region                        = "${var.region}"
   route53_sub_domain            = "${local.route53_sub_domain}"
