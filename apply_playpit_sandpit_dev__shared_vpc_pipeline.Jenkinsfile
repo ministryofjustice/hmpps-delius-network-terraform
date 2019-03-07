@@ -10,6 +10,10 @@ def environments = [
   'delius-core-sandpit',
   'delius-core-playpit',
   'delius-core-dev',
+  'delius-po-test1',
+  'delius-po-test2',
+  'delius-training',
+  'delius-training-test'
 ]
 
 def prepare_env() {
