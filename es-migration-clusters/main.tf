@@ -111,6 +111,17 @@ locals {
   public_ssl_arn          = "${data.terraform_remote_state.vpc.public_ssl_arn}"
 }
 
+module "create_elastic2_efs_backup_share" {
+  source            = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//efs"
+
+  share_name        = "es2backup"
+  zone_id           = "${data.terraform_remote_state.vpc.private_zone_id}"
+  domain            = "${data.terraform_remote_state.vpc.private_zone_name}"
+  subnets           = "${local.private_subnet_ids}"
+  security_groups   = ["${module.create_elastic2_cluster.elasticsearch_cluster_sg_client_id}"]
+  tags              = "${var.tags}"
+}
+
 module "create_elastic2_cluster" {
   source = "./modules/elasticsearch-cluster"
 
@@ -137,8 +148,10 @@ module "create_elastic2_cluster" {
   vpc_id                        = "${data.terraform_remote_state.vpc.vpc_id}"
   vpc_cidr                      = "${data.terraform_remote_state.vpc.vpc_cidr_block}"
   s3-config-bucket              = "${var.remote_state_bucket_name}"
-  bastion_inventory             =  "${var.bastion_inventory}"
+  bastion_inventory             = "${var.bastion_inventory}"
   hostname                      = "es2-mig-clust"
+  efs_file_system_id            = "${module.create_elastic2_efs_backup_share.efs_id}"
+  efs_mount_dir                 = "/opt/esbackup"
 }
 
 module "create_elastic5_cluster" {

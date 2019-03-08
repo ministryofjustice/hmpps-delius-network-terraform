@@ -41,6 +41,16 @@ resource "aws_security_group_rule" "elasticsearch_client_sg_es_https_in" {
 
 }
 
+resource "aws_security_group_rule" "elasticsearch_client_sg_efs_in" {
+  count = "${var.efs_file_system_id != "" ? 1 : 0}"
+  from_port = 2049
+  protocol = "tcp"
+  security_group_id = "${aws_security_group.elasticsearch_client_sg.id}"
+  to_port = 2049
+  type = "ingress"
+  cidr_blocks = ["${var.vpc_cidr}"]
+}
+
 resource "aws_security_group_rule" "elasticsearch_client_sg_es_self_in" {
   from_port = 0
   protocol = -1

@@ -69,3 +69,11 @@ variable "bastion_inventory" {
 }
 
 variable "hostname" {}
+
+variable "efs_file_system_id" {
+  default = ""
+}
+
+variable "efs_mount_dir" {
+  default = ""
+}
