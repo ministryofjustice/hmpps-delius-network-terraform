@@ -38,6 +38,9 @@ EOF
 cat << EOF > ~/bootstrap_vars.yml
 mount_point: "${es_home}"
 device_name: "${ebs_device}"
+efs_mount_dir: "${efs_mount_dir}"
+efs_file_system_id: "${efs_file_system_id}"
+region: "${region}"
 EOF
 
 wget https://raw.githubusercontent.com/ministryofjustice/hmpps-delius-ansible/master/group_vars/${bastion_inventory}.yml -O users.yml
@@ -60,7 +63,7 @@ ansible-playbook ~/bootstrap.yml
 
 
 #Create docker-compose file and env file
-mkdir -p ${es_home}/service-elasticsearch ${es_home}/elasticsearch/data ${es_home}/elasticsearch/conf.d
+mkdir -p ${es_home}/service-elasticsearch ${es_home}/backups ${es_home}/elasticsearch/data ${es_home}/elasticsearch/conf.d
 
 cat << EOF > ${es_home}/service-elasticsearch/docker-compose.yml
 version: "3"
@@ -71,6 +74,7 @@ services:
     volumes:
       - ${es_home}/elasticsearch/data:/usr/share/elasticsearch/data
       - ${es_home}/elasticsearch/conf.d:/usr/share/elasticsearch/conf.d
+      - ${efs_mount_dir}:${efs_mount_dir}
     environment:
       - HMPPS_ES_CLUSTER_NAME=${aws_cluster}
       - HMPPS_ES_NODE_NAME=${app_name}-node${instance_identifier}
@@ -83,6 +87,7 @@ services:
       - HMPPS_ES_GATEWAY_RECOVER_AFTER_TIME=5m
       - HMPPS_ES_GATEWAY_RECOVER_AFTER_NODES=2
       - HMPPS_ES_NETWORK_PUBLISH_HOST=`curl http://169.254.169.254/latest/meta-data/local-ipv4/`
+      - HMPPS_ES_PATH_REPO=${efs_mount_dir}
     ports:
       - 9300:9300
       - 9200:9200

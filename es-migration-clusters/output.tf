@@ -30,6 +30,13 @@ output "elasticsearch2_cluster_name" {
   value = "${module.create_elastic2_cluster.elasticsearch_cluster_name}"
 }
 
+output "elasticsearch2_efs_dns" {
+  value = "${module.create_elastic2_efs_backup_share.efs_dns_name}"
+}
+
+output "elasticsearch2_efs_cname" {
+  value = "${module.create_elastic2_efs_backup_share.dns_cname}"
+}
 
 
 output "elasticsearch5_cluster_sg_client_id" {
