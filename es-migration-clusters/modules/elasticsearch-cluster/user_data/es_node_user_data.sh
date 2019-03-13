@@ -53,18 +53,49 @@ cat << EOF > ~/bootstrap.yml
     - "{{ playbook_dir }}/bootstrap_vars.yml"
     - "{{ playbook_dir }}/users.yml"
   roles:
-     - bootstrap
-     - users
+    - users
+    - bootstrap
 EOF
 
 
 ansible-galaxy install -f -r ~/requirements.yml
-ansible-playbook ~/bootstrap.yml
+ansible-playbook ~/bootstrap.yml -vvv
 
 
 #Create docker-compose file and env file
 mkdir -p ${es_home}/service-elasticsearch ${es_home}/backups ${es_home}/elasticsearch/data ${es_home}/elasticsearch/conf.d
 
+if [ "x${efs_mount_dir}" == "x" ];then
+
+cat << EOF > ${es_home}/service-elasticsearch/docker-compose.yml
+version: "3"
+
+services:
+  elasticsearch:
+    image: ${registry_url}/${image_name}:${version}
+    volumes:
+      - ${es_home}/elasticsearch/data:/usr/share/elasticsearch/data
+      - ${es_home}/elasticsearch/conf.d:/usr/share/elasticsearch/conf.d
+    environment:
+      - HMPPS_ES_CLUSTER_NAME=${aws_cluster}
+      - HMPPS_ES_NODE_NAME=${app_name}-node${instance_identifier}
+      - HMPPS_ES_MIN_MASTER_NODES=2
+      - HMPPS_ES_CLUSTER_NODES_01=${app_name}-node1.${private_domain}
+      - HMPPS_ES_CLUSTER_NODES_02=${app_name}-node2.${private_domain}
+      - HMPPS_ES_CLUSTER_NODES_03=${app_name}-node3.${private_domain}
+      - HMPPS_ES_CLUSTER_NODES_04=elasticsearch
+      - HMPPS_ES_GATEWAY_EXPECTED_NODES=3
+      - HMPPS_ES_GATEWAY_RECOVER_AFTER_TIME=5m
+      - HMPPS_ES_GATEWAY_RECOVER_AFTER_NODES=2
+      - HMPPS_ES_NETWORK_PUBLISH_HOST=`curl http://169.254.169.254/latest/meta-data/local-ipv4/`
+    ports:
+      - 9300:9300
+      - 9200:9200
+    ulimits:
+      nofile: 65536
+
+EOF
+else
 cat << EOF > ${es_home}/service-elasticsearch/docker-compose.yml
 version: "3"
 
@@ -93,8 +124,8 @@ services:
       - 9200:9200
     ulimits:
       nofile: 65536
-
 EOF
+fi
 
 chown -R `id -u hmpps_sys_user`:`id -g hmpps_sys_user` ${es_home}/elasticsearch
 chmod -R 777 ${es_home}/elasticsearch
