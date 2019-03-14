@@ -112,7 +112,7 @@ locals {
 }
 
 module "create_elastic_cluster" {
-  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules/monitoring/elasticsearch-cluster"
+  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=pre-monitoring-refactor//modules/monitoring/elasticsearch-cluster"
 
   app_name                      = "es-clust"
   instance_type                 = "${local.instance_type}"
@@ -140,7 +140,7 @@ module "create_elastic_cluster" {
 }
 
 module "create_monitoring_instance" {
-  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules/monitoring/monitoring-server"
+  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=pre-monitoring-refactor//modules/monitoring/monitoring-server"
 
   app_name                            = "mon-srv"
   amazon_ami_id                       = "${data.aws_ami.amazon_ami.id}"
