@@ -1,6 +1,6 @@
 locals {
   route53_internal_domain = "${var.project_name}-${var.environment_type}.internal"
-  public_domain           = "${var.environment_type}.${var.project_name}.${var.route53_domain_private}"
+  public_domain           = "${var.subdomain}.${var.route53_domain_private}"
 }
 
 # Private internal zone for easier lookups
