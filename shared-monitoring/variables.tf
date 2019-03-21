@@ -34,3 +34,7 @@ variable "project_name" {}
 variable "environment_type" {}
 
 variable "bastion_inventory" {}
+
+variable "backup_retention_days" {}
+
+variable "retention_period" {}
