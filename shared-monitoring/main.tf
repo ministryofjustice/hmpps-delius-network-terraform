@@ -195,6 +195,7 @@ module "create_monitoring_instance" {
   efs_file_system_id                  = "${module.create_elasticseach_efs_backup_share.efs_id}"
   efs_mount_dir                       = "${local.backup_mount}"
   elasticsearch-backup-bucket         = "${module.create_backup_bucket.elastic_search_backup_bucket_name}"
+  public_domain                       = "${var.subdomain}.${var.route53_domain_private}"
 }
 
 module "create_backup_bucket" {

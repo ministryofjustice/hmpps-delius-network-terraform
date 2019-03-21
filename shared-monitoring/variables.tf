@@ -38,3 +38,5 @@ variable "bastion_inventory" {}
 variable "backup_retention_days" {}
 
 variable "retention_period" {}
+
+variable "subdomain" {}
