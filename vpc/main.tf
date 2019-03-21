@@ -40,3 +40,16 @@ data "terraform_remote_state" "bastion_remote_vpc" {
     role_arn = "${var.bastion_role_arn}"
   }
 }
+
+
+## Lambda to snapshot volumes periodically
+
+module "create_snapshot_lambda" {
+  source            = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//ebs-backup"
+  cron_expression   = "30 1 * * ? *"
+  regions           = ["${var.region}"]
+  rolename_prefix   = "${var.environment_identifier}"
+  stack_prefix      = "${var.environment_name}"
+  ec2_instance_tag  = "CreateSnapshot"
+  unique_name       = "snapshot_ebs_volumes"
+}

@@ -109,10 +109,24 @@ locals {
   route53_sub_domain      = "${var.environment_type}.${var.project_name}"
   account_id              = "${data.aws_caller_identity.current.account_id}"
   public_ssl_arn          = "${data.terraform_remote_state.vpc.public_ssl_arn}"
+
+  share_name              = "${var.environment_type}_es_backup"
+  backup_mount            = "/opt/es_backups"
+}
+
+module "create_elasticseach_efs_backup_share" {
+  source            = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//efs"
+
+  share_name        = "${local.share_name}"
+  zone_id           = "${data.terraform_remote_state.vpc.private_zone_id}"
+  domain            = "${data.terraform_remote_state.vpc.private_zone_name}"
+  subnets           = "${local.private_subnet_ids}"
+  security_groups   = ["${module.create_elastic_cluster.elasticsearch_cluster_sg_client_id}"]
+  tags              = "${var.tags}"
 }
 
 module "create_elastic_cluster" {
-  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=pre-monitoring-refactor//modules/monitoring/elasticsearch-cluster"
+  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//components/monitoring/elasticsearch-cluster"
 
   app_name                      = "es-clust"
   instance_type                 = "${local.instance_type}"
@@ -137,10 +151,16 @@ module "create_elastic_cluster" {
   vpc_cidr                      = "${data.terraform_remote_state.vpc.vpc_cidr_block}"
   s3-config-bucket              = "${var.remote_state_bucket_name}"
   bastion_inventory             =  "${var.bastion_inventory}"
+  efs_file_system_id            = "${module.create_elasticseach_efs_backup_share.efs_id}"
+  efs_mount_dir                 = "${local.backup_mount}"
+  elasticsearch-backup-bucket   = "${module.create_backup_bucket.elastic_search_backup_bucket_name}"
+  retention_period              = "${var.retention_period}"
+  backup_retention_days         = "${var.backup_retention_days}"
+
 }
 
 module "create_monitoring_instance" {
-  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=pre-monitoring-refactor//modules/monitoring/monitoring-server"
+  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//components/monitoring/monitoring-server"
 
   app_name                            = "mon-srv"
   amazon_ami_id                       = "${data.aws_ami.amazon_ami.id}"
@@ -172,4 +192,16 @@ module "create_monitoring_instance" {
   elasticsearch_cluster_name          = "${module.create_elastic_cluster.elasticsearch_cluster_name}"
   elasticsearch_cluster_sg_client_id  = "${module.create_elastic_cluster.elasticsearch_cluster_sg_client_id}"
   bastion_inventory                   =  "${var.bastion_inventory}"
+  efs_file_system_id                  = "${module.create_elasticseach_efs_backup_share.efs_id}"
+  efs_mount_dir                       = "${local.backup_mount}"
+  elasticsearch-backup-bucket         = "${module.create_backup_bucket.elastic_search_backup_bucket_name}"
+}
+
+module "create_backup_bucket" {
+  source      = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//components/monitoring/elasticsearch-backup-bucket"
+
+  tags        = "${var.tags}"
+  bucket_name = "${var.environment_type}-${var.project_name}-monitoring-backup-bucket"
+  vpc_cidr    = "${data.terraform_remote_state.vpc.vpc_cidr_block}"
+  account_id  = "${local.account_id}"
 }
