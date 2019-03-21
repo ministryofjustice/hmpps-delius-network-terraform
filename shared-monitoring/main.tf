@@ -111,6 +111,7 @@ locals {
   public_ssl_arn          = "${data.terraform_remote_state.vpc.public_ssl_arn}"
 
   share_name              = "${var.environment_type}_es_backup"
+  backup_mount            = "/opt/es_backups"
 }
 
 module "create_elasticseach_efs_backup_share" {
@@ -150,10 +151,10 @@ module "create_elastic_cluster" {
   vpc_cidr                      = "${data.terraform_remote_state.vpc.vpc_cidr_block}"
   s3-config-bucket              = "${var.remote_state_bucket_name}"
   bastion_inventory             =  "${var.bastion_inventory}"
-  efs_file_system_id            = ""
-//  efs_file_system_id            = "${module.create_elasticseach_efs_backup_share.efs_id}"
-  efs_mount_dir                 = ""
-//  efs_mount_dir                 = "${local.backup_mount}"
+  efs_file_system_id            = "${module.create_elasticseach_efs_backup_share.efs_id}"
+  efs_mount_dir                 = "${local.backup_mount}"
+  elasticsearch-backup-bucket   = "${module.create_backup_bucket.elastic_search_backup_bucket_name}"
+
 }
 
 module "create_monitoring_instance" {
@@ -189,8 +190,16 @@ module "create_monitoring_instance" {
   elasticsearch_cluster_name          = "${module.create_elastic_cluster.elasticsearch_cluster_name}"
   elasticsearch_cluster_sg_client_id  = "${module.create_elastic_cluster.elasticsearch_cluster_sg_client_id}"
   bastion_inventory                   =  "${var.bastion_inventory}"
-  efs_file_system_id            = ""
-//  efs_file_system_id            = "${module.create_elasticseach_efs_backup_share.efs_id}"
-  efs_mount_dir                 = ""
-//  efs_mount_dir                 = "${local.backup_mount}"
+  efs_file_system_id                  = "${module.create_elasticseach_efs_backup_share.efs_id}"
+  efs_mount_dir                       = "${local.backup_mount}"
+  elasticsearch-backup-bucket         = "${module.create_backup_bucket.elastic_search_backup_bucket_name}"
+}
+
+module "create_backup_bucket" {
+  source      = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=esBackups//modules/monitoring/elasticsearch-backup-bucket"
+
+  tags        = "${var.tags}"
+  bucket_name = "${var.environment_type}-${var.project_name}-monitoring-backup-bucket"
+  vpc_cidr    = "${data.terraform_remote_state.vpc.vpc_cidr_block}"
+  account_id  = "${local.account_id}"
 }
