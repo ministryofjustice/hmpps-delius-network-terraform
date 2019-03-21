@@ -126,7 +126,7 @@ module "create_elasticseach_efs_backup_share" {
 }
 
 module "create_elastic_cluster" {
-  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=esBackups//modules/monitoring/elasticsearch-cluster"
+  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=esBackups//components/monitoring/elasticsearch-cluster"
 
   app_name                      = "es-clust"
   instance_type                 = "${local.instance_type}"
@@ -160,7 +160,7 @@ module "create_elastic_cluster" {
 }
 
 module "create_monitoring_instance" {
-  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=esBackups//modules/monitoring/monitoring-server"
+  source = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=esBackups//components/monitoring/monitoring-server"
 
   app_name                            = "mon-srv"
   amazon_ami_id                       = "${data.aws_ami.amazon_ami.id}"
@@ -198,7 +198,7 @@ module "create_monitoring_instance" {
 }
 
 module "create_backup_bucket" {
-  source      = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=esBackups//modules/monitoring/elasticsearch-backup-bucket"
+  source      = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=esBackups//components/monitoring/elasticsearch-backup-bucket"
 
   tags        = "${var.tags}"
   bucket_name = "${var.environment_type}-${var.project_name}-monitoring-backup-bucket"
