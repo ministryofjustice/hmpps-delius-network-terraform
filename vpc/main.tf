@@ -52,4 +52,5 @@ module "create_snapshot_lambda" {
   stack_prefix      = "${var.environment_name}"
   ec2_instance_tag  = "CreateSnapshot"
   unique_name       = "snapshot_ebs_volumes"
+  retention_days    = "${var.snapshot_retention_days}"
 }

@@ -73,3 +73,5 @@ variable "availability_zone" {
 variable "environment_identifier" {}
 
 variable "subdomain" {}
+
+variable "snapshot_retention_days" {}
