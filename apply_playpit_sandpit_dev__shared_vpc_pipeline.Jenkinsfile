@@ -10,6 +10,7 @@ def environments = [
   'delius-core-sandpit',
   'delius-core-playpit',
   'delius-core-dev',
+  'delius-mis-test',
   'delius-po-test1',
   'delius-po-test2',
   'delius-training',
