@@ -30,3 +30,8 @@ output "sg_ldap_proxy" {
 output "sg_ldap_inst" {
   value = "${aws_security_group.ldap_inst.id}"
 }
+
+#jumphost
+output "sg_jumphost" {
+  value = "${aws_security_group.mis_jumphost.id}"
+}
