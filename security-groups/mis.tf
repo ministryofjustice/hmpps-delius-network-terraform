@@ -81,3 +81,15 @@ resource "aws_security_group" "ldap_inst" {
     create_before_destroy = true
   }
 }
+
+# jumphost
+resource "aws_security_group" "mis_jumphost" {
+  name        = "${var.environment_name}-delius-core-${var.mis_app_name}-jumphost"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "jumphost sg for rdp"
+  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}_${var.mis_app_name}_jumphost", "Type", "RDP"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
