@@ -213,6 +213,8 @@ service docker restart
 sleep 10
 docker-compose -f ${es_home}/service-elasticsearch/docker-compose.yml up -d
 
+if [ "x${efs_mount_dir}" != "x" ];then
 #Wait for elasticsearch to come up
 sleep 60
 sudo docker exec service-elasticsearch_elasticsearch_1 bash -c "es_repo_mgr --config /usr/share/elasticsearch/.curator/curator.yml create fs --repository ${aws_cluster}-backup --location ${efs_mount_dir} --compression true"
+fi
