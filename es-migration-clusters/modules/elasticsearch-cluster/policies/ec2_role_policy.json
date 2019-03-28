@@ -55,6 +55,31 @@
                 "ssm:List*"
             ],
             "Resource": "*"
+        },
+        {
+            "Sid": "allowAccessToS3BackupBuckets",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${es_backup_bucket}",
+                "arn:aws:s3:::${es_backup_bucket}/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Sid": "allowBucketEncryptionAccess",
+            "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+                "kms:DescribeKey"
+            ],
+            "Resource": [
+                "*"
+            ]
         }
     ]
 }

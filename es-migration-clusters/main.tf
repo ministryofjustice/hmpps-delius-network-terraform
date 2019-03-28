@@ -109,6 +109,8 @@ locals {
   route53_sub_domain      = "${var.environment_type}.${var.project_name}"
   account_id              = "${data.aws_caller_identity.current.account_id}"
   public_ssl_arn          = "${data.terraform_remote_state.vpc.public_ssl_arn}"
+
+  bucket_name             = "${var.short_environment_identifier}-mig-clust-staging-bucket"
 }
 
 module "create_elastic2_efs_backup_share" {
@@ -152,6 +154,7 @@ module "create_elastic2_cluster" {
   hostname                      = "es2-mig-clust"
   efs_file_system_id            = "${module.create_elastic2_efs_backup_share.efs_id}"
   efs_mount_dir                 = "/opt/esbackup"
+  es_backup_bucket              = "${aws_s3_bucket.elasticsearch_backup_bucket.bucket}"
 }
 
 module "create_elastic5_cluster" {
@@ -182,4 +185,43 @@ module "create_elastic5_cluster" {
   s3-config-bucket              = "${var.remote_state_bucket_name}"
   bastion_inventory             = "${var.bastion_inventory}"
   hostname                      = "es5-mig-clust"
+  es_backup_bucket              = "${aws_s3_bucket.elasticsearch_backup_bucket.bucket}"
+}
+
+## Staging bucket
+resource "aws_kms_key" "s3_bucket_encryption_key" {
+  description             = "Ensure backups at rest are encrypted"
+  deletion_window_in_days = 10
+}
+
+
+resource "aws_s3_bucket" "elasticsearch_backup_bucket" {
+  bucket  = "${local.bucket_name}"
+
+  acl     = "private"
+  tags    = "${var.tags}"
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = "${aws_kms_key.s3_bucket_encryption_key.arn}"
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "elasticsearch_backup_bucket_policy" {
+  bucket = "${aws_s3_bucket.elasticsearch_backup_bucket.bucket}"
+  policy = "${data.template_file.elasticsearch_backup_policy.rendered}"
+}
+
+data "template_file" "elasticsearch_backup_policy" {
+  template    = "${file("${path.module}/policies/elasticsearch-backup-bucket.json")}"
+
+  vars {
+    bucket      = "${local.bucket_name}"
+    vpc_cidr    = "${data.terraform_remote_state.vpc.vpc_cidr_block}"
+    account_id  = "${local.account_id}"
+  }
 }
