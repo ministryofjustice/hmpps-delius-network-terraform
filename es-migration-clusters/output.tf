@@ -70,3 +70,7 @@ output "elasticsearch5_3_internal_ipv4" {
 output "elasticsearch5_cluster_name" {
   value = "${module.create_elastic5_cluster.elasticsearch_cluster_name}"
 }
+
+output "staging_bucket_name" {
+  value = "${aws_s3_bucket.elasticsearch_backup_bucket.bucket}"
+}

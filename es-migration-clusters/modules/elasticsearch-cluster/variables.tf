@@ -77,3 +77,5 @@ variable "efs_file_system_id" {
 variable "efs_mount_dir" {
   default = ""
 }
+
+variable "es_backup_bucket" {}
