@@ -55,6 +55,21 @@ cat << EOF > ~/bootstrap.yml
   roles:
     - users
     - bootstrap
+  tasks:
+    - name: Create the elasticsearch group
+      group:
+        name: elasticsearch
+        gid: 3999
+        state: present
+    - name: Add an elasticsearch user
+      user:
+        name: elasticsearch
+        groups:
+          - elasticsearch
+          - docker
+        uid: 101
+        system: true
+        state: present
 EOF
 
 
@@ -63,7 +78,8 @@ ansible-playbook ~/bootstrap.yml -vvv
 
 
 #Create docker-compose file and env file
-mkdir -p ${es_home}/service-elasticsearch ${es_home}/backups ${es_home}/elasticsearch/data ${es_home}/elasticsearch/conf.d
+mkdir -p ${es_home}/service-elasticsearch ${es_home}/elasticsearch/data ${es_home}/elasticsearch/conf.d /opt/curator
+
 
 if [ "x${efs_mount_dir}" == "x" ];then
 
@@ -76,6 +92,7 @@ services:
     volumes:
       - ${es_home}/elasticsearch/data:/usr/share/elasticsearch/data
       - ${es_home}/elasticsearch/conf.d:/usr/share/elasticsearch/conf.d
+      - /opt/curator:/opt/curator
     environment:
       - HMPPS_ES_CLUSTER_NAME=${aws_cluster}
       - HMPPS_ES_NODE_NAME=${app_name}-node${instance_identifier}
@@ -106,6 +123,7 @@ services:
       - ${es_home}/elasticsearch/data:/usr/share/elasticsearch/data
       - ${es_home}/elasticsearch/conf.d:/usr/share/elasticsearch/conf.d
       - ${efs_mount_dir}:${efs_mount_dir}
+      - /opt/curator:/opt/curator
     environment:
       - HMPPS_ES_CLUSTER_NAME=${aws_cluster}
       - HMPPS_ES_NODE_NAME=${app_name}-node${instance_identifier}
@@ -125,7 +143,12 @@ services:
     ulimits:
       nofile: 65536
 EOF
+
+chown -R `id -u elasticsearch`:`id -g elasticsearch` ${efs_mount_dir}
+chmod -R 775 ${efs_mount_dir}
 fi
+
+
 
 chown -R `id -u hmpps_sys_user`:`id -g hmpps_sys_user` ${es_home}/elasticsearch
 chmod -R 777 ${es_home}/elasticsearch
@@ -134,3 +157,66 @@ sysctl -w vm.max_map_count=262144
 service docker restart
 sleep 10
 docker-compose -f ${es_home}/service-elasticsearch/docker-compose.yml up -d
+
+if [ "x${efs_mount_dir}" != "x" ];then
+# See
+# http://www.madhur.co.in/blog/2017/04/09/usingcuratordeleteelasticindex.html
+# https://adnanahmed.info/blog/2017/11/15/backing_up_and_restoring_es_indices_using_curator/
+#Create our curator templates
+cat << EOF > /opt/curator/backup.yml
+---
+
+actions:
+  1:
+    action: snapshot
+    description: "Create snapshot of ${aws_cluster}"
+    options:
+      repository: "${aws_cluster}-backup"
+      continue_if_exception: False
+      wait_for_completion: True
+    filters:
+      - filtertype: pattern
+        kind: regex
+        value: ".*$"
+
+EOF
+
+cat << EOF > /opt/curator/restore.yml
+---
+
+actions:
+  1:
+    action: close
+    description: "Close indices before restoring snapshot"
+    options:
+      continue_if_exception: True
+      ignore_empty_list: True
+    filters:
+      - filtertype: pattern
+        kind: regex
+        value: ".*$"
+  2:
+    action: restore
+    description: "Restore all indices in the most recent snapshot with state SUCCESS"
+    options:
+      repository: "${aws_cluster}-backup"
+      name:
+      indices:
+      wait_for_completion: True
+    filters:
+      - filtertype: state
+        state: SUCCESS
+  3:
+    action: open
+    description: "Open indices after restoring snapshot"
+    filters:
+      - filtertype: pattern
+        kind: regex
+        value: ".*$"
+
+EOF
+
+#Wait for elasticsearch to come up
+sleep 60
+sudo docker exec service-elasticsearch_elasticsearch_1 bash -c "es_repo_mgr --config /usr/share/elasticsearch/.curator/curator.yml create fs --repository ${aws_cluster}-backup --location ${efs_mount_dir} --compression true"
+fi
