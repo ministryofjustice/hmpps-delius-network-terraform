@@ -170,28 +170,6 @@ actions:
 
 EOF
 
-cat << EOF > /opt/curator/prune.yml
----
-
-actions:
-  1:
-    action: delete_indices
-    description: "Prune indices on ${aws_cluster}"
-    options:
-      ignore_empty_list: True
-      disable_action: False
-    filters:
-    - filtertype: age
-      source: creation_date
-      direction: older
-      unit: days
-      unit_count: ${retention_period}
-    - filtertype: pattern
-      kind: regex
-      value: '*'
-
-EOF
-
 cat << EOF > /opt/curator/restore.yml
 ---
 
