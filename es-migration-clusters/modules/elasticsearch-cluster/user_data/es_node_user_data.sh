@@ -148,6 +148,17 @@ chown -R `id -u elasticsearch`:`id -g elasticsearch` ${efs_mount_dir}
 chmod -R 775 ${efs_mount_dir}
 fi
 
+
+
+chown -R `id -u hmpps_sys_user`:`id -g hmpps_sys_user` ${es_home}/elasticsearch
+chmod -R 777 ${es_home}/elasticsearch
+ulimit -n 65536
+sysctl -w vm.max_map_count=262144
+service docker restart
+sleep 10
+docker-compose -f ${es_home}/service-elasticsearch/docker-compose.yml up -d
+
+if [ "x${efs_mount_dir}" != "x" ];then
 # See
 # http://www.madhur.co.in/blog/2017/04/09/usingcuratordeleteelasticindex.html
 # https://adnanahmed.info/blog/2017/11/15/backing_up_and_restoring_es_indices_using_curator/
@@ -205,15 +216,6 @@ actions:
 
 EOF
 
-chown -R `id -u hmpps_sys_user`:`id -g hmpps_sys_user` ${es_home}/elasticsearch
-chmod -R 777 ${es_home}/elasticsearch
-ulimit -n 65536
-sysctl -w vm.max_map_count=262144
-service docker restart
-sleep 10
-docker-compose -f ${es_home}/service-elasticsearch/docker-compose.yml up -d
-
-if [ "x${efs_mount_dir}" != "x" ];then
 #Wait for elasticsearch to come up
 sleep 60
 sudo docker exec service-elasticsearch_elasticsearch_1 bash -c "es_repo_mgr --config /usr/share/elasticsearch/.curator/curator.yml create fs --repository ${aws_cluster}-backup --location ${efs_mount_dir} --compression true"
