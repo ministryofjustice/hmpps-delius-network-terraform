@@ -38,39 +38,6 @@ output "elasticsearch2_efs_cname" {
   value = "${module.create_elastic2_efs_backup_share.dns_cname}"
 }
 
-
-output "elasticsearch5_cluster_sg_client_id" {
-  value = "${module.create_elastic5_cluster.elasticsearch_cluster_sg_client_id}"
-}
-
-output "elasticsearch5_1_internal_dns" {
-  value = "${module.create_elastic5_cluster.elasticsearch_1_internal_dns}"
-}
-
-output "elasticsearch5_1_internal_ipv4" {
-  value = "${module.create_elastic5_cluster.elasticsearch_1_internal_ipv4}"
-}
-
-output "elasticsearch5_2_internal_dns" {
-  value = "${module.create_elastic5_cluster.elasticsearch_2_internal_dns}"
-}
-
-output "elasticsearch5_2_internal_ipv4" {
-  value = "${module.create_elastic5_cluster.elasticsearch_2_internal_ipv4}"
-}
-
-output "elasticsearch5_3_internal_dns" {
-  value = "${module.create_elastic5_cluster.elasticsearch_3_internal_dns}"
-}
-
-output "elasticsearch5_3_internal_ipv4" {
-  value = "${module.create_elastic5_cluster.elasticsearch_3_internal_ipv4}"
-}
-
-output "elasticsearch5_cluster_name" {
-  value = "${module.create_elastic5_cluster.elasticsearch_cluster_name}"
-}
-
 output "staging_bucket_name" {
   value = "${aws_s3_bucket.elasticsearch_backup_bucket.bucket}"
 }

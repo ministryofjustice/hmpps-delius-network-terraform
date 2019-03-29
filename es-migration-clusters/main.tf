@@ -157,37 +157,6 @@ module "create_elastic2_cluster" {
   es_backup_bucket              = "${aws_s3_bucket.elasticsearch_backup_bucket.bucket}"
 }
 
-module "create_elastic5_cluster" {
-  source = "./modules/elasticsearch-cluster"
-
-  app_name                      = "es5-mig-clust"
-  instance_type                 = "${local.instance_type}"
-  ebs_device_volume_size        = "${local.ebs_device_volume_size}"
-  docker_image_tag              = "${local.docker_image_tag}"
-  docker_image_name             = "hmpps-elasticsearch-5"
-  availability_zones            = "${local.availability_zones}"
-  short_environment_identifier  = "${var.short_environment_identifier}"
-  environment_identifier        = "${var.environment_identifier}"
-  region                        = "${var.region}"
-  route53_sub_domain            = "${local.route53_sub_domain}"
-  amazon_ami_id                 = "${data.aws_ami.amazon_ami.id}"
-  bastion_origin_cidr           = "${data.terraform_remote_state.bastion_remote_vpc.bastion_vpc_cidr}"
-  bastion_origin_sgs            = "${local.bastion_origin_sgs}"
-
-  private_zone_name             = "${data.terraform_remote_state.vpc.private_zone_name}"
-  private_zone_id               = "${data.terraform_remote_state.vpc.private_zone_id}"
-  account_id                    = "${local.account_id}"
-  tags                          = "${var.tags}"
-  ssh_deployer_key              = "${data.terraform_remote_state.vpc.ssh_deployer_key}"
-  subnet_ids                    = "${local.private_subnet_ids}"
-  vpc_id                        = "${data.terraform_remote_state.vpc.vpc_id}"
-  vpc_cidr                      = "${data.terraform_remote_state.vpc.vpc_cidr_block}"
-  s3-config-bucket              = "${var.remote_state_bucket_name}"
-  bastion_inventory             = "${var.bastion_inventory}"
-  hostname                      = "es5-mig-clust"
-  es_backup_bucket              = "${aws_s3_bucket.elasticsearch_backup_bucket.bucket}"
-}
-
 ## Staging bucket
 resource "aws_kms_key" "s3_bucket_encryption_key" {
   description             = "Ensure backups at rest are encrypted"

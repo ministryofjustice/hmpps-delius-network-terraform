@@ -88,7 +88,9 @@ version: "3"
 
 services:
   elasticsearch:
-    image: ${registry_url}/${image_name}:${version}
+    image: ${registry_url}/${image_name}:${version} # This is our es 2.3 image
+    #image: ${registry_url}/elasticsearch-5:latest # This is our es 5.6 image
+    #image: ${registry_url}/elasticsearch:latest # This is our es 6.2 image
     volumes:
       - ${es_home}/elasticsearch/data:/usr/share/elasticsearch/data
       - ${es_home}/elasticsearch/conf.d:/usr/share/elasticsearch/conf.d
@@ -118,7 +120,9 @@ version: "3"
 
 services:
   elasticsearch:
-    image: ${registry_url}/${image_name}:${version}
+    image: ${registry_url}/${image_name}:${version} # This is our es 2.3 image
+    #image: ${registry_url}/elasticsearch-5:latest # This is our es 5.6 image
+    #image: ${registry_url}/elasticsearch:latest # This is our es 6.2 image
     volumes:
       - ${es_home}/elasticsearch/data:/usr/share/elasticsearch/data
       - ${es_home}/elasticsearch/conf.d:/usr/share/elasticsearch/conf.d
@@ -157,6 +161,10 @@ sysctl -w vm.max_map_count=262144
 service docker restart
 sleep 10
 docker-compose -f ${es_home}/service-elasticsearch/docker-compose.yml up -d
+
+# Pull our extra images down to simplify things
+docker pull ${registry_url}/hmpps-elasticsearch-5
+docker pull ${registry_url}/hmpps-elasticsearch
 
 if [ "x${efs_mount_dir}" != "x" ];then
 # See
