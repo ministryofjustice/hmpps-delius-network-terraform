@@ -122,6 +122,7 @@ module "create_elasticseach_efs_backup_share" {
   domain            = "${data.terraform_remote_state.vpc.private_zone_name}"
   subnets           = "${local.private_subnet_ids}"
   security_groups   = ["${module.create_elastic_cluster.elasticsearch_cluster_sg_client_id}"]
+  encrypted         = true
   tags              = "${var.tags}"
 }
 
