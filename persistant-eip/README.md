@@ -1,7 +1,7 @@
-# Persistant EIP
+# Persistent EIP
 AWS resources that need to persist between environment refreshes.
 
-Primarily this is for but not limeted to Elastic IP that we need to register in 3rd party firewalls etc.
+Primarily this is for but not limited to Elastic IP that we need to register in 3rd party firewalls etc.
 
 A file named for the resource.
 
@@ -31,7 +31,7 @@ Example usage/consumption.
 
       config {
         bucket = "${var.remote_state_bucket_name}"
-        key    = "persistant-eip/terraform.tfstate"
+        key    = "persistent-eip/terraform.tfstate"
         region = "${var.region}"
       }
     }
