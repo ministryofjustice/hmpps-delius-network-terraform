@@ -189,6 +189,14 @@ pipeline {
           }
         }
 
+        stage('Persistent eip') {
+          steps {
+            script {
+              do_terraform(project.config, environment_name, project.network, 'persistent-eip')
+            }
+          }
+        }
+
         stage('Delius Shared Monitoring') {
           steps {
             script {

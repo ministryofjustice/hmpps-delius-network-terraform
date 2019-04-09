@@ -87,6 +87,7 @@ pipeline {
             stage('Plan Delius natgateway')          { steps { script {plan_submodule(project.config, environment_name, project.network, 'natgateway')}}}
             stage('Plan Delius routes')              { steps { script {plan_submodule(project.config, environment_name, project.network, 'routes')}}}
             stage('Plan Delius security-groups')     { steps { script {plan_submodule(project.config, environment_name, project.network, 'security-groups')}}}
+            stage('Plan Persistent EIP')             { steps { script {plan_submodule(project.config, environment_name, project.network, 'persistent-eip')}}}
             // stage('Plan Delius shared-monitoring')   { steps { script {plan_submodule(project.config, environment_name, project.network, 'shared-monitoring')}}}
           }
         }

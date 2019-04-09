@@ -69,6 +69,7 @@ pipeline {
             stage('Plan Delius Test natgateway')          { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'natgateway')}}}
             stage('Plan Delius Test routes')              { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'routes')}}}
             stage('Plan Delius Test security-groups')     { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'security-groups')}}}
+            stage('Plan Delius Test Persistent EIP')      { steps { script {plan_submodule(project.config, environment_name, project.network, 'persistent-eip')}}}
             stage('Plan Delius Test shared-monitoring')   { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'shared-monitoring')}}}
           }
         }
@@ -81,6 +82,7 @@ pipeline {
             stage('Plan Delius Perf natgateway')          { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'natgateway')}}}
             stage('Plan Delius Perf routes')              { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'routes')}}}
             stage('Plan Delius Perf security-groups')     { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'security-groups')}}}
+            stage('Plan Delius Perf Persistent EIP')      { steps { script {plan_submodule(project.config, environment_name, project.network, 'persistent-eip')}}}
             stage('Plan Delius Perf shared-monitoring')   { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'shared-monitoring')}}}
           }
         }
@@ -94,6 +96,7 @@ pipeline {
             stage('Plan Delius Stage natgateway')          { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'natgateway')}}}
             stage('Plan Delius Stage routes')              { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'routes')}}}
             stage('Plan Delius Stage security-groups')     { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'security-groups')}}}
+            stage('Plan Delius Stage Persistent EIP')      { steps { script {plan_submodule(project.config, environment_name, project.network, 'persistent-eip')}}}
             stage('Plan Delius Stage shared-monitoring')   { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'shared-monitoring')}}}
           }
         }
@@ -107,6 +110,7 @@ pipeline {
             // stage('Plan natgateway')          { steps { script {plan_submodule(project.config, 'delius-preprod', project.network, 'natgateway')}}}
             // stage('Plan routes')              { steps { script {plan_submodule(project.config, 'delius-preprod', project.network, 'routes')}}}
             // stage('Plan security-groups')     { steps { script {plan_submodule(project.config, 'delius-preprod', project.network, 'security-groups')}}}
+            // stage('Plan Persistent EIP')      { steps { script {plan_submodule(project.config, environment_name, project.network, 'persistent-eip')}}}
             stage('Monitoring placeholder')   { steps { script {sh '''
             #!/usr/env/bin bash
             echo "delius-preprod VPC Shared Monitoring - placeholder"
@@ -124,6 +128,7 @@ pipeline {
             // stage('Plan natgateway')          { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'natgateway')}}}
             // stage('Plan routes')              { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'routes')}}}
             // stage('Plan security-groups')     { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'security-groups')}}}
+            // stage('Plan Persistent EIP')      { steps { script {plan_submodule(project.config, environment_name, project.network, 'persistent-eip')}}}
             stage('Monitoring placeholder')   { steps { script {sh '''
             #!/usr/env/bin bash
             echo "delius-prod VPC Shared Monitoring - placeholder"
