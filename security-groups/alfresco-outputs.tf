@@ -33,3 +33,8 @@ output "sg_alfresco_elasticache_in" {
 output "sg_alfresco_efs_in" {
   value = "${aws_security_group.alfresco_efs_in.id}"
 }
+
+# Elasticsearch
+output "sg_alfresco_es_in" {
+  value = "${aws_security_group.alfresco_es_in.id}"
+}
