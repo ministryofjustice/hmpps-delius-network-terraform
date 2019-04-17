@@ -28,3 +28,8 @@ output "sg_alfresco_api_in" {
 output "sg_alfresco_elasticache_in" {
   value = "${aws_security_group.alfresco_elasticache_in.id}"
 }
+
+# EFS
+output "sg_alfresco_efs_in" {
+  value = "${aws_security_group.alfresco_efs_in.id}"
+}
