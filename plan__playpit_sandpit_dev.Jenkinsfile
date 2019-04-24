@@ -6,16 +6,6 @@ project.alfresco  = 'hmpps-delius-alfresco-shared-terraform'
 project.spg       = 'hmpps-spg-terraform'
 //project.ndmis     = 'hmpps-ndmis-terraform' //
 
-def environments = [
-  'delius-core-sandpit',
-  'delius-core-playpit',
-  'delius-core-dev',
-  'delius-po-test1',
-  'delius-po-test2',
-  'delius-training',
-  'delius-training-test'
-]
-
 def prepare_env() {
     sh '''
     #!/usr/env/bin bash
@@ -52,14 +42,6 @@ def plan_submodule(config_dir, env_name, git_project_dir, submodule_name) {
 pipeline {
 
     agent { label "jenkins_slave" }
-
-    parameters {
-        choice(
-          name: 'environment_name',
-          choices: environments,
-          description: 'Select environment for creation or updating.'
-        )
-    }
 
     stages {
 
