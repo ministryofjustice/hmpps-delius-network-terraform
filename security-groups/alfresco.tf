@@ -82,3 +82,15 @@ resource "aws_security_group" "alfresco_efs_in" {
     create_before_destroy = true
   }
 }
+
+# Elasticsearch
+resource "aws_security_group" "alfresco_es_in" {
+  name        = "${var.environment_name}-${var.alfresco_app_name}-elasticsearch-in"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "elasticsearch"
+  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}_${var.alfresco_app_name}_elasticsearch_in", "Type", "DB"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
