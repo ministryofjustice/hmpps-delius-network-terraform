@@ -82,7 +82,11 @@ def confirm() {
 
 def do_terraform(config_dir, env_name, git_project, component) {
     if (plan_submodule(config_dir, env_name, git_project, component) == "2") {
-        confirm()
+        if ("${confirmation}" == "true") {
+            confirm()
+        } else {
+            env.Continue = true
+        }
         if (env.Continue == "true") {
             apply_submodule(config_dir, env_name, git_project, component)
         }
