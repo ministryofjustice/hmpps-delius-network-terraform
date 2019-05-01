@@ -29,7 +29,8 @@ def plan_submodule(config_dir, env_name, git_project_dir, submodule_name) {
                 cd ${submodule_name}; \
                 if [ -d .terraform ]; then rm -rf .terraform; fi; sleep 5; \
                 terragrunt init; \
-                terragrunt plan -detailed-exitcode --out ${env_name}.plan" \
+                terragrunt plan > tf.plan.out; cat tf.plan.out; \
+                parse-terraform-plan -i tf.plan.out | jq '.changedResources[] | (.action != \\\"update\\\") or (.changedAttributes | to_entries | map(.key != \\\"tags.source-hash\\\") | reduce .[] as \\\$item (false; . or \\\$item))' | jq -e -s 'reduce .[] as \\\$item (false; . or \\\$item) == false'" \
             || exitcode="\$?"; \
             echo "\$exitcode" > plan_ret; \
             if [ "\$exitcode" == '1' ]; then exit 1; else exit 0; fi
@@ -70,7 +71,7 @@ pipeline {
             stage('Plan Delius routes')              { steps { script {plan_submodule(project.config, environment_name, project.network, 'routes')}}}
             stage('Plan Delius security-groups')     { steps { script {plan_submodule(project.config, environment_name, project.network, 'security-groups')}}}
             stage('Plan Persistent EIP')             { steps { script {plan_submodule(project.config, environment_name, project.network, 'persistent-eip')}}}
-            // stage('Plan Delius shared-monitoring')   { steps { script {plan_submodule(project.config, environment_name, project.network, 'shared-monitoring')}}}
+            stage('Plan Delius shared-monitoring')   { steps { script {plan_submodule(project.config, environment_name, project.network, 'shared-monitoring')}}}
           }
         }
     }
