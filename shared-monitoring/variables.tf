@@ -24,7 +24,7 @@ variable "route53_domain_private" {
 
 variable "whitelist_monitoring_ips" {
   description = "List of ips allowed to access the monitoring front end"
-  type = "list"
+  type        = "list"
 }
 
 variable "short_environment_identifier" {}
@@ -40,3 +40,7 @@ variable "backup_retention_days" {}
 variable "retention_period" {}
 
 variable "subdomain" {}
+
+variable "es_jvm_heap_size" {
+  default = "4g"
+}
