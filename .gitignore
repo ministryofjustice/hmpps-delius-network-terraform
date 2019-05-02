@@ -26,7 +26,7 @@ Temporary Items
 **/.terraform/*
 *.tfstate
 *.tfstate.*
-*.plan
+*.plan*
 crash.log
 .idea/**/workspace.xml
 .idea/**/tasks.xml
