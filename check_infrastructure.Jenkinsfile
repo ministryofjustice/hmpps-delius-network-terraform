@@ -29,7 +29,10 @@ def plan_submodule(config_dir, env_name, git_project_dir, submodule_name) {
                 cd ${submodule_name}; \
                 if [ -d .terraform ]; then rm -rf .terraform; fi; sleep 5; \
                 terragrunt init; \
-                terragrunt plan > tf.plan.out; cat tf.plan.out; \
+                terragrunt plan > tf.plan.out; \
+                exitcode=\\\"\\\$?\\\"; \
+                cat tf.plan.out; \
+                if [ \\\"\\\$exitcode\\\" == '1' ]; then exit 1; fi; \
                 parse-terraform-plan -i tf.plan.out | jq '.changedResources[] | (.action != \\\"update\\\") or (.changedAttributes | to_entries | map(.key != \\\"tags.source-hash\\\") | reduce .[] as \\\$item (false; . or \\\$item))' | jq -e -s 'reduce .[] as \\\$item (false; . or \\\$item) == false'" \
             || exitcode="\$?"; \
             echo "\$exitcode" > plan_ret; \
