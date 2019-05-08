@@ -42,7 +42,7 @@ resource "aws_security_group_rule" "alfresco_db_in" {
   protocol          = "tcp"
   from_port         = "5432"
   to_port           = "5432"
-  cidr_blocks       = "${data.terraform_remote_state.vpc.eng_vpc_cidr}"
+  cidr_blocks       = [ "${data.terraform_remote_state.vpc.eng_vpc_cidr}" ]
   description       = "TF - alfresco_db_in"
 }
 
