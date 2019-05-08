@@ -35,6 +35,17 @@ resource "aws_security_group" "alfresco_db_in" {
   }
 }
 
+
+resource "aws_security_group_rule" "alfresco_db_in" {
+  security_group_id = "${aws_security_group.alfresco_db_in.id}"
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = "5432"
+  to_port           = "5432"
+  cidr_blocks       = [ "${values(data.terraform_remote_state.vpc.eng_vpc_cidr)}" ]
+  description       = "TF - alfresco_db_in"
+}
+
 #API
 # Internal
 resource "aws_security_group" "alfresco_internal_lb_in" {
