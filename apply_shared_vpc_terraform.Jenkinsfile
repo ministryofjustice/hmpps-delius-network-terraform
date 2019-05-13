@@ -194,6 +194,14 @@ pipeline {
           }
         }
 
+        stage('OracleDB Backups S3 Bucket') {
+          steps {
+            script {
+              do_terraform(project.config, environment_name, project.network, 'oracledb-backups')
+            }
+          }
+        }
+
         stage('Delius Shared Monitoring') {
           steps {
             script {
