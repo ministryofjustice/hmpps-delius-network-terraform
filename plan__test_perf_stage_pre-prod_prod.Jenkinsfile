@@ -70,7 +70,8 @@ pipeline {
             stage('Plan Delius Test routes')                    { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'routes')}}}
             stage('Plan Delius Test security-groups')           { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'security-groups')}}}
             stage('Plan Delius Test Persistent EIP')            { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'persistent-eip')}}}
-            stage('Plan Delius Test oracledb-backups'){ steps { script {plan_submodule(project.config, 'delius-test', project.network, 'oracledb-backups')}}}
+            stage('Plan Delius Test S3 oracledb-backups')       { steps { script {plan_submodule(project.config, 'delius-test', project.network, 's3/oracledb-backups')}}}
+            stage('Plan Delius Test S3 ldap-backups')           { steps { script {plan_submodule(project.config, 'delius-test', project.network, 's3/ldap-backups')}}}
             stage('Plan Delius Test shared-monitoring')         { steps { script {plan_submodule(project.config, 'delius-test', project.network, 'shared-monitoring')}}}
           }
         }
@@ -84,7 +85,8 @@ pipeline {
             stage('Plan Delius Perf routes')                    { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'routes')}}}
             stage('Plan Delius Perf security-groups')           { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'security-groups')}}}
             stage('Plan Delius Perf Persistent EIP')            { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'persistent-eip')}}}
-            stage('Plan Delius Perf oracledb-backups'){ steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'oracledb-backups')}}}
+            stage('Plan Delius Perf S3 oracledb-backups')       { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 's3/oracledb-backups')}}}
+            stage('Plan Delius Perf S3 ldap-backups')           { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 's3/ldap-backups')}}}
             stage('Plan Delius Perf shared-monitoring')         { steps { script {plan_submodule(project.config, 'delius-perf', project.network, 'shared-monitoring')}}}
           }
         }
@@ -99,7 +101,8 @@ pipeline {
             stage('Plan Delius Stage routes')                    { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'routes')}}}
             stage('Plan Delius Stage security-groups')           { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'security-groups')}}}
             stage('Plan Delius Stage Persistent EIP')            { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'persistent-eip')}}}
-            stage('Plan Delius Stage oracledb-backups'){ steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'oracledb-backups')}}}
+            stage('Plan Delius Stage S3 oracledb-backups')       { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 's3/oracledb-backups')}}}
+            stage('Plan Delius Stage S3 ldap-backups')           { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 's3/ldap-backups')}}}
             stage('Plan Delius Stage shared-monitoring')         { steps { script {plan_submodule(project.config, 'delius-stage', project.network, 'shared-monitoring')}}}
           }
         }
@@ -114,7 +117,8 @@ pipeline {
             // stage('Plan Delius PreProd routes')                    { steps { script {plan_submodule(project.config, 'delius-preprod', project.network, 'routes')}}}
             // stage('Plan Delius PreProd security-groups')           { steps { script {plan_submodule(project.config, 'delius-preprod', project.network, 'security-groups')}}}
             // stage('Plan Delius PreProd Persistent EIP')            { steps { script {plan_submodule(project.config, 'delius-preprod', project.network, 'persistent-eip')}}}
-            // stage('Plan Delius PreProd oracledb-backups'){ steps { script {plan_submodule(project.config, 'delius-preprod', project.network, 'oracledb-backups')}}}
+            // stage('Plan Delius PreProd S3 oracledb-backups')       { steps { script {plan_submodule(project.config, 'delius-preprod', project.network, 's3/oracledb-backups')}}}
+            // stage('Plan Delius PreProd S3 ldap-backups')           { steps { script {plan_submodule(project.config, 'delius-preprod', project.network, 's3/ldap-backups')}}}
             stage('Monitoring placeholder')   { steps { script {sh '''
             #!/usr/env/bin bash
             echo "delius-preprod VPC Shared Monitoring - placeholder"
@@ -124,21 +128,6 @@ pipeline {
         }
 
         // delius-prod
-        stage('Delius Prod VPC') {
-          parallel {
-            // stage('Plan vpc')                 { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'vpc')}}}
-            // stage('Plan peering-connection')  { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'peering-connection')}}}
-            // stage('Plan internetgateway')     { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'internetgateway')}}}
-            // stage('Plan natgateway')          { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'natgateway')}}}
-            // stage('Plan routes')              { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'routes')}}}
-            // stage('Plan security-groups')     { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'security-groups')}}}
-            // stage('Plan Persistent EIP')      { steps { script {plan_submodule(project.config, environment_name, project.network, 'persistent-eip')}}}
-            stage('Monitoring placeholder')   { steps { script {sh '''
-            #!/usr/env/bin bash
-            echo "delius-prod VPC Shared Monitoring - placeholder"
-            '''}}}
-            //stage('Plan shared-monitoring')   { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'shared-monitoring')}}}
-          }
           parallel {
             // stage('Plan Delius vpc')                       { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'vpc')}}}
             // stage('Plan Delius peering-connection')        { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'peering-connection')}}}
@@ -147,7 +136,8 @@ pipeline {
             // stage('Plan Delius routes')                    { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'routes')}}}
             // stage('Plan Delius security-groups')           { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'security-groups')}}}
             // stage('Plan Delius Persistent EIP')            { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'persistent-eip')}}}
-            // stage('Plan Delius oracledb-backups'){ steps { script {plan_submodule(project.config, 'delius-prod', project.network, 'oracledb-backups')}}}
+            // stage('Plan Delius S3 oracledb-backups')       { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 's3/oracledb-backups')}}}
+            // stage('Plan Delius S3 ldap-backups')           { steps { script {plan_submodule(project.config, 'delius-prod', project.network, 's3/ldap-backups')}}}
             stage('Monitoring placeholder')   { steps { script {sh '''
             #!/usr/env/bin bash
             echo "delius-prod VPC Shared Monitoring - placeholder"
