@@ -1,3 +1,13 @@
+terraform {
+  # The configuration for this backend will be filled in by Terragrunt
+  backend "s3" {}
+}
+
+provider "aws" {
+  region  = "${var.region}"
+  version = "~> 1.16"
+}
+
 # ### oracledb-backups-s3bucket
 # S3 Bucket name will have
 # "region-environment_name" prepended
