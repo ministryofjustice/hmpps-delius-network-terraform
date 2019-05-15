@@ -194,10 +194,18 @@ pipeline {
           }
         }
 
-        stage('OracleDB Backups S3 Bucket') {
+        stage('S3 - OracleDB Backups') {
           steps {
             script {
-              do_terraform(project.config, environment_name, project.network, 'oracledb-backups')
+              do_terraform(project.config, environment_name, project.network, 's3/oracledb-backups')
+            }
+          }
+        }
+
+        stage('S3 - LDAP Backups') {
+          steps {
+            script {
+              do_terraform(project.config, environment_name, project.network, 's3/ldap-backups')
             }
           }
         }
