@@ -217,6 +217,14 @@ pipeline {
             }
           }
         }
+
+        stage('Testing - Chaosmonkey') {
+          steps {
+            script {
+              do_terraform(project.config, environment_name, project.network, 'testing/chaosmonkey')
+            }
+          }
+        }
     }
 
     post {
