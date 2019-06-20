@@ -81,6 +81,18 @@ resource "aws_security_group_rule" "ssh_jenkins_in" {
   description       = "TF - ssh_jenkins_in"
 }
 
+resource "aws_security_group" "spg_amazonmq_in" {
+  name        = "${var.environment_name}-delius-core-${var.spg_app_name}-amazonmq-in"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "amazonmq incoming"
+  tags        = "${merge(var.tags, map("Name", "${var.environment_name}_${var.spg_app_name}_api_in", "Type", "API"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+
 
 # OUTPUTS
 # define security groups only for spg outputs
@@ -108,3 +120,9 @@ output "sg_spg_internal_lb_in" {
 output "sg_spg_api_in" {
   value = "${aws_security_group.spg_api_in.id}"
 }
+
+# spg_amazonmq_in
+output "sg_spg_amazonmq_in" {
+  value = "${aws_security_group.spg_amazonmq_in.id}"
+}
+
