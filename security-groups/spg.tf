@@ -81,7 +81,7 @@ resource "aws_security_group_rule" "ssh_jenkins_in" {
   description       = "TF - ssh_jenkins_in"
 }
 
-resource "aws_security_group" "spg_amazonmq_in" {
+resource "aws_security_group" "amazonmq_in" {
   name        = "${var.environment_name}-delius-core-${var.spg_app_name}-amazonmq-in"
   vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
   description = "amazonmq incoming"
@@ -122,7 +122,7 @@ output "sg_spg_api_in" {
 }
 
 # spg_amazonmq_in
-output "sg_spg_amazonmq_in" {
-  value = "${aws_security_group.spg_amazonmq_in.id}"
+output "sg_amazonmq_in" {
+  value = "${aws_security_group.amazonmq_in.id}"
 }
 
