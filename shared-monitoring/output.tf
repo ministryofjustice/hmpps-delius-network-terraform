@@ -1,56 +1,90 @@
-output "monitoring_server_internal_url" {
-  value = "${module.create_monitoring_instance.monitoring_server_internal_dns}"
+# ECS
+output "ecs_cluster_arn" {
+  value = "${module.ecs_cluster.ecs_cluster_arn}"
 }
 
-output "monitoring_server_internal_ipv4" {
-  value = "${module.create_monitoring_instance.monitoring_server_internal_ipv4}"
+output "ecs_cluster_id" {
+  value = "${module.ecs_cluster.ecs_cluster_id}"
+}
+
+output "ecs_cluster_name" {
+  value = "${module.ecs_cluster.ecs_cluster_name}"
+}
+
+output "loggroup_name" {
+  value = {
+    elasticsearch = "${module.create_loggroup.loggroup_name}"
+    kibana        = "${module.kibana_loggroup.loggroup_name}"
+    logstash      = "${module.logstash_loggroup.loggroup_name}"
+    redis         = "${module.redis_loggroup.loggroup_name}"
+  }
+}
+
+# ECS Service
+output "ecs_service_id" {
+  value = "${module.app_service.ecs_service_id}"
+}
+
+output "ecs_service_name" {
+  value = "${module.app_service.ecs_service_name}"
+}
+
+output "monitoring_server_internal_url" {
+  value = "${aws_route53_record.internal_monitoring_dns.fqdn}"
 }
 
 output "monitoring_server_external_url" {
-  value = "${module.create_monitoring_instance.monitoring_server_external_dns}"
+  value = "${aws_route53_record.external_monitoring_dns.fqdn}"
 }
-
 
 output "monitoring_server_client_sg_id" {
-  value = "${module.create_monitoring_instance.monitoring_server_client_security_group_id}"
+  value = "${local.sg_monitoring_client}"
 }
 
+# EFS
 output "monitoring_server_efs_share_arn" {
-  value = "${module.create_elasticseach_efs_backup_share.efs_arn}"
-}
-
-output "monitoring_server_bucket_name" {
-  value = "${module.create_backup_bucket.elastic_search_backup_bucket_name}"
-}
-
-output "monitoring_server_bucket_arn" {
-  value = "${module.create_backup_bucket.elastic_search_backup_bucket_arn}"
+  value = "${module.efs_backups.efs_arn}"
 }
 
 output "monitoring_server_efs_share_id" {
-  value = "${module.create_elasticseach_efs_backup_share.efs_id}"
+  value = "${module.efs_backups.efs_id}"
 }
 
-output "elastic_cluster_node_1_internal_url" {
-  value = "${module.create_elastic_cluster.elasticsearch_1_internal_dns}"
+output "monitoring_server_efs_share_dns" {
+  value = "${module.efs_backups.efs_dns_name}"
 }
 
-output "elastic_cluster_node_1_internal_ipv4" {
-  value = "${module.create_elastic_cluster.elasticsearch_1_internal_ipv4}"
+# s3buckets
+
+output "monitoring_server_bucket_name" {
+  value = "${module.s3_backups_bucket.s3_bucket_name}"
 }
 
-output "elastic_cluster_node_2_internal_url" {
-  value = "${module.create_elastic_cluster.elasticsearch_2_internal_dns}"
+output "monitoring_server_bucket_arn" {
+  value = "${module.s3_backups_bucket.s3_bucket_arn}"
 }
 
-output "elastic_cluster_node_2_internal_ipv4" {
-  value = "${module.create_elastic_cluster.elasticsearch_2_internal_ipv4}"
+# IAM
+
+output "iam_instance_profile" {
+  value = "${module.create-iam-instance-profile-es.iam_instance_name}"
 }
 
-output "elastic_cluster_node_3_internal_url" {
-  value = "${module.create_elastic_cluster.elasticsearch_3_internal_dns}"
+# Security groups
+output "instance_security_groups" {
+  value = "${local.instance_security_groups}"
 }
 
-output "elastic_cluster_node_3_internal_ipv4" {
-  value = "${module.create_elastic_cluster.elasticsearch_3_internal_ipv4}"
+# KMS Key
+output "monitoring_kms_arn" {
+  value = "${module.kms_key.kms_arn}"
+}
+
+# logstash
+output "internal_logstash_host" {
+  value = "${aws_route53_record.internal_logstash_dns.fqdn}"
+}
+
+output "external_logstash_host" {
+  value = "${aws_route53_record.external_logstash_dns.fqdn}"
 }
