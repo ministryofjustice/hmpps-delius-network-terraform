@@ -192,6 +192,17 @@ resource "aws_security_group_rule" "smtp-in" {
   description              = "TF - SMTP In"
 }
 
+### SMTP out
+resource "aws_security_group_rule" "smtp-out" {
+  security_group_id        = "${data.terraform_remote_state.security-groups.sg_smtp_ses}"
+  type                     = "egress"
+  protocol                 = "tcp"
+  from_port                = "25"
+  to_port                  = "25"
+  self                     = "true"
+  description              = "TF - SMTP Out"
+}
+
 ### SES out
 resource "aws_security_group_rule" "ses-out" {
   security_group_id        = "${data.terraform_remote_state.security-groups.sg_smtp_ses}"
