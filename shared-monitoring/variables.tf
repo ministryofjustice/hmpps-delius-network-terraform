@@ -106,3 +106,8 @@ variable "user_access_cidr_blocks" {
   type    = "list"
   default = []
 }
+
+# kibana
+variable "kibana_short_name" {
+  default = ""
+}
