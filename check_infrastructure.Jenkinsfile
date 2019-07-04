@@ -77,8 +77,6 @@ pipeline {
             stage('Plan S3 OracleDB Backups')        { steps { script {plan_submodule(project.config, environment_name, project.network, 's3/oracledb-backups')}}}
             stage('Plan S3 LDAP Backups')            { steps { script {plan_submodule(project.config, environment_name, project.network, 's3/ldap-backups')}}}
             stage('Plan Delius shared-monitoring')   { steps { script {plan_submodule(project.config, environment_name, project.network, 'shared-monitoring')}}}
-            stage('Plan Delius SES')                 { steps { script {plan_submodule(project.config, environment_name, project.network, 'ses')}}}
-            stage('Plan Delius SMTP-Server')         { steps { script {plan_submodule(project.config, environment_name, project.network, 'smtp-server')}}}                                
           }
         }
     }
