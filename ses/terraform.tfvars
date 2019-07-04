@@ -5,7 +5,7 @@ terragrunt = {
 
   dependencies {
     paths = [
-      "../common"
+      "../vpc"
     ]
   }
 }

@@ -55,7 +55,7 @@ pipeline {
                   git url: 'git@github.com:ministryofjustice/' + project.config, branch: 'master', credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
                 }
                 dir( project.network ) {
-                  git url: 'git@github.com:ministryofjustice/' + project.network, branch: 'master', credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
+                  git url: 'git@github.com:ministryofjustice/' + project.network, branch: 'issue_116_ses_smtp_to_vpc_pipeline', credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
                 }
                 dir( project.dcore ) {
                   git url: 'git@github.com:ministryofjustice/' + project.dcore, branch: 'master', credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
@@ -77,6 +77,8 @@ pipeline {
             stage('Plan S3 OracleDB Backups')        { steps { script {plan_submodule(project.config, environment_name, project.network, 's3/oracledb-backups')}}}
             stage('Plan S3 LDAP Backups')            { steps { script {plan_submodule(project.config, environment_name, project.network, 's3/ldap-backups')}}}
             stage('Plan Delius shared-monitoring')   { steps { script {plan_submodule(project.config, environment_name, project.network, 'shared-monitoring')}}}
+            stage('Plan Delius SES')                 { steps { script {plan_submodule(project.config, environment_name, project.network, 'ses')}}}
+            stage('Plan Delius SMTP-Server')         { steps { script {plan_submodule(project.config, environment_name, project.network, 'smtp-server')}}}
           }
         }
     }

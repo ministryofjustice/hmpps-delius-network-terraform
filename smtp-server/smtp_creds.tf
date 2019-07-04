@@ -16,7 +16,7 @@ resource "aws_iam_group" "ses_group" {
 
 ####Create policy
 resource "aws_iam_policy" "ses" {
-  name             = "AmazonSesSendingAccess"
+  name   = "${var.short_environment_identifier}-ses-policy"
 
   policy = <<EOF
 {
