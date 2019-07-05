@@ -114,18 +114,25 @@ resource "aws_ecs_task_definition" "environment" {
 # CREATE ECS SERVICES
 ############################################
 
-module "app_service" {
-  source                          = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//ecs/ecs_service//withloadbalancer//alb"
-  servicename                     = "${local.common_name}"
-  clustername                     = "${module.ecs_cluster.ecs_cluster_id}"
-  ecs_service_role                = "${module.create-iam-ecs-role-int.iamrole_arn}"
-  task_definition_family          = "${aws_ecs_task_definition.environment.family}"
-  task_definition_revision        = "${aws_ecs_task_definition.environment.revision}"
-  current_task_definition_version = "${data.aws_ecs_task_definition.app_task_definition.revision}"
-  service_desired_count           = "${local.service_desired_count}"
-  target_group_arn                = "${module.create_alb_target_grp.target_group_arn}"
-  containername                   = "${local.application}"
-  containerport                   = "${local.containerport}"
+resource "aws_ecs_service" "elk_service" {
+  name                               = "${local.common_name}-ecs-svc"
+  cluster                            = "${module.ecs_cluster.ecs_cluster_id}"
+  task_definition                    = "${aws_ecs_task_definition.environment.family}:${max("${aws_ecs_task_definition.environment.revision}", "${data.aws_ecs_task_definition.app_task_definition.revision}")}"
+  desired_count                      = "${local.service_desired_count}"
+  iam_role                           = "${module.create-iam-ecs-role-int.iamrole_arn}"
+  deployment_minimum_healthy_percent = 50
+
+  load_balancer {
+    target_group_arn = "${module.create_alb_target_grp.target_group_arn}"
+    container_name   = "${local.application}"
+    container_port   = "${local.containerport}"
+  }
+
+  depends_on = [
+    "module.create_alb_target_grp",
+    "module.create_app_alb",
+    "module.create_alb_listener",
+  ]
 }
 
 #-------------------------------------------------------------

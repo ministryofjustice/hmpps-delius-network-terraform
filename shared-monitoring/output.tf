@@ -22,11 +22,11 @@ output "loggroup_name" {
 
 # ECS Service
 output "ecs_service_id" {
-  value = "${module.app_service.ecs_service_id}"
+  value = "${aws_ecs_service.elk_service.id}"
 }
 
 output "ecs_service_name" {
-  value = "${module.app_service.ecs_service_name}"
+  value = "${aws_ecs_service.elk_service.name}"
 }
 
 output "monitoring_server_internal_url" {

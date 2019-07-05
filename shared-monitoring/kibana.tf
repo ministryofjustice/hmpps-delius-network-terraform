@@ -2,12 +2,13 @@ locals {
   kibana_port           = 5601
   kibana_protocol       = "HTTP"
   kibana_container_name = "kibana"
+  target_grp_name       = "${var.kibana_short_name != "" ? var.kibana_short_name : local.kibana_container_name}"
 }
 
 # target group
 module "kibana_target_grp" {
   source              = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//loadbalancer//alb/targetgroup"
-  appname             = "${local.common_name}-${local.kibana_container_name}"
+  appname             = "${local.common_name}-${local.target_grp_name}"
   target_port         = "${local.kibana_port}"
   target_protocol     = "${local.kibana_protocol}"
   vpc_id              = "${local.vpc_id}"
