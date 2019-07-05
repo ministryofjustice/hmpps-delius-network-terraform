@@ -134,9 +134,8 @@ data "template_file" "postfix_user_data" {
     mail_domain           = "${data.terraform_remote_state.vpc.public_zone_name}"
     mail_network          = "${data.terraform_remote_state.vpc.vpc_cidr_block}"
     ses_iam_user          = "${local.ses_iam_user}"
-
-env_identifier        = "${var.short_environment_identifier}"
-short_env_identifier  = "${var.short_environment_identifier}"
+    env_identifier        = "${var.short_environment_identifier}"
+    short_env_identifier  = "${var.short_environment_identifier}"
   }
 }
 
@@ -154,9 +153,8 @@ module "create-ec2-instance" {
   user_data                   = "${data.template_file.postfix_user_data.rendered}"
   CreateSnapshot              = true
   key_name                    = "${data.terraform_remote_state.vpc.ssh_deployer_key}"
-
-app_name                    = "${var.short_environment_identifier}-${local.app_name}"
-tags                        = "${data.terraform_remote_state.vpc.tags}"
+  app_name                    = "${var.short_environment_identifier}-${local.app_name}"
+  tags                        = "${data.terraform_remote_state.vpc.tags}"
 
 
   vpc_security_group_ids = [
