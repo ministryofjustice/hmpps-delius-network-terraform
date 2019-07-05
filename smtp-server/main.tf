@@ -127,7 +127,8 @@ data "template_file" "postfix_user_data" {
   vars {
     app_name              = "${local.app_name}"
     bastion_inventory     = "${local.bastion_inventory}"
-    private_domain        = "${data.terraform_remote_state.vpc.private_zone_name}"
+    private_domain        = "${local.internal_domain}"
+    private_zone_id       = "${local.private_zone_id}"
     account_id            = "${data.terraform_remote_state.vpc.vpc_account_id}"
     environment_name      = "${local.environment_name}"
     mail_hostname         = "mail.${data.terraform_remote_state.vpc.public_zone_name}"
@@ -136,45 +137,74 @@ data "template_file" "postfix_user_data" {
     ses_iam_user          = "${local.ses_iam_user}"
     env_identifier        = "${var.short_environment_identifier}"
     short_env_identifier  = "${var.short_environment_identifier}"
+
   }
 }
 
 #-------------------------------------------------------------
 ### Create instance
 #-------------------------------------------------------------
-module "create-ec2-instance" {
-  source                      = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//ec2"
-  ami_id                      = "${data.aws_ami.amazon_ami.id}"
-  instance_type               = "${var.instance_type}"
-  subnet_id                   = "${data.terraform_remote_state.vpc.vpc_private-subnet-az1}"
-  iam_instance_profile        = "${module.iam_instance_profile.iam_instance_name}"
-  associate_public_ip_address = false
-  monitoring                  = true
-  user_data                   = "${data.template_file.postfix_user_data.rendered}"
-  CreateSnapshot              = true
-  key_name                    = "${data.terraform_remote_state.vpc.ssh_deployer_key}"
-  app_name                    = "${var.short_environment_identifier}-${local.app_name}"
-  tags                        = "${data.terraform_remote_state.vpc.tags}"
 
 
-  vpc_security_group_ids = [
+resource "aws_launch_configuration" "launch_cfg" {
+  name_prefix          = "${var.short_environment_name}-smtp-launch-cfg-"
+  image_id             = "${data.aws_ami.amazon_ami.id}"
+  iam_instance_profile = "${module.iam_instance_profile.iam_instance_name}"
+  instance_type        = "${var.instance_type}"
+  security_groups      = [
     "${local.sg_bastion_in}",
     "${local.sg_smtp_ses}",
     "${local.sg_https_out}",
   ]
+  enable_monitoring    = "true"
+  associate_public_ip_address = false
+  key_name                    = "${data.terraform_remote_state.vpc.ssh_deployer_key}"
+  user_data            = "${data.template_file.postfix_user_data.rendered}"
+  root_block_device {
+    volume_type        = "gp2"
+    volume_size        = 50
+  }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
-#-------------------------------------------------------------
-### Create internal dns record
-#-------------------------------------------------------------
 
-resource "aws_route53_record" "instance" {
-  zone_id      = "${local.private_zone_id}"
-  name         = "${local.app_name}.${local.internal_domain}"
-  type         = "A"
-  ttl          = "300"
-  records      = ["${module.create-ec2-instance.private_ip}"]
+data "null_data_source" "tags" {
+  count = "${length(keys(var.tags))}"
+  inputs = {
+    key                 = "${element(keys(var.tags), count.index)}"
+    value               = "${element(values(var.tags), count.index)}"
+    propagate_at_launch = true
+  }
 }
+
+
+resource "aws_autoscaling_group" "asg" {
+  name                      = "${var.environment_name}-smtp"
+  vpc_zone_identifier       = ["${list(
+    data.terraform_remote_state.vpc.vpc_private-subnet-az1,
+  )}"]
+  launch_configuration      = "${aws_launch_configuration.launch_cfg.id}"
+  min_size                  = "${var.instance_count}"
+  max_size                  = "${var.instance_count}"
+  desired_capacity          = "${var.instance_count}"
+  tags = [
+    "${data.null_data_source.tags.*.outputs}",
+    {
+      key                 = "Name"
+      value               = "${var.environment_name}-smtp"
+      propagate_at_launch = true
+    }
+  ]
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+
+
+
 
 
 #-------------------------------------------------------------
