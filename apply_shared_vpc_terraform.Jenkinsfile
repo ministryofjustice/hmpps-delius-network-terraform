@@ -218,6 +218,22 @@ pipeline {
           }
         }
 
+        stage('Delius SES') {
+          steps {
+            script {
+              do_terraform(project.config, environment_name, project.network, 'ses')
+            }
+          }
+        }
+
+        stage('Delius SMTP-Server') {
+          steps {
+            script {
+              do_terraform(project.config, environment_name, project.network, 'smtp-server')
+            }
+          }
+        }
+
         stage('Testing - Chaosmonkey') {
           steps {
             script {

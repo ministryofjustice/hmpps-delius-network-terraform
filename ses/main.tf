@@ -9,14 +9,14 @@ provider "aws" {
 }
 
 #-------------------------------------------------------------
-### Getting the common details
+### Getting the remote state details
 #-------------------------------------------------------------
-data "terraform_remote_state" "common" {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config {
     bucket = "${var.remote_state_bucket_name}"
-    key    = "${var.environment_type}/common/terraform.tfstate"
+    key    = "vpc/terraform.tfstate"
     region = "${var.region}"
   }
 }
@@ -26,15 +26,15 @@ data "terraform_remote_state" "common" {
 # Create SES domain
 ####################################################
 resource "aws_ses_domain_identity" "ses_domain" {
-  domain = "${data.terraform_remote_state.common.external_domain}"
+  domain = "${data.terraform_remote_state.vpc.public_zone_name}"
 }
 
 ####################################################
 # Create Verification Records
 ####################################################
 resource "aws_route53_record" "amazonses_verification_record" {
-  zone_id = "${data.terraform_remote_state.common.public_zone_id}"
-  name    = "_amazonses.${data.terraform_remote_state.common.external_domain}"
+  zone_id = "${data.terraform_remote_state.vpc.public_zone_id}"
+  name    = "_amazonses.${data.terraform_remote_state.vpc.public_zone_name}"
   type    = "TXT"
   ttl     = "600"
   records = ["${aws_ses_domain_identity.ses_domain.verification_token}"]
@@ -56,7 +56,7 @@ resource "aws_ses_domain_dkim" "dkim_records" {
 
 resource "aws_route53_record" "amazonses_verification_record_dkim" {
   count      = 3
-  zone_id    = "${data.terraform_remote_state.common.public_zone_id}"
+  zone_id    = "${data.terraform_remote_state.vpc.public_zone_id}"
   name       = "${element(aws_ses_domain_dkim.dkim_records.dkim_tokens, count.index)}._domainkey.${aws_ses_domain_identity.ses_domain.domain}"
   type       = "CNAME"
   ttl        = "600"
@@ -75,7 +75,7 @@ resource "aws_ses_domain_mail_from" "ses_domain_from" {
 
 # Route53 MX record
 resource "aws_route53_record" "ses_domain_mail_from_mx" {
-  zone_id   = "${data.terraform_remote_state.common.public_zone_id}"
+  zone_id   = "${data.terraform_remote_state.vpc.public_zone_id}"
   name      = "${aws_ses_domain_mail_from.ses_domain_from.mail_from_domain}"
   type      = "MX"
   ttl       = "600"
@@ -84,7 +84,7 @@ resource "aws_route53_record" "ses_domain_mail_from_mx" {
 
 # Route53 TXT record for SPF
 resource "aws_route53_record" "ses_domain_mail_from_txt" {
-  zone_id   = "${data.terraform_remote_state.common.public_zone_id}"
+  zone_id   = "${data.terraform_remote_state.vpc.public_zone_id}"
   name      = "${aws_ses_domain_mail_from.ses_domain_from.mail_from_domain}"
   type      = "TXT"
   ttl       = "600"

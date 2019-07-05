@@ -14,6 +14,7 @@ MAIL_HOSTNAME="${mail_hostname}"
 MAIL_DOMAIN="${mail_domain}"
 MAIL_NETWORK="${mail_network}"
 SES_IAM_USER="${ses_iam_user}"
+INT_ZONE_ID="${private_zone_id}"
 
 
 EOF
@@ -30,6 +31,7 @@ export MAIL_HOSTNAME="${mail_hostname}"
 export MAIL_DOMAIN="${mail_domain}"
 export MAIL_NETWORK="${mail_network}"
 export SES_IAM_USER="${ses_iam_user}"
+export INT_ZONE_ID="${private_zone_id}"
 
 cd ~
 pip install ansible
@@ -223,3 +225,48 @@ crontab -l > $temp_cron_file ;
 grep -q "@hourly update_users > /dev/null 2>&1" $temp_cron_file  ||  sed -i "s/update_users/update_users > \/dev\/null 2\>\&1/" $temp_cron_file ;
 grep -q "$rotate_script" $temp_cron_file || echo "00 21 * * 0 /usr/bin/sh $rotate_script > /dev/null 2>&1" >> $temp_cron_file && crontab $temp_cron_file;
 rm -f $temp_cron_file ;
+
+
+#Create DNS record for smtp host
+log_file="/var/log/dns_update"
+host_dns_name="$HMPPS_ROLE.$HMPPS_DOMAIN"
+current_host_ip=$(ifconfig eth0 | grep inet | awk '{print $2}')
+existing_dns_ip=$(aws route53 list-resource-record-sets --hosted-zone-id $INT_ZONE_ID --query "ResourceRecordSets[?Name == '$host_dns_name.']" | grep "Value" | awk '{print $2}' | sed 's/"//g')
+tmp_file="/tmp/dns_file"
+
+#Create json file
+cat << EOF > $tmp_file
+{
+    "Comment": "Auto updating dns",
+    "Changes": [{
+        "Action": "UPSERT",
+        "ResourceRecordSet": {
+            "ResourceRecords":[{ "Value": "$current_host_ip" }],
+            "Name": "$host_dns_name",
+            "Type": "A",
+            "TTL": 300
+        }
+    }]
+}
+EOF
+
+#Create log file
+[[ ! -f $log_file ]] && touch $log_file
+
+#Check if local ip and dns match
+#If not matching update
+echo "Current host ip : $current_host_ip"
+echo "Current DNS IP  : $existing_dns_ip"
+
+if [[ $current_host_ip != $existing_dns_ip ]]; then
+    echo "Updating dns entry for $host_dns_name to $current_host_ip"
+    echo "$(date) Updating dns entry for $host_dns_name to $current_host_ip" >> $log_file
+
+    #Update dns entry
+    aws route53 change-resource-record-sets --hosted-zone-id $INT_ZONE_ID --change-batch "file://$tmp_file"
+else
+    echo "DNS Update not required fo $host_dns_name"
+    echo "$(date) DNS Update not required fo $host_dns_name" >> $log_file
+fi
+
+rm -f $tmp_file

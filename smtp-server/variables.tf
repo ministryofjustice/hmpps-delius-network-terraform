@@ -6,16 +6,20 @@ variable "environment_type" {}
 
 variable "environment_name" {}
 
-variable "bastion_inventory" {
-  default = "dev"
-}
+variable "bastion_inventory" {}
 
 variable "short_environment_identifier" {}
 
 variable "tags" {
-  type = "map"
+  type     = "map"
 }
 
 variable "instance_type" {
-  default = "t2.small"
+  default  = "t2.small"
+}
+
+variable "short_environment_name" {}
+
+variable "instance_count" {
+  default  = "1"
 }
