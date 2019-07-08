@@ -213,8 +213,7 @@ postconf -e 'myorigin = $mydomain' \
   'inet_protocols = all'           \
   'local_recipient_maps ='         \
   'relay_domains = $mydestination' \
-  'home_mailbox = Maildir/'        \
-  'mydestination = $myhostname, localhost.$mydomain, localhost' ;
+  'mydestination = $mydomain' ;
 
 #Restart postfix service
 systemctl restart $${app}
