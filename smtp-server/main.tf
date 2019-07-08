@@ -131,7 +131,7 @@ data "template_file" "postfix_user_data" {
     private_zone_id       = "${local.private_zone_id}"
     account_id            = "${data.terraform_remote_state.vpc.vpc_account_id}"
     environment_name      = "${local.environment_name}"
-    mail_hostname         = "mail.${data.terraform_remote_state.vpc.public_zone_name}"
+    mail_hostname         = "${local.app_name}.${data.terraform_remote_state.vpc.public_zone_name}"
     mail_domain           = "${data.terraform_remote_state.vpc.public_zone_name}"
     mail_network          = "${data.terraform_remote_state.vpc.vpc_cidr_block}"
     ses_iam_user          = "${local.ses_iam_user}"
