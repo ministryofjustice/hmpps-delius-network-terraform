@@ -5,11 +5,7 @@ terragrunt = {
 
   dependencies {
     paths = [
-      "../common",
-      "../s3buckets",
-      "../iam",
-      "../security-groups",
-      "../efs",
+      "../vpc"
     ]
   }
 }

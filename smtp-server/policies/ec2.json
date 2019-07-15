@@ -1,0 +1,60 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ec2InstanceRole",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:Describe*"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "ViewAndUpdateAccessKeys",
+            "Effect": "Allow",
+            "Action": [
+                "iam:UpdateAccessKey",
+                "iam:CreateAccessKey",
+                "iam:ListAccessKeys",
+                "iam:DeleteAccessKey"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "UpdateParameters",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:GetParameters",
+                "ssm:PutParameter"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "allowLoggingToCloudWatch",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams"
+            ],
+            "Resource": [
+                "arn:aws:logs:*:*:*"
+            ]
+        },
+        {
+            "Sid": "allowRoute53Update",
+            "Effect": "Allow",
+            "Action": [
+                "route53:GetHostedZone",
+                "route53:ListHostedZones",
+                "route53:ChangeResourceRecordSets",
+                "route53:ListResourceRecordSets",
+                "route53:ListHostedZonesByName"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

@@ -86,13 +86,13 @@ tg_applyCmd="terragrunt apply ${ENVIRONMENT_NAME}.plan"
 
 runCmd="docker run -it --rm -v $(pwd):/home/tools/data \
     -v ${HOME}/.aws:/home/tools/.aws \
-    ${TOKEN_ARGS} -e RUNNING_IN_CONTAINER=True hmpps/terraform-builder:latest sh run.sh ${ENVIRONMENT_NAME} ${ACTION_TYPE} ${COMPONENT}"
+    ${TOKEN_ARGS} -e RUNNING_IN_CONTAINER=True mojdigitalstudio/hmpps-terraform-builder sh run.sh ${ENVIRONMENT_NAME} ${ACTION_TYPE} ${COMPONENT}"
 
 #check env vars for RUNNING_IN_CONTAINER switch
 if [[ ${RUNNING_IN_CONTAINER} == True ]]
 then
     echo "Output -> environment stage"
-    source ${env_config_dir}/${ENVIRONMENT_NAME}.properties
+    source ${env_config_dir}/${ENVIRONMENT_NAME}/${ENVIRONMENT_NAME}.properties
     exit_on_error $? !!
     echo "Output ---> set environment stage complete"
     # set runCmd

@@ -70,3 +70,27 @@ resource "aws_eip" "delius_interface_az3_lb" {
     prevent_destroy = true
   }
 }
+
+resource "aws_eip" "delius_pwm_az1_lb" {
+  vpc  = true
+  tags = "${merge(var.tags, map("Name", "${var.environment_name}-delius-pwm-az1-lb"), map("Do-Not-Delete", "true"))}"
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_eip" "delius_pwm_az2_lb" {
+  vpc  = true
+  tags = "${merge(var.tags, map("Name", "${var.environment_name}-delius-pwm-az2-lb"), map("Do-Not-Delete", "true"))}"
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_eip" "delius_pwm_az3_lb" {
+  vpc  = true
+  tags = "${merge(var.tags, map("Name", "${var.environment_name}-delius-pwm-az3-lb"), map("Do-Not-Delete", "true"))}"
+  lifecycle {
+    prevent_destroy = true
+  }
+}
