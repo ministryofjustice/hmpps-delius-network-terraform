@@ -1,19 +1,12 @@
 #!/bin/bash
-
+set -x
 # Install additional packages
 sudo yum install -y amazon-efs-utils nfs-utils jq awslogs
 # Install and start SSM Agent service - will always want the latest - used for remote access via aws console/cli
 # Avoids need to manage users identity in 2 places and install ansible/dependencies
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 sudo systemctl enable amazon-ssm-agent
-
-#open file descriptor for stderr
-exec 2>>/var/log/ecs/ecs-agent-install.log
-set -x
-#verify that the agent is running
-until curl -s http://localhost:51678/v1/metadata; do
-    sleep 1;
-done
+sudo systemctl start amazon-ssm-agent
 
 # Install any docker plugins
 # Volume plugin for providing EBS/EFS docker volumes
@@ -69,7 +62,7 @@ EOF
 sed -i -e "s/region = us-east-1/region = ${region}/g" /etc/awslogs/awscli.conf
 
 # Start the awslogs service
-systemctl enable awslogs 
-systemctl start awslogs
+sudo systemctl enable awslogsd.service
+sudo systemctl start awslogsd
 
 # ECS service is started by cloud-init once this userdata script has returned

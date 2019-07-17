@@ -22,7 +22,7 @@ resource "aws_ecs_cluster" "ecs" {
 
 # Host Launch Configuration
 resource "aws_launch_configuration" "ecs_host_lc" {
-  name                        = "${local.name_prefix}-ecscluster-private-asg"
+  name_prefix                 = "${local.name_prefix}-ecscluster-private-asg"
   associate_public_ip_address = false
   iam_instance_profile        = "${aws_iam_instance_profile.ecs_host_profile.name}"
   image_id                    = "${data.aws_ami.ecs_ami.id}"

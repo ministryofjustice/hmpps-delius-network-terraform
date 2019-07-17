@@ -74,19 +74,42 @@
             "Resource": "*"
         },
         {
-            "Sid": "AllowCloudwatchLogsActions",
+            "Sid": "AllowCloudwatchActions",
             "Effect": "Allow",
             "Action": [
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:CreateLogGroup",
                 "logs:CreateLogStream",
-                "logs:PutLogEvents"
+                "logs:PutLogEvents",
+                "cloudwatch:PutMetricData"
             ],
             "Resource": "*"
         },
         {
-            "Sid": "PermitKMSActions",
+            "Sid": "AllowKMSActions",
             "Effect": "Allow",
             "Action": [
                 "kms:ListAliases"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AllowSSMActions",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:UpdateInstanceInformation",
+                "ssmmessages:CreateControlChannel",
+                "ssmmessages:CreateDataChannel",
+                "ssmmessages:OpenControlChannel",
+                "ssmmessages:OpenDataChannel",
+                "s3:GetEncryptionConfiguration",
+                "ec2messages:AcknowledgeMessage",
+                "ec2messages:DeleteMessage",
+                "ec2messages:FailMessage",
+                "ec2messages:GetEndpoint",
+                "ec2messages:GetMessages",
+                "ec2messages:SendReply"
             ],
             "Resource": "*"
         }
