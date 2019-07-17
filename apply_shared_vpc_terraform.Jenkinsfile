@@ -234,6 +234,14 @@ pipeline {
           }
         }
 
+        stage('Delius Shared ECS Cluster') {
+          steps {
+            script {
+              do_terraform(project.config, environment_name, project.network, 'ecs-cluster')
+            }
+          }
+        }
+
         stage('Testing - Chaosmonkey') {
           steps {
             script {

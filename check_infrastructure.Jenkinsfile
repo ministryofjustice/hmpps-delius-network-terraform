@@ -79,6 +79,7 @@ pipeline {
             stage('Plan Delius shared-monitoring')   { steps { script {plan_submodule(project.config, environment_name, project.network, 'shared-monitoring')}}}
             stage('Plan Delius SES')                 { steps { script {plan_submodule(project.config, environment_name, project.network, 'ses')}}}
             stage('Plan Delius SMTP-Server')         { steps { script {plan_submodule(project.config, environment_name, project.network, 'smtp-server')}}}
+            stage('Plan Delius Shared ECS Cluster')         { steps { script {plan_submodule(project.config, environment_name, project.network, 'ecs-cluster')}}}
           }
         }
     }
