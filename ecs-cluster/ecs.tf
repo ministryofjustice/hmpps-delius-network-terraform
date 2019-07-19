@@ -12,12 +12,37 @@ resource "aws_security_group" "ecs_host_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = "${merge(var.tags, map("Name", "${local.name_prefix}-ecscluster-private-sg"))}"
+}
+
+# Security Group for docker EFS volumes used for persistent storage
+resource "aws_security_group" "ecs_efs_sg" {
+  name        = "${local.name_prefix}-ecsefs-private-sg"
+  description = "Shared ECS Cluster EFS Volumes Security Group"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+
+  ingress {
+    # TLS (change to whatever ports you need)
+    from_port       = 2049
+    to_port         = 2049
+    protocol        = "tcp"
+    security_groups = ["${aws_security_group.ecs_host_sg.id}"]
+  }
+
+  # Allow all outbound
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = "${merge(var.tags, map("Name", "${local.name_prefix}-ecsefs-private-sg"))}"
 }
 
 # ECS Cluster
 resource "aws_ecs_cluster" "ecs" {
   name = "${local.name_prefix}-ecscluster-private-ecs"
-  tags = "${merge(var.tags, map("Name", "${var.project_name_abbreviated}-${var.project_name}-ecscluster-private-ecs"))}"
+  tags = "${merge(var.tags, map("Name", "${local.name_prefix}-ecscluster-private-ecs"))}"
 }
 
 # Create a private service namespace to allow tasks to discover & communicate with each other
@@ -38,6 +63,7 @@ resource "aws_launch_configuration" "ecs_host_lc" {
 
   security_groups = [
     "${aws_security_group.ecs_host_sg.id}",
+    "${aws_security_group.ecs_efs_sg.id}",
     "${data.terraform_remote_state.vpc_security_groups.sg_ssh_bastion_in_id}",
   ]
 

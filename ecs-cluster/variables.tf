@@ -51,7 +51,7 @@ variable "node_min_count" {
 
 variable "ecs_scale_up_cpu_threshold" {
   description = "Avg CPU Util above which to add more EC2 resource to the cluster within the boundaries set"
-  default     = "75"
+  default     = "70"
 }
 
 variable "ecs_scale_down_cpu_threshold" {

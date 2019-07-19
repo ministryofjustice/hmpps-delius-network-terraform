@@ -8,4 +8,11 @@ locals {
     "${data.terraform_remote_state.vpc.vpc_private-subnet-az2}",
     "${data.terraform_remote_state.vpc.vpc_private-subnet-az3}",
   ]
+
+  db_subnet_ids = [
+    "${data.terraform_remote_state.vpc.vpc_db-subnet-az1}",
+    "${data.terraform_remote_state.vpc.vpc_db-subnet-az2}",
+    "${data.terraform_remote_state.vpc.vpc_db-subnet-az3}",
+  ]
+
 }
