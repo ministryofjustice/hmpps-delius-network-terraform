@@ -4,5 +4,8 @@ output "shared_ecs_cluster_id" {
 }
 
 output "private_cluster_namespace" {
-    value = "${aws_service_discovery_private_dns_namespace.ecs_namespace.id}"
+    value = {
+        id = "${aws_service_discovery_private_dns_namespace.ecs_namespace.id}"
+        domain_name = "${var.ecs_cluster_namespace_name}"
+    }
 }

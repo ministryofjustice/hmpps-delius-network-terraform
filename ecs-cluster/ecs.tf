@@ -23,7 +23,7 @@ resource "aws_ecs_cluster" "ecs" {
 # Create a private service namespace to allow tasks to discover & communicate with each other
 # without using load balancers, or building per env fqdns
 resource "aws_service_discovery_private_dns_namespace" "ecs_namespace" {
-  name        = "ecscluster.local"
+  name        = "${var.ecs_cluster_namespace_name}"
   description = "Private namespace for shared ECS Cluster tasks"
   vpc         = "${data.terraform_remote_state.vpc.vpc_id}"
 }

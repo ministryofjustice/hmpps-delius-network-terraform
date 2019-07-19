@@ -58,3 +58,8 @@ variable "ecs_scale_down_cpu_threshold" {
   description = "Avg CPU Util below which to add more EC2 resource to the cluster within the boundaries set"
   default     = "40"
 }
+
+variable "ecs_cluster_namespace_name" {
+  description = "Private namespace domain name value"
+  default = "ecs.cluster"
+}
