@@ -20,6 +20,14 @@ resource "aws_ecs_cluster" "ecs" {
   tags = "${merge(var.tags, map("Name", "${var.project_name_abbreviated}-${var.project_name}-ecscluster-private-ecs"))}"
 }
 
+# Create a private service namespace to allow tasks to discover & communicate with each other
+# without using load balancers, or building per env fqdns
+resource "aws_service_discovery_private_dns_namespace" "ecs_namespace" {
+  name        = "ecscluster.local"
+  description = "Private namespace for shared ECS Cluster tasks"
+  vpc         = "${data.terraform_remote_state.vpc.vpc_id}"
+}
+
 # Host Launch Configuration
 resource "aws_launch_configuration" "ecs_host_lc" {
   name_prefix                 = "${local.name_prefix}-ecscluster-private-asg"
@@ -113,7 +121,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_scaleup_alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ecs_scaledown_alarm" {
-  alarm_name          = "${local.name_prefix}-ecssclup-pri-cwa"
+  alarm_name          = "${local.name_prefix}-ecsscldown-pri-cwa"
   alarm_description   = "ECS cluster scaling metric under threshold"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "2"
@@ -121,7 +129,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_scaledown_alarm" {
   namespace           = "AWS/ECS"
   period              = "120"
   statistic           = "Average"
-  threshold           = "${var.ecs_scale_up_cpu_threshold}"
+  threshold           = "${var.ecs_scale_down_cpu_threshold}"
   alarm_actions       = ["${aws_autoscaling_policy.ecs_host_scaledown.arn}"]
 
   dimensions {

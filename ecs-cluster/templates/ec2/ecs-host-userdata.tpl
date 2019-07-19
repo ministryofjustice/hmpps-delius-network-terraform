@@ -14,6 +14,8 @@ docker plugin install rexray/efs REXRAY_PREEMPT=true EFS_REGION=${region} EFS_SE
 
 # Set any ECS agent configuration options
 echo "ECS_CLUSTER=${ecs_cluster_name}" >> /etc/ecs/ecs.config
+# Block tasks running in awsvpc mode from calling host metadata
+echo "ECS_AWSVPC_BLOCK_IMDS=true" >> /etc/ecs/ecs.config
 
 # Inject the CloudWatch Logs configuration file contents
 export INSTANCE_ID="`curl http://169.254.169.254/latest/meta-data/instance-id`"
