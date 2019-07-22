@@ -41,6 +41,9 @@ cat << EOF > ~/vars.yml
 ## NFS data
 is_nfs_client: true
 nfs_mount_dir: ${nfs_mount_dir}
+
+# For user_update cron
+remote_user_filename: "${bastion_inventory}"
 EOF
 
 cat << EOF > ~/bootstrap.yml
