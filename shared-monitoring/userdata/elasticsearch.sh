@@ -38,10 +38,16 @@ EOF
 
 wget https://raw.githubusercontent.com/ministryofjustice/hmpps-delius-ansible/master/group_vars/${bastion_inventory}.yml -O users.yml
 
+cat << EOF > ~/vars.yml
+# For user_update cron
+remote_user_filename: "${bastion_inventory}"
+EOF
+
 cat << EOF > ~/bootstrap.yml
 ---
 - hosts: localhost
   vars_files:
+   - "{{ playbook_dir }}/vars.yml"
    - "{{ playbook_dir }}/users.yml"
   roles:
      - bootstrap
