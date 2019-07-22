@@ -50,15 +50,21 @@ EOF
 
 wget https://raw.githubusercontent.com/ministryofjustice/hmpps-delius-ansible/master/group_vars/${bastion_inventory}.yml -O users.yml
 
+cat << EOF > ~/vars.yml
+# For user_update cron
+remote_user_filename: "${bastion_inventory}"
+EOF
+
 cat << EOF > ~/bootstrap.yml
 ---
 - hosts: localhost
   vars_files:
-   - "{{ playbook_dir }}/users.yml"
+    - "~/vars.yml"
+    - "~/users.yml"
   roles:
-     - bootstrap
-     - rsyslog
-     - users
+    - bootstrap
+    - rsyslog
+    - users
 EOF
 
 ansible-galaxy install -f -r ~/requirements.yml
@@ -120,7 +126,7 @@ systemctl start $${app}  ;
 #Configure SES opts
 postconf -e "relayhost = [$ses_host]:$ses_port" "smtp_sasl_auth_enable = yes"     \
      "smtp_sasl_security_options = noanonymous" "smtp_sasl_password_maps = hash:$sasl_passwd_file" \
-	 "smtp_use_tls = yes" "smtp_tls_security_level = encrypt" "smtp_tls_note_starttls_offer = yes" ;
+   "smtp_use_tls = yes" "smtp_tls_security_level = encrypt" "smtp_tls_note_starttls_offer = yes" ;
 
 #Remove/Comment out -o smtp_fallback_relay= fro master.cf file
 grep -q "\-o smtp_fallback_relay=" $${master_cf_file} && sed -e '/\-o smtp_fallback_relay=/s/^#*/#/' -i $${master_cf_file} ;
@@ -159,8 +165,8 @@ if [[ $CREATION_DATE -ne $CURRENT_DATE ]] || [[ ! -f $sasl_passwd_file ]]; then
         NEW_SECRET_KEY=$(cat $TEMP_CREDS_FILE | grep SecretAccessKey | awk '{print $2}'| sed 's/"//g' | sed 's/,//')
         rm -f $TEMP_CREDS_FILE
 
-	    ###Convert IAM SecretAccessKey to SES SMTP Password
-	    MSG="SendRawEmail";
+      ###Convert IAM SecretAccessKey to SES SMTP Password
+      MSG="SendRawEmail";
         VerInBytes="2";
         VerInBytes=$(printf \\$(printf '%03o' "$VerInBytes"));
         SignInBytes=$(echo -n "$MSG"|openssl dgst -sha256 -hmac "$NEW_SECRET_KEY" -binary);
