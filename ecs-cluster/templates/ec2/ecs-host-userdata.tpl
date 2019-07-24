@@ -17,6 +17,8 @@ docker plugin install --alias cloudstor:aws --grant-all-permissions ${cloudstor_
 echo "ECS_CLUSTER=${ecs_cluster_name}" >> /etc/ecs/ecs.config
 # Block tasks running in awsvpc mode from calling host metadata
 echo "ECS_AWSVPC_BLOCK_IMDS=true" >> /etc/ecs/ecs.config
+# Required for ecs tasks in awsvpc mode to pull images remotely
+echo "ECS_ENABLE_TASK_ENI=true" >> /etc/ecs/ecs.config
 
 # Inject the CloudWatch Logs configuration file contents
 export INSTANCE_ID="`curl http://169.254.169.254/latest/meta-data/instance-id`"
