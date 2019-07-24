@@ -11,6 +11,7 @@ sudo systemctl start amazon-ssm-agent
 # Install any docker plugins
 # Volume plugin for providing EBS/EFS docker volumes
 docker plugin install rexray/efs REXRAY_PREEMPT=true EFS_REGION=${region} EFS_SECURITYGROUPS=${efs_sg} --grant-all-permissions
+docker plugin install --alias cloudstor:aws --grant-all-permissions ${cloudstor_plugin_version} CLOUD_PLATFORM=AWS AWS_REGION=${region} EFS_SUPPORTED=0 DEBUG=1
 
 # Set any ECS agent configuration options
 echo "ECS_CLUSTER=${ecs_cluster_name}" >> /etc/ecs/ecs.config

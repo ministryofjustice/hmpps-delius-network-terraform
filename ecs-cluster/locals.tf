@@ -14,5 +14,4 @@ locals {
     "${data.terraform_remote_state.vpc.vpc_db-subnet-az2}",
     "${data.terraform_remote_state.vpc.vpc_db-subnet-az3}",
   ]
-
 }

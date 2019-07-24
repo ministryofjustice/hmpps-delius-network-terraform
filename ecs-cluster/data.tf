@@ -67,10 +67,11 @@ data "template_file" "ecs_host_userdata_template" {
   template = "${file("${path.module}/templates/ec2/ecs-host-userdata.tpl")}"
 
   vars {
-    ecs_cluster_name = "${aws_ecs_cluster.ecs.name}"
-    region           = "${var.region}"
-    efs_sg           = "${aws_security_group.ecs_efs_sg.id}"
-    log_group_name   = "${var.environment_name}/shared-ecs-cluster"
+    ecs_cluster_name         = "${aws_ecs_cluster.ecs.name}"
+    region                   = "${var.region}"
+    efs_sg                   = "${aws_security_group.ecs_efs_sg.id}"
+    log_group_name           = "${var.environment_name}/shared-ecs-cluster"
+    cloudstor_plugin_version = "${var.cloudstor_plugin_version}"
   }
 }
 

@@ -12,6 +12,7 @@ resource "aws_security_group" "ecs_host_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   tags = "${merge(var.tags, map("Name", "${local.name_prefix}-ecscluster-private-sg"))}"
 }
 
@@ -36,6 +37,7 @@ resource "aws_security_group" "ecs_efs_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   tags = "${merge(var.tags, map("Name", "${local.name_prefix}-ecsefs-private-sg"))}"
 }
 
