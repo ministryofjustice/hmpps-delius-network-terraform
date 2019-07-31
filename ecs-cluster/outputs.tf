@@ -3,6 +3,10 @@ output "shared_ecs_cluster_id" {
   value = "${aws_ecs_cluster.ecs.arn}"
 }
 
+output "shared_ecs_cluster_name" {
+  value = "${aws_ecs_cluster.ecs.name}"
+}
+
 output "shared_ecs_cluster_efs_sg_id" {
   value = "${aws_security_group.ecs_efs_sg.id}"
 }
