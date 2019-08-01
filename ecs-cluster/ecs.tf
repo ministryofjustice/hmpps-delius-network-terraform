@@ -132,14 +132,14 @@ resource "aws_autoscaling_policy" "ecs_host_scaledown" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ecs_scaleup_alarm" {
-  alarm_name          = "${local.name_prefix}-ecssclup-pri-cwa"
+  alarm_name          = "${local.name_prefix}-ecssclup-cpu-cwa"
   alarm_description   = "ECS cluster scaling metric above threshold"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
-  metric_name         = "CPUUtilization"
+  metric_name         = "CPUReservation"
   namespace           = "AWS/ECS"
-  period              = "120"
-  statistic           = "Average"
+  period              = "60"
+  statistic           = "Maximum"
   threshold           = "${var.ecs_scale_up_cpu_threshold}"
   alarm_actions       = ["${aws_autoscaling_policy.ecs_host_scaleup.arn}"]
 
@@ -148,19 +148,65 @@ resource "aws_cloudwatch_metric_alarm" "ecs_scaleup_alarm" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "ecs_scaledown_alarm" {
-  alarm_name          = "${local.name_prefix}-ecsscldown-pri-cwa"
-  alarm_description   = "ECS cluster scaling metric under threshold"
-  comparison_operator = "LessThanThreshold"
+resource "aws_cloudwatch_metric_alarm" "ecs_scaleup_mem_alarm" {
+  alarm_name          = "${local.name_prefix}-ecssclup-mem-cwa"
+  alarm_description   = "ECS cluster scaling metric above threshold"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
-  metric_name         = "CPUUtilization"
+  metric_name         = "MemoryReservation"
   namespace           = "AWS/ECS"
-  period              = "120"
-  statistic           = "Average"
-  threshold           = "${var.ecs_scale_down_cpu_threshold}"
-  alarm_actions       = ["${aws_autoscaling_policy.ecs_host_scaledown.arn}"]
+  period              = "60"
+  statistic           = "Maximum"
+  threshold           = "${var.ecs_scale_up_cpu_threshold}"
+  alarm_actions       = ["${aws_autoscaling_policy.ecs_host_scaleup.arn}"]
 
   dimensions {
     ClusterName = "${aws_ecs_cluster.ecs.name}"
+  }
+}
+
+# Scaling down must only happen if both cpu and mem reservations are below the threshold
+resource "aws_cloudwatch_metric_alarm" "ecs_scaledown_alarm" {
+  alarm_name          = "${local.name_prefix}-ecsscldown-cpu-cwa"
+  alarm_description   = "ECS cluster scaling metric under threshold"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = "5"
+  threshold           = "1"
+  alarm_actions       = ["${aws_autoscaling_policy.ecs_host_scaledown.arn}"]
+
+  metric_query {
+    id          = "mq"
+    expression  = "CEIL((cpu-${var.ecs_scale_down_cpu_threshold})/100)+CEIL((mem-${var.ecs_scale_down_mem_threshold})/100)"
+    label       = "ECS Cluster CPU and Mem Reservations are BOTH Below Threshold for Scale Down"
+    return_data = "true"
+  }
+
+  metric_query {
+    id = "cpu"
+    metric {
+      metric_name = "CPUReservation"
+      namespace   = "AWS/ECS"
+      period      = "120"
+      stat        = "Maximum"
+      unit        = "Percent"
+      dimensions {
+        ClusterName = "${aws_ecs_cluster.ecs.name}"
+      }
+    }
+  }
+
+  metric_query {
+    id = "mem"
+    metric {
+      metric_name = "MemoryReservation"
+      metric_name = "CPUReservation"
+      namespace   = "AWS/ECS"
+      period      = "120"
+      stat        = "Maximum"
+      unit        = "Percent"
+      dimensions {
+        ClusterName = "${aws_ecs_cluster.ecs.name}"
+      }
+    }
   }
 }

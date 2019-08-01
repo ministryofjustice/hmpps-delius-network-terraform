@@ -52,12 +52,22 @@ variable "node_min_count" {
 }
 
 variable "ecs_scale_up_cpu_threshold" {
-  description = "Avg CPU Util above which to add more EC2 resource to the cluster within the boundaries set"
-  default     = "70"
+  description = "Avg CPU reservation util above which to add more EC2 resource to the cluster within the boundaries set"
+  default     = "50"
 }
 
 variable "ecs_scale_down_cpu_threshold" {
-  description = "Avg CPU Util below which to add more EC2 resource to the cluster within the boundaries set"
+  description = "Avg CPU reservation util below which to remove EC2 resource to the cluster within the boundaries set"
+  default     = "40"
+}
+
+variable "ecs_scale_up_mem_threshold" {
+  description = "Avg Memory reservation util above which to add more EC2 resource to the cluster within the boundaries set"
+  default     = "50"
+}
+
+variable "ecs_scale_down_mem_threshold" {
+  description = "Avg Memory reservation util below which to remove EC2 resource to the cluster within the boundaries set"
   default     = "40"
 }
 
