@@ -26,7 +26,7 @@ data "aws_caller_identity" "current" {}
 # Search for ami id
 data "aws_ami" "ecs_ami" {
   most_recent = true
-
+owners           = ["amazon"]
   # Amazon Linux 2 optimised ECS instance
   filter {
     name   = "name"
