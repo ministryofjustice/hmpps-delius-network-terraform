@@ -93,3 +93,41 @@ resource "aws_security_group" "mis_jumphost" {
     create_before_destroy = true
   }
 }
+
+# efs
+resource "aws_security_group" "efs" {
+  name        = "${var.environment_name}-delius-core-${var.mis_app_name}-efs"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "sg for efs"
+  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}-${var.mis_app_name}-efs", "Type", "EFS"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+
+# https fs
+resource "aws_security_group" "https_fs_lb" {
+  name        = "${var.environment_name}-delius-core-${var.mis_app_name}-http-fs-lb"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "http-fs lb incoming"
+  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}-${var.mis_app_name}-https-fs-lb", "Type", "API"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+
+# samba_sg
+resource "aws_security_group" "samba_lb" {
+  name        = "${var.environment_name}-delius-core-${var.mis_app_name}-samba"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "samba sg"
+  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}-${var.mis_app_name}-samba", "Type", "SAMBA"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
