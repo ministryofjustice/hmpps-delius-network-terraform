@@ -61,7 +61,7 @@ output "monitoring_server_bucket_name" {
 }
 
 output "monitoring_server_bucket_arn" {
-  value = "${aws_s3_bucket1.backups.arn}"
+  value = "${aws_s3_bucket.backups.arn}"
 }
 
 # IAM
