@@ -57,11 +57,11 @@ output "monitoring_server_efs_share_dns" {
 # s3buckets
 
 output "monitoring_server_bucket_name" {
-  value = "${module.s3_backups_bucket.s3_bucket_name}"
+  value = "${aws_s3_bucket.backups.id}"
 }
 
 output "monitoring_server_bucket_arn" {
-  value = "${module.s3_backups_bucket.s3_bucket_arn}"
+  value = "${aws_s3_bucket1.backups.arn}"
 }
 
 # IAM

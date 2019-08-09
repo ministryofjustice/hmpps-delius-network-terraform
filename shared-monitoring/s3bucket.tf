@@ -29,11 +29,44 @@ module "s3alb_logs_policy" {
 }
 
 #-------------------------------------------
-### S3 bucket for logs
+### S3 bucket for backups
 #--------------------------------------------
-module "s3_backups_bucket" {
-  source            = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//s3bucket//s3bucket_kms_encryption"
-  s3_bucket_name    = "${local.common_name}-backups"
-  kms_master_key_id = "${module.kms_key.kms_key_id}"
-  tags              = "${local.tags}"
+
+locals {
+  transition_days = "${var.elk_backups_config["transition_days"]}"
+  expiration_days = "${var.elk_backups_config["expiration_days"]}"
+}
+resource "aws_s3_bucket" "backups" {
+  bucket = "${local.common_name}-s3bucket"
+  acl    = "private"
+
+  versioning {
+    enabled = false
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = "${module.kms_key.kms_key_id}"
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+  lifecycle_rule {
+    enabled = true
+    transition {
+      days          = "${local.transition_days}"
+      storage_class = "GLACIER"
+    }
+
+    expiration {
+      days = "${local.expiration_days}"
+    }
+  }
+
+  tags = "${merge(local.tags, map("Name", "${local.common_name}-s3-bucket"))}"
 }
