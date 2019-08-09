@@ -111,3 +111,11 @@ variable "user_access_cidr_blocks" {
 variable "kibana_short_name" {
   default = ""
 }
+
+variable "elk_backups_config" {
+  type = "map"
+  default = {
+    transition_days = 7
+    expiration_days = 14
+  }
+}
