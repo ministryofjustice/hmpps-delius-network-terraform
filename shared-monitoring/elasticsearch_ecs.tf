@@ -160,6 +160,7 @@ data "template_file" "userdata_ecs" {
     es_home_dir          = "${local.es_home_dir}"
     es_master_nodes      = "${var.es_master_nodes}"
     es_host_url          = "${aws_route53_record.internal_monitoring_dns.fqdn}:${local.port}"
+    es_block_device      = "${var.es_block_device}"
   }
 }
 
@@ -168,17 +169,13 @@ data "template_file" "userdata_ecs" {
 ############################################
 
 module "launch_cfg" {
-  source                      = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//launch_configuration//blockdevice"
+  source                      = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//launch_configuration//noblockdevice"
   launch_configuration_name   = "${local.common_name}"
   image_id                    = "${data.aws_ami.ecs_ami.id}"
   instance_type               = "${var.es_instance_type}"
   volume_size                 = "30"
   instance_profile            = "${module.create-iam-instance-profile-es.iam_instance_name}"
   key_name                    = "${local.ssh_deployer_key}"
-  ebs_device_name             = "/dev/xvdb"
-  ebs_encrypted               = "true"
-  ebs_volume_size             = "${var.es_ebs_volume_size}"
-  ebs_volume_type             = "standard"
   associate_public_ip_address = false
   security_groups             = ["${local.elasticsearch_security_groups}"]
   user_data                   = "${data.template_file.userdata_ecs.rendered}"
@@ -230,15 +227,9 @@ module "auto_scale_az3" {
 
 # All AZ
 module "auto_scale_az" {
-  source   = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//autoscaling//group//default"
-  asg_name = "${local.common_name}-all-az"
-
-  subnet_ids = [
-    "${local.private_subnet_ids[0]}",
-    "${local.private_subnet_ids[1]}",
-    "${local.private_subnet_ids[2]}",
-  ]
-
+  source               = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//autoscaling//group//default"
+  asg_name             = "${local.common_name}-all-az"
+  subnet_ids           = ["${local.private_subnet_ids}"]
   asg_min              = 1
   asg_max              = 1
   asg_desired          = 1

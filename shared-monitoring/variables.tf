@@ -46,8 +46,8 @@ variable "es_service_desired_count" {
   default = 4
 }
 
-variable "es_ebs_volume_size" {
-  default = 200
+variable "es_block_device" {
+  default = "/dev/nvme1n1"
 }
 
 variable "es_instance_type" {
