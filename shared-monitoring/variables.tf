@@ -51,7 +51,7 @@ variable "es_block_device" {
 }
 
 variable "es_instance_type" {
-  default = "t2.xlarge"
+  default = "m5d.xlarge"
 }
 
 #LB
