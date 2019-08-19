@@ -35,18 +35,3 @@ output "sg_ldap_inst" {
 output "sg_jumphost" {
   value = "${aws_security_group.mis_jumphost.id}"
 }
-
-#efs
-output "sg_mis_efs_in" {
-  value = "${aws_security_group.efs.id}"
-}
-
-#https_fs_lb
-output "sg_mis_httpfs_lb" {
-  value = "${aws_security_group.https_fs_lb.id}"
-}
-
-# samba_sg
-output "sg_mis_samba" {
-  value = "${aws_security_group.samba_lb.id}"
-}
