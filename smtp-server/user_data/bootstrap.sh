@@ -148,56 +148,47 @@ ses_port="587"
 iam_rotation_log="/var/log/iam_rotate.log"
 region="eu-west-2"
 
-####Verify if rotations needs to occur
-CURRENT_DATE=$(date +"%Y-%m-%d")
-CREATION_DATE=$(aws iam list-access-keys --user-name $SES_IAM_USER --max-items 1 | grep "CreateDate" | awk '{print $2}' | sed 's/"//g' | sed 's/,//' | cut -f1 -d"T")
+####Rotate key
 EXISTING_ACCESS_ID=$(aws iam list-access-keys --user-name $SES_IAM_USER --max-items 1 | grep "AccessKeyId" | awk '{print $2}' | sed 's/"//g')
 
+echo "$(date) : Rotating key" > $iam_rotation_log
+echo "Rotating key"
+#Create new Access key
+TEMP_CREDS_FILE="/root/temp_creds_file"
+aws iam create-access-key --user-name $SES_IAM_USER > $TEMP_CREDS_FILE
+NEW_ACCESS_ID=$(cat $TEMP_CREDS_FILE | grep AccessKeyId | awk '{print $2}' | sed 's/"//g')
+NEW_SECRET_KEY=$(cat $TEMP_CREDS_FILE | grep SecretAccessKey | awk '{print $2}'| sed 's/"//g' | sed 's/,//')
+rm -f $TEMP_CREDS_FILE
 
+###Convert IAM SecretAccessKey to SES SMTP Password
+MSG="SendRawEmail";
+VerInBytes="2";
+VerInBytes=$(printf \\$(printf '%03o' "$VerInBytes"));
+SignInBytes=$(echo -n "$MSG"|openssl dgst -sha256 -hmac "$NEW_SECRET_KEY" -binary);
+SignAndVer=""$VerInBytes""$SignInBytes"";
+SMTP_PASS=$(echo -n "$SignAndVer"|base64);
 
-if [[ $CREATION_DATE -ne $CURRENT_DATE ]] || [[ ! -f $sasl_passwd_file ]]; then
-        echo "$(date) : Rotating key" > $iam_rotation_log
-        echo "Rotating key"
-        #Create new Access key
-        TEMP_CREDS_FILE="/root/temp_creds_file"
-        aws iam create-access-key --user-name $SES_IAM_USER > $TEMP_CREDS_FILE
-        NEW_ACCESS_ID=$(cat $TEMP_CREDS_FILE | grep AccessKeyId | awk '{print $2}' | sed 's/"//g')
-        NEW_SECRET_KEY=$(cat $TEMP_CREDS_FILE | grep SecretAccessKey | awk '{print $2}'| sed 's/"//g' | sed 's/,//')
-        rm -f $TEMP_CREDS_FILE
+#Configure Postifix to use new creds
+#Configure sasl_passwd vars_file
+echo "[$ses_host]:$ses_port $NEW_ACCESS_ID:$SMTP_PASS" > $sasl_passwd_file ;
+postmap hash:$sasl_passwd_file ;
+chown root:root $sasl_passwd_file $sasl_passwd_db ;
+chmod 0600      $sasl_passwd_file $sasl_passwd_db ;
+systemctl restart postfix
 
-      ###Convert IAM SecretAccessKey to SES SMTP Password
-      MSG="SendRawEmail";
-        VerInBytes="2";
-        VerInBytes=$(printf \\$(printf '%03o' "$VerInBytes"));
-        SignInBytes=$(echo -n "$MSG"|openssl dgst -sha256 -hmac "$NEW_SECRET_KEY" -binary);
-        SignAndVer=""$VerInBytes""$SignInBytes"";
-        SMTP_PASS=$(echo -n "$SignAndVer"|base64);
+#Remove Old Creds
+aws iam  delete-access-key --access-key-id $EXISTING_ACCESS_ID --user-name $SES_IAM_USER > /dev/null 2>&1 ;
 
-        #Configure Postifix to use new creds
-        #Configure sasl_passwd vars_file
-        echo "[$ses_host]:$ses_port $NEW_ACCESS_ID:$SMTP_PASS" > $sasl_passwd_file ;
-        postmap hash:$sasl_passwd_file ;
-        chown root:root $sasl_passwd_file $sasl_passwd_db ;
-        chmod 0600      $sasl_passwd_file $sasl_passwd_db ;
-        systemctl restart postfix
+###Update Param store
+aws ssm put-parameter --name $SES_IAM_USER-access-key-id          \
+                      --description $SES_IAM_USER-access-key-id   \
+                            --value $NEW_ACCESS_ID --type "SecureString" --overwrite    \
+                            --region $region  > /dev/null 2>&1
 
-        #Remove Old Creds
-        aws iam  delete-access-key --access-key-id $EXISTING_ACCESS_ID --user-name $SES_IAM_USER > /dev/null 2>&1 ;
-
-         ###Update Param store
-         aws ssm put-parameter --name $SES_IAM_USER-access-key-id          \
-                               --description $SES_IAM_USER-access-key-id   \
-                               --value $NEW_ACCESS_ID --type "SecureString" --overwrite    \
-                               --region $region  > /dev/null 2>&1
-
-         aws ssm put-parameter --name $SES_IAM_USER-ses-password          \
-                               --description $SES_IAM_USER-ses-password   \
-                               --value $SMTP_PASS    --type "SecureString" --overwrite    \
-                               --region $region  > /dev/null 2>&1
-else
-        echo "$(date) : Rotation not required yet" > $iam_rotation_log
-        echo "Rotation not required yet"
-fi
+aws ssm put-parameter --name $SES_IAM_USER-ses-password          \
+                      --description $SES_IAM_USER-ses-password   \
+                      --value $SMTP_PASS    --type "SecureString" --overwrite    \
+                      --region $region  > /dev/null 2>&1
 
 EOF
 
