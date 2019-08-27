@@ -35,3 +35,13 @@ output "sg_ldap_inst" {
 output "sg_jumphost" {
   value = "${aws_security_group.mis_jumphost.id}"
 }
+
+#nextcloud_fs_lb
+output "sg_mis_nextcloud_lb" {
+  value = "${aws_security_group.nextcloud_lb.id}"
+}
+
+#nextcloud efs
+output "sg_mis_nextcloud_efs_in" {
+  value = "${aws_security_group.nextcloud_efs.id}"
+}

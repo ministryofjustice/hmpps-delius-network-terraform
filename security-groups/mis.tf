@@ -93,3 +93,27 @@ resource "aws_security_group" "mis_jumphost" {
     create_before_destroy = true
   }
 }
+
+# nextcloud
+resource "aws_security_group" "nextcloud_lb" {
+  name        = "${var.environment_name}-delius-core-${var.mis_app_name}-nextcloud-lb"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "nextcloud lb incoming"
+  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}-${var.mis_app_name}-nextcloud-lb", "Type", "API"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# efs
+resource "aws_security_group" "nextcloud_efs" {
+  name        = "${var.environment_name}-delius-core-${var.mis_app_name}-nextcloud-efs"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "sg for nextcloud efs"
+  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}-${var.mis_app_name}-nextcloud-efs", "Type", "EFS"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
