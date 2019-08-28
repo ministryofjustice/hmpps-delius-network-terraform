@@ -45,3 +45,8 @@ output "sg_mis_nextcloud_lb" {
 output "sg_mis_nextcloud_efs_in" {
   value = "${aws_security_group.nextcloud_efs.id}"
 }
+
+#nextcloud db
+output "sg_mis_nextcloud_db" {
+  value = "${aws_security_group.nextcloud_db.id}"
+}
