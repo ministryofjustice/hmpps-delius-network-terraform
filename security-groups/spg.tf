@@ -1,3 +1,10 @@
+#DEPRECATED - these SGs have been migrated to the spg-terraform project as they are not conusmed by other appliances
+#
+# Once all envs have had thier SGs replaced with the new ones - these SGs can be deleted
+#
+#
+#
+
 # spg_external_lb_in  = web to Front End LBs (techincally not used by NLB)
 # spg_nginx_in = front end LB -> front end ISO server (either nginx, haproxy or spg-iso)
 # port 9001 from POs and crcstubs only
@@ -57,28 +64,6 @@ resource "aws_security_group" "spg_api_in" {
   lifecycle {
     create_before_destroy = true
   }
-}
-
-resource "aws_security_group" "ssh_jenkins_in" {
-  name        = "${var.environment_name}-delius-core-${var.spg_app_name}-ssh-jenkins-in"
-  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
-  description = "ssh access from jenkins"
-  tags        = "${merge(var.tags, map("Name", "${var.environment_name}_${var.spg_app_name}_ssh_jenkins_in", "Type", "API"))}"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-
-resource "aws_security_group_rule" "ssh_jenkins_in" {
-  security_group_id = "${aws_security_group.ssh_jenkins_in.id}"
-  type              = "ingress"
-  protocol          = "tcp"
-  from_port         = "2222"
-  to_port           = "2222"
-  cidr_blocks       = [ "${data.terraform_remote_state.vpc.eng_vpc_cidr}" ]
-  description       = "TF - ssh_jenkins_in"
 }
 
 
