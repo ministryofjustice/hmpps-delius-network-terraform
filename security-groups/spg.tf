@@ -1,3 +1,13 @@
+# spg_external_lb_in  = web to Front End LBs (techincally not used by NLB)
+# spg_nginx_in = front end LB -> front end ISO server (either nginx, haproxy or spg-iso)
+# port 9001 from POs and crcstubs only
+# spg_internal_lb_in = internal classic LB infront of mpx
+# spg_api_in = internal loadbalancer to mpx:
+#   ports 61616-61617 (JMS from all)
+#   ports 8989 (unsigned SOAP from spg-iso to spg-mpx)
+#   ports 8181 (signed soap from haproxy to spg-iso)
+# ssh_jenkins_in = port 2222 from any machine in engineering vpc (ie jenkins slave - for use by passwordless accounts like virtuoso)
+#
 # define security groups only for spg
 # External
 resource "aws_security_group" "spg_external_lb_in" {
@@ -23,17 +33,7 @@ resource "aws_security_group" "spg_nginx_in" {
   }
 }
 
-# RDS
-resource "aws_security_group" "spg_db_in" {
-  name        = "${var.environment_name}-delius-core-${var.spg_app_name}-db-in"
-  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
-  description = "db incoming"
-  tags        = "${merge(var.tags, map("Name", "${var.environment_name}_${var.spg_app_name}_db_in", "Type", "DB"))}"
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
 
 #API
 # Internal
@@ -94,10 +94,6 @@ output "sg_spg_nginx_in" {
   value = "${aws_security_group.spg_nginx_in.id}"
 }
 
-# spg_db_in
-output "sg_spg_db_in" {
-  value = "${aws_security_group.spg_db_in.id}"
-}
 
 # spg_internal_lb_in
 output "sg_spg_internal_lb_in" {
