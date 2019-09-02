@@ -35,3 +35,8 @@ output "sg_ldap_inst" {
 output "sg_jumphost" {
   value = "${aws_security_group.mis_jumphost.id}"
 }
+
+#bws_ldap
+output "sg_bws_ldap" {
+  value = "${aws_security_group.bws_ldap.id}"
+}

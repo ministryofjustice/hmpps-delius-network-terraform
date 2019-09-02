@@ -93,3 +93,15 @@ resource "aws_security_group" "mis_jumphost" {
     create_before_destroy = true
   }
 }
+
+#bws to ldap
+resource "aws_security_group" "bws_ldap" {
+  name        = "${var.environment_name}-delius-core-${var.mis_app_name}-ldap-out"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "sg for bws ldap out"
+  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}_${var.mis_app_name}_ldap", "Type", "LDAP"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
