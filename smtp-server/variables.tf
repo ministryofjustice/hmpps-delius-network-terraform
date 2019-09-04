@@ -14,7 +14,7 @@ variable "tags" {
   type     = "map"
 }
 
-variable "instance_type" {
+variable "smtp_instance_type" {
   default  = "t2.large"
 }
 
