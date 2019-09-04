@@ -150,7 +150,7 @@ resource "aws_launch_configuration" "launch_cfg" {
   name_prefix          = "${var.short_environment_name}-smtp-launch-cfg-"
   image_id             = "${data.aws_ami.amazon_ami.id}"
   iam_instance_profile = "${module.iam_instance_profile.iam_instance_name}"
-  instance_type        = "${var.instance_type}"
+  instance_type        = "${var.smtp_instance_type}"
   security_groups      = [
     "${local.sg_bastion_in}",
     "${local.sg_smtp_ses}",
