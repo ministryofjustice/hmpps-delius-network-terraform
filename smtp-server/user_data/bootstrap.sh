@@ -131,7 +131,12 @@ postconf -e "relayhost = [$ses_host]:$ses_port" "smtp_sasl_auth_enable = yes"   
 #Remove/Comment out -o smtp_fallback_relay= fro master.cf file
 grep -q "\-o smtp_fallback_relay=" $${master_cf_file} && sed -e '/\-o smtp_fallback_relay=/s/^#*/#/' -i $${master_cf_file} ;
 
-
+#Pause to allow az1 to complete first and rotate iam Creds
+AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | cut -f3 -d"-")
+if [[ $AZ != "2a" ]] ; then
+    systemctl stop $${app}
+    sleep 300
+fi
 
 ############################################################################
 #Configure sasl_passwd vars_file
@@ -140,6 +145,7 @@ cat << 'EOF' > /root/iam_rotate_keys
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
 
 #vars
+AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | cut -f3 -d"-")
 SES_IAM_USER=
 ses_host="email-smtp.eu-west-1.amazonaws.com"
 sasl_passwd_file="/etc/postfix/sasl_passwd"
@@ -148,47 +154,60 @@ ses_port="587"
 iam_rotation_log="/var/log/iam_rotate.log"
 region="eu-west-2"
 
-####Rotate key
-EXISTING_ACCESS_ID=$(aws iam list-access-keys --user-name $SES_IAM_USER --max-items 1 | grep "AccessKeyId" | awk '{print $2}' | sed 's/"//g')
 
-echo "$(date) : Rotating key" > $iam_rotation_log
-echo "Rotating key"
-#Create new Access key
-TEMP_CREDS_FILE="/root/temp_creds_file"
-aws iam create-access-key --user-name $SES_IAM_USER > $TEMP_CREDS_FILE
-NEW_ACCESS_ID=$(cat $TEMP_CREDS_FILE | grep AccessKeyId | awk '{print $2}' | sed 's/"//g')
-NEW_SECRET_KEY=$(cat $TEMP_CREDS_FILE | grep SecretAccessKey | awk '{print $2}'| sed 's/"//g' | sed 's/,//')
-rm -f $TEMP_CREDS_FILE
+if [[ $AZ == "2a" ]] ; then
+    ####Rotate key
+    EXISTING_ACCESS_ID=$(aws iam list-access-keys --user-name $SES_IAM_USER --max-items 1 | grep "AccessKeyId" | awk '{print $2}' | sed 's/"//g')
+    echo "$(date) : Rotating key" > $iam_rotation_log
+    echo "Rotating key"
+    #Create new Access key
+    TEMP_CREDS_FILE="/root/temp_creds_file"
+    aws iam create-access-key --user-name $SES_IAM_USER > $TEMP_CREDS_FILE
+    NEW_ACCESS_ID=$(cat $TEMP_CREDS_FILE | grep AccessKeyId | awk '{print $2}' | sed 's/"//g')
+    NEW_SECRET_KEY=$(cat $TEMP_CREDS_FILE | grep SecretAccessKey | awk '{print $2}'| sed 's/"//g' | sed 's/,//')
+    rm -f $TEMP_CREDS_FILE
 
-###Convert IAM SecretAccessKey to SES SMTP Password
-MSG="SendRawEmail";
-VerInBytes="2";
-VerInBytes=$(printf \\$(printf '%03o' "$VerInBytes"));
-SignInBytes=$(echo -n "$MSG"|openssl dgst -sha256 -hmac "$NEW_SECRET_KEY" -binary);
-SignAndVer=""$VerInBytes""$SignInBytes"";
-SMTP_PASS=$(echo -n "$SignAndVer"|base64);
+    ###Convert IAM SecretAccessKey to SES SMTP Password
+    MSG="SendRawEmail"
+    VerInBytes="2"
+    VerInBytes=$(printf \\$(printf '%03o' "$VerInBytes"))
+    SignInBytes=$(echo -n "$MSG"|openssl dgst -sha256 -hmac "$NEW_SECRET_KEY" -binary)
+    SignAndVer=""$VerInBytes""$SignInBytes""
+    SMTP_PASS=$(echo -n "$SignAndVer"|base64)
 
-#Configure Postifix to use new creds
-#Configure sasl_passwd vars_file
-echo "[$ses_host]:$ses_port $NEW_ACCESS_ID:$SMTP_PASS" > $sasl_passwd_file ;
-postmap hash:$sasl_passwd_file ;
-chown root:root $sasl_passwd_file $sasl_passwd_db ;
-chmod 0600      $sasl_passwd_file $sasl_passwd_db ;
-systemctl restart postfix
+    #Configure Postifix to use new creds
+    #Configure sasl_passwd vars_file
+    echo "[$ses_host]:$ses_port $NEW_ACCESS_ID:$SMTP_PASS" > $sasl_passwd_file
+    postmap hash:$sasl_passwd_file ;
+    chown root:root $sasl_passwd_file $sasl_passwd_db
+    chmod 0600      $sasl_passwd_file $sasl_passwd_db
+    systemctl restart postfix
 
-#Remove Old Creds
-aws iam  delete-access-key --access-key-id $EXISTING_ACCESS_ID --user-name $SES_IAM_USER > /dev/null 2>&1 ;
+    #Remove Old Creds
+    aws iam  delete-access-key --access-key-id $EXISTING_ACCESS_ID --user-name $SES_IAM_USER > /dev/null 2>&1 ;
 
-###Update Param store
-aws ssm put-parameter --name $SES_IAM_USER-access-key-id          \
-                      --description $SES_IAM_USER-access-key-id   \
-                            --value $NEW_ACCESS_ID --type "SecureString" --overwrite    \
-                            --region $region  > /dev/null 2>&1
+    ###Update Param store
+    aws ssm put-parameter --name $SES_IAM_USER-access-key-id          \
+                          --description $SES_IAM_USER-access-key-id   \
+                          --value $NEW_ACCESS_ID --type "SecureString" --overwrite    \
+                          --region $region  > /dev/null 2>&1
 
-aws ssm put-parameter --name $SES_IAM_USER-ses-password          \
-                      --description $SES_IAM_USER-ses-password   \
-                      --value $SMTP_PASS    --type "SecureString" --overwrite    \
-                      --region $region  > /dev/null 2>&1
+    aws ssm put-parameter --name $SES_IAM_USER-ses-password          \
+                          --description $SES_IAM_USER-ses-password   \
+                          --value $SMTP_PASS    --type "SecureString" --overwrite    \
+                          --region $region  > /dev/null 2>&1
+else
+    #Configure Postifix to use existing creds
+    #Configure sasl_passwd vars_file
+    CURRENT_SMTP_USER=$(aws ssm get-parameters --with-decryption --names $SES_IAM_USER-access-key-id --region $region --query "Parameters[0]"."Value" | sed 's:^.\(.*\).$:\1:')
+    CURRENT_SMTP_PASS=$(aws ssm get-parameters --with-decryption --names $SES_IAM_USER-ses-password  --region $region --query "Parameters[0]"."Value" | sed 's:^.\(.*\).$:\1:')
+
+    echo "[$ses_host]:$ses_port $CURRENT_SMTP_USER:$CURRENT_SMTP_PASS" > $sasl_passwd_file
+    postmap hash:$sasl_passwd_file ;
+    chown root:root $sasl_passwd_file $sasl_passwd_db
+    chmod 0600      $sasl_passwd_file $sasl_passwd_db
+    systemctl restart postfix
+fi
 
 EOF
 
@@ -219,50 +238,9 @@ systemctl restart $${app}
 temp_cron_file="/tmp/temp_cron_file" ;
 crontab -l > $temp_cron_file ;
 grep -q "@hourly update_users > /dev/null 2>&1" $temp_cron_file  ||  sed -i "s/update_users/update_users > \/dev\/null 2\>\&1/" $temp_cron_file ;
-grep -q "$rotate_script" $temp_cron_file || echo "00 21 * * 0 /usr/bin/sh $rotate_script > /dev/null 2>&1" >> $temp_cron_file && crontab $temp_cron_file;
-rm -f $temp_cron_file ;
-
-
-#Create DNS record for smtp host
-log_file="/var/log/dns_update"
-host_dns_name="$HMPPS_ROLE.$HMPPS_DOMAIN"
-current_host_ip=$(ifconfig eth0 | grep inet | awk '{print $2}')
-existing_dns_ip=$(aws route53 list-resource-record-sets --hosted-zone-id $INT_ZONE_ID --query "ResourceRecordSets[?Name == '$host_dns_name.']" | grep "Value" | awk '{print $2}' | sed 's/"//g')
-tmp_file="/tmp/dns_file"
-
-#Create json file
-cat << EOF > $tmp_file
-{
-    "Comment": "Auto updating dns",
-    "Changes": [{
-        "Action": "UPSERT",
-        "ResourceRecordSet": {
-            "ResourceRecords":[{ "Value": "$current_host_ip" }],
-            "Name": "$host_dns_name",
-            "Type": "A",
-            "TTL": 300
-        }
-    }]
-}
-EOF
-
-#Create log file
-[[ ! -f $log_file ]] && touch $log_file
-
-#Check if local ip and dns match
-#If not matching update
-echo "Current host ip : $current_host_ip"
-echo "Current DNS IP  : $existing_dns_ip"
-
-if [[ $current_host_ip != $existing_dns_ip ]]; then
-    echo "Updating dns entry for $host_dns_name to $current_host_ip"
-    echo "$(date) Updating dns entry for $host_dns_name to $current_host_ip" >> $log_file
-
-    #Update dns entry
-    aws route53 change-resource-record-sets --hosted-zone-id $INT_ZONE_ID --change-batch "file://$tmp_file"
+if [[ $AZ == "2a" ]] ; then
+    grep -q "$rotate_script" $temp_cron_file || echo "00 21 * * 0 /usr/bin/sh $rotate_script > /dev/null 2>&1" >> $temp_cron_file && crontab $temp_cron_file
 else
-    echo "DNS Update not required fo $host_dns_name"
-    echo "$(date) DNS Update not required fo $host_dns_name" >> $log_file
-fi
-
-rm -f $tmp_file
+    grep -q "$rotate_script" $temp_cron_file || echo "05 21 * * 0 /usr/bin/sh $rotate_script > /dev/null 2>&1" >> $temp_cron_file && crontab $temp_cron_file
+fi;
+rm -f $temp_cron_file ;

@@ -21,5 +21,5 @@ variable "smtp_instance_type" {
 variable "short_environment_name" {}
 
 variable "instance_count" {
-  default  = "1"
+  default  = "3"
 }
