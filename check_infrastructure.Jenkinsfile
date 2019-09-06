@@ -47,18 +47,24 @@ pipeline {
 
     agent { label "jenkins_slave" }
 
+    parameters {
+        string(name: 'NETWORK_BRANCH', description: 'Target Branch for hmpps-delius-network-terraform', defaultValue: 'master')
+        string(name: 'DCORE_BRANCH', description: 'Target Branch for hmpps-delius-core-terraform', defaultValue: 'master')
+        string(name: 'CONFIG_BRANCH', description: 'Target Branch for hmpps-env-configs', defaultValue: 'master')
+    }
+
     stages {
 
         stage('setup') {
             steps {
                 dir( project.config ) {
-                  git url: 'git@github.com:ministryofjustice/' + project.config, branch: 'master', credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
+                  git url: 'git@github.com:ministryofjustice/' + project.config, branch: env.CONFIG_BRANCH, credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
                 }
                 dir( project.network ) {
-                  git url: 'git@github.com:ministryofjustice/' + project.network, branch: 'master', credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
+                  git url: 'git@github.com:ministryofjustice/' + project.network, branch: env.NETWORK_BRANCH, credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
                 }
                 dir( project.dcore ) {
-                  git url: 'git@github.com:ministryofjustice/' + project.dcore, branch: 'master', credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
+                  git url: 'git@github.com:ministryofjustice/' + project.dcore, branch: env.DCORE_BRANCH, credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
                 }
 
                 prepare_env()
