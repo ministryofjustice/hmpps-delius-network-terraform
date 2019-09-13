@@ -1,3 +1,20 @@
+#DEPRECATED - these SGs have been migrated to the spg-terraform project as they are not conusmed by other appliances
+#
+# Once all envs have had thier SGs replaced with the new ones - these SGs can be deleted
+#
+#
+#
+
+# spg_external_lb_in  = web to Front End LBs (techincally not used by NLB)
+# spg_nginx_in = front end LB -> front end ISO server (either nginx, haproxy or spg-iso)
+# port 9001 from POs and crcstubs only
+# spg_internal_lb_in = internal classic LB infront of mpx
+# spg_api_in = internal loadbalancer to mpx:
+#   ports 61616-61617 (JMS from all)
+#   ports 8989 (unsigned SOAP from spg-iso to spg-mpx)
+#   ports 8181 (signed soap from haproxy to spg-iso)
+# ssh_jenkins_in = port 2222 from any machine in engineering vpc (ie jenkins slave - for use by passwordless accounts like virtuoso)
+#
 # define security groups only for spg
 # External
 resource "aws_security_group" "spg_external_lb_in" {

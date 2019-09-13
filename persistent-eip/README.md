@@ -7,7 +7,7 @@ A file named for the resource.
 
     spg-elastic-ip.tf
 
-The terraform resouce name should indicate it's use.
+The terraform resource name should indicate it's use.
 
     resource "aws_eip" "spg_az1_lb" {
       vpc  = true
