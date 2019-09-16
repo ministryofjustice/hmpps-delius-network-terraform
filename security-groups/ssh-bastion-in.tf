@@ -43,3 +43,23 @@ resource "aws_security_group_rule" "ssh_eng_jenkins_in" {
   cidr_blocks       = [ "${data.terraform_remote_state.vpc.eng_vpc_cidr}" ]
   description       = "TF - ssh_eng_jenkins_in"
 }
+
+resource "aws_security_group_rule" "internal_in_ping" {
+  security_group_id = "${aws_security_group.ssh_bastion_in.id}"
+  type              = "ingress"
+  protocol          = "icmp"
+  from_port         = "8"
+  to_port           = "0"
+  cidr_blocks       = ["10.0.0.0/8"]
+  description       = "Internal Ping in all"
+}
+
+resource "aws_security_group_rule" "out_ping" {
+  security_group_id = "${aws_security_group.ssh_bastion_in.id}"
+  type              = "egress"
+  protocol          = "icmp"
+  from_port         = "8"
+  to_port           = "0"
+  cidr_blocks       = ["0.0.0.0/0"]
+  description       = "Ping out all"
+}
