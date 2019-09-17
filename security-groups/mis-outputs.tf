@@ -55,3 +55,8 @@ output "sg_mis_nextcloud_db" {
 output "sg_mis_samba" {
   value = "${aws_security_group.samba_lb.id}"
 }
+
+#bws_ldap
+output "sg_bws_ldap" {
+  value = "${aws_security_group.bws_ldap.id}"
+}
