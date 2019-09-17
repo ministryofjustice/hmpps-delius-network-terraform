@@ -129,3 +129,15 @@ resource "aws_security_group" "nextcloud_db" {
     create_before_destroy = true
   }
 }
+
+#nextcloud samba
+resource "aws_security_group" "samba_lb" {
+  name        = "${var.environment_name}-delius-core-${var.mis_app_name}-samba"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "samba sg"
+  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}-${var.mis_app_name}-samba", "Type", "SAMBA"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}

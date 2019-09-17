@@ -50,3 +50,8 @@ output "sg_mis_nextcloud_efs_in" {
 output "sg_mis_nextcloud_db" {
   value = "${aws_security_group.nextcloud_db.id}"
 }
+
+#nextcloud samba_sg
+output "sg_mis_samba" {
+  value = "${aws_security_group.samba_lb.id}"
+}
