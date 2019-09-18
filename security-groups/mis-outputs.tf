@@ -36,6 +36,26 @@ output "sg_jumphost" {
   value = "${aws_security_group.mis_jumphost.id}"
 }
 
+#nextcloud_fs_lb
+output "sg_mis_nextcloud_lb" {
+  value = "${aws_security_group.nextcloud_lb.id}"
+}
+
+#nextcloud efs
+output "sg_mis_nextcloud_efs_in" {
+  value = "${aws_security_group.nextcloud_efs.id}"
+}
+
+#nextcloud db
+output "sg_mis_nextcloud_db" {
+  value = "${aws_security_group.nextcloud_db.id}"
+}
+
+#nextcloud samba_sg
+output "sg_mis_samba" {
+  value = "${aws_security_group.samba_lb.id}"
+}
+
 #bws_ldap
 output "sg_bws_ldap" {
   value = "${aws_security_group.bws_ldap.id}"
