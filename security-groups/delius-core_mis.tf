@@ -27,6 +27,11 @@ resource "aws_security_group_rule" "delius_core_db_in_from_mis" {
 }
 
 
+### NOTE:
+## This security group is now mis named because it enable ingress & egress of MIS* DBs
+## with the RMAN Catalogue in the engineering platform.
+## Prefer this to raising the Security group limit of 5 on each netowrk interface in each AWS account.
+
 ## Apply this SG to MIS to enable connection to Delius DB
 resource "aws_security_group" "mis_out_to_delius_db" {
   name        = "${var.environment_name}-mis-out-to-delius-db"
@@ -51,4 +56,60 @@ resource "aws_security_group_rule" "mis_out_to_delius_db" {
   to_port                  = "1521"
   source_security_group_id = "${aws_security_group.delius_core_db_in_from_mis.id}"
   description              = "TF - MIS out to Delius Database"
+}
+
+resource "aws_security_group_rule" "db_to_eng_rman_catalog_out" {
+  security_group_id        = "${aws_security_group.mis_out_to_delius_db.id}"
+  type                     = "egress"
+  protocol                 = "tcp"
+  from_port                = "1521"
+  to_port                  = "1521"
+  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.rman_catalog}"
+  description              = "RMAN Catalog out"
+}
+
+resource "aws_security_group_rule" "eng_rman_catalog_db_in" {
+  security_group_id        = "${aws_security_group.mis_out_to_delius_db.id}"
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = "1521"
+  to_port                  = "1521"
+  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.rman_catalog}"
+  description              = "RMAN Catalog in"
+}
+
+## Apply this SG to MIS to enable connection to Delius DB
+resource "aws_security_group" "mis_db_in_out_rman_cat" {
+  name        = "${var.environment_name}-mis-db-in-out-to-rman-cat"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "MIS in and out to RMAN Catalogue"
+  tags        = "${merge(var.tags, map("Name", "${var.environment_name}-mis-db-in-out-to-rman-cat", "Type", "DB"))}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+output "sg_mis_db_in_out_rman_cat_id" {
+  value = "${aws_security_group.mis_db_in_out_rman_cat.id}"
+}
+
+resource "aws_security_group_rule" "mis_db_to_eng_rman_catalog_out" {
+  security_group_id        = "${aws_security_group.mis_db_in_out_rman_cat.id}"
+  type                     = "egress"
+  protocol                 = "tcp"
+  from_port                = "1521"
+  to_port                  = "1521"
+  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.rman_catalog}"
+  description              = "RMAN Catalog out"
+}
+
+resource "aws_security_group_rule" "eng_rman_catalog_mis_db_in" {
+  security_group_id        = "${aws_security_group.mis_db_in_out_rman_cat.id}"
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = "1521"
+  to_port                  = "1521"
+  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.rman_catalog}"
+  description              = "RMAN Catalog in"
 }
