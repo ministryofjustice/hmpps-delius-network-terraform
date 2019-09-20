@@ -98,7 +98,6 @@ resource "aws_security_group_rule" "ssh_jenkins_in" {
   description       = "TF - ssh_jenkins_in"
 }
 
-
 # OUTPUTS
 # define security groups only for spg outputs
 # External
