@@ -36,7 +36,7 @@ data "template_file" "es" {
 
   vars {
     app_role_arn       = "${module.create-iam-app-role-es.iamrole_arn}"
-    backups_bucket_arn = "${module.s3_backups_bucket.s3_bucket_arn}"
+    backups_bucket_arn = "${aws_s3_bucket.backups.arn}"
     elk_kms_arn        = "${module.kms_key.kms_arn}"
   }
 }

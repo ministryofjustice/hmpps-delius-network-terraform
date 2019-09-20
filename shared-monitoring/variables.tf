@@ -46,12 +46,12 @@ variable "es_service_desired_count" {
   default = 4
 }
 
-variable "es_ebs_volume_size" {
-  default = 200
+variable "es_block_device" {
+  default = "/dev/nvme1n1"
 }
 
 variable "es_instance_type" {
-  default = "t2.xlarge"
+  default = "m5d.xlarge"
 }
 
 #LB
@@ -110,4 +110,31 @@ variable "user_access_cidr_blocks" {
 # kibana
 variable "kibana_short_name" {
   default = ""
+}
+
+variable "elk_backups_config" {
+  type = "map"
+  default = {
+    transition_days                 = 7
+    expiration_days                 = 14
+    provisioned_throughput_in_mibps = 20
+    throughput_mode                 = "provisioned"
+  }
+}
+
+variable "ebs_optimized" {
+  default = "false"
+}
+
+variable "volume_type" {
+  default = "standard"
+}
+
+variable "elk_asg_props" {
+  type = "map"
+  default = {
+    min_size = 4
+    max_size = 4
+    desired  = 4
+  }
 }

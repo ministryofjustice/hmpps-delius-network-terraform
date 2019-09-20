@@ -38,10 +38,16 @@ EOF
 
 wget https://raw.githubusercontent.com/ministryofjustice/hmpps-delius-ansible/master/group_vars/${bastion_inventory}.yml -O users.yml
 
+cat << EOF > ~/vars.yml
+# For user_update cron
+remote_user_filename: "${bastion_inventory}"
+EOF
+
 cat << EOF > ~/bootstrap.yml
 ---
 - hosts: localhost
   vars_files:
+   - "{{ playbook_dir }}/vars.yml"
    - "{{ playbook_dir }}/users.yml"
   roles:
      - bootstrap
@@ -70,9 +76,9 @@ mkdir -p ${efs_mount_path} ${es_home_dir}
 mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 ${efs_dns_name}:/ ${efs_mount_path}
 
 # create lvm and mount
-pvcreate /dev/xvdb
-vgcreate esdata /dev/xvdb
-lvcreate -n esdatavol -l90%VG esdata
+pvcreate ${es_block_device}
+vgcreate esdata ${es_block_device}
+lvcreate -n esdatavol -l100%VG esdata
 mkfs.xfs /dev/esdata/esdatavol
 
 cat /etc/fstab | grep -v '/dev/esdata/esdatavol' > /tmp/fstab-orig
@@ -98,9 +104,9 @@ network.host: 0.0.0.0
 path.data: /usr/share/elasticsearch/data
 path.repo: /opt/es_backup
 # Node settings
-node.master: false 
-node.data: false 
-node.ingest: true 
+node.master: false
+node.data: false
+node.ingest: true
 discovery.zen.minimum_master_nodes: ${es_master_nodes}
 node.name: $HOSTNAME
 network.publish_host: _ec2:privateIp_

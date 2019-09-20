@@ -36,6 +36,22 @@ data "terraform_remote_state" "security-groups" {
     region = "${var.region}"
   }
 }
+
+####################################################
+# DATA SOURCE MODULES FROM OTHER TERRAFORM BACKENDS
+####################################################
+#-------------------------------------------------------------
+### Getting the common details
+#-------------------------------------------------------------
+data "terraform_remote_state" "common" {
+  backend = "s3"
+
+  config {
+    bucket = "${var.remote_state_bucket_name}"
+    key    = "${var.environment_type}/common/terraform.tfstate"
+    region = "${var.region}"
+  }
+}
 #-------------------------------------------------------------
 ### Getting the latest amazon ami
 #-------------------------------------------------------------
@@ -79,6 +95,7 @@ locals {
   ec2_policy_file      = "ec2_policy.json"
   ec2_role_policy_file = "policies/ec2.json"
   environment_name     = "${var.environment_type}"
+  private_subnet_ids   = ["${data.terraform_remote_state.common.private_subnet_ids}"]
 }
 
 
@@ -150,7 +167,7 @@ resource "aws_launch_configuration" "launch_cfg" {
   name_prefix          = "${var.short_environment_name}-smtp-launch-cfg-"
   image_id             = "${data.aws_ami.amazon_ami.id}"
   iam_instance_profile = "${module.iam_instance_profile.iam_instance_name}"
-  instance_type        = "${var.instance_type}"
+  instance_type        = "${var.smtp_instance_type}"
   security_groups      = [
     "${local.sg_bastion_in}",
     "${local.sg_smtp_ses}",
@@ -184,6 +201,8 @@ resource "aws_autoscaling_group" "asg" {
   name                      = "${var.environment_name}-smtp"
   vpc_zone_identifier       = ["${list(
     data.terraform_remote_state.vpc.vpc_private-subnet-az1,
+    data.terraform_remote_state.vpc.vpc_private-subnet-az2,
+    data.terraform_remote_state.vpc.vpc_private-subnet-az3,
   )}"]
   launch_configuration      = "${aws_launch_configuration.launch_cfg.id}"
   min_size                  = "${var.instance_count}"
@@ -202,7 +221,11 @@ resource "aws_autoscaling_group" "asg" {
   }
 }
 
-
+#smtp lb attachment
+resource "aws_autoscaling_attachment" "smtp_attachment" {
+  autoscaling_group_name = "${aws_autoscaling_group.asg.id}"
+  elb                    = "${aws_elb.smtp_lb.id}"
+}
 
 
 
