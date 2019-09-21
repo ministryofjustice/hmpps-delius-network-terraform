@@ -37,6 +37,17 @@ data "terraform_remote_state" "security-groups" {
   }
 }
 
+
+data "terraform_remote_state" "iaps-sg" {
+  backend = "s3"
+
+  config {
+    bucket = "${var.remote_state_bucket_name}"
+    key    = "iaps/security-groups/terraform.tfstate"
+    region = "${var.region}"
+  }
+}
+
 ####################################################
 # DATA SOURCE MODULES FROM OTHER TERRAFORM BACKENDS
 ####################################################
@@ -96,6 +107,7 @@ locals {
   ec2_role_policy_file = "policies/ec2.json"
   environment_name     = "${var.environment_type}"
   private_subnet_ids   = ["${data.terraform_remote_state.common.private_subnet_ids}"]
+  iaps_sg_id = "${data.terraform_remote_state.iaps-sg.security_groups_sg_internal_instance_id}"
 }
 
 
@@ -243,6 +255,16 @@ resource "aws_security_group_rule" "smtp-in" {
   to_port                  = "25"
   self                     = "true"
   description              = "TF - SMTP In"
+}
+
+resource "aws_security_group_rule" "iaps-smtp-in" {
+  security_group_id        = "${local.sg_smtp_ses}"
+  source_security_group_id = "${local.iaps_sg_id}"
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = "25"
+  to_port                  = "25"
+  description              = "IAPS SMTP In"
 }
 
 ### SMTP out
