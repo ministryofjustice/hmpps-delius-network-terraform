@@ -22,7 +22,12 @@ data "aws_route53_zone" "public_hosted_zone" {
 #################
 # DNS migration to gov domain
 
-# Private internal zone for easier lookups
+# strategic public zone - will only create whilst the main domain is in the old format
+# once the main one is updated, all records in this zone will need to be manually deleted
+# and then run terraform to remove this dns
+# any projects (ie spg) depending on this 2nd domain name must do a check before creating records that a split is required
+
+# see hmpps-delius-spg-shared-terraform/ecs-iso/ecs--network-public-nlb.tf : resource "aws_route53_record" "strategic_dns_ext_entry"
 resource "aws_route53_zone" "strategic_public_zone" {
   count = "${(local.public_domain == local.strategic_public_domain) ? 0 : 1}"
   name = "${local.strategic_public_domain}"
@@ -31,13 +36,6 @@ resource "aws_route53_zone" "strategic_public_zone" {
   }
 }
 
-//
-//#create a "env.probation.service.justice.gov.uk hosted zone if public domain is the legacy preprod.delius.probation.hmpps.dsd.io.
-//data "aws_route53_zone" "strategic_public_hosted_zone" {
-//  count = "${(local.public_domain == local.strategic_public_domain) ? 0 : 1}"
-//  name = "${local.strategic_public_domain}"
-//}
-#################
 
 
 
