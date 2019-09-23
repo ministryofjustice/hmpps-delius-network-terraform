@@ -61,6 +61,19 @@ variable "route53_domain_private" {
   type = "string"
 }
 
+variable "public_dns_parent_zone" {
+  type = "string"
+  description = "for strategic .gov domain. set in common.properties"
+}
+
+variable "public_dns_child_zone" {
+  type = "string"
+  description = "for strategic .gov domain. set in common.properties."
+}
+
+
+
+
 variable "aws_nameserver" {
   type = "string"
 }
