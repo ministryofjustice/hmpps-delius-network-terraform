@@ -46,3 +46,9 @@ variable "iaps_app_name" {
   description = "label for IAPS"
   default     = "iaps"
 }
+
+# Engineering remote state (for RMAN security group details)
+variable "oracle_db_operation" {
+  type        = "map"
+  description = "Engineering remote state and arn for Oracle OPs security groups"
+}
