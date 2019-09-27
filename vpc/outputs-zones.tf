@@ -15,14 +15,6 @@ output "public_zone_name" {
 }
 
 
-output "strategic_public_zone_id" {
-  #picks first item from optional strategic public zone, or the default zone id
-  value = "${element(concat(aws_route53_zone.strategic_public_zone.*.zone_id, list(data.aws_route53_zone.public_hosted_zone.zone_id)), 0)}"
-}
-
-output "strategic_public_zone_name" {
-  value = "${local.strategic_public_domain}"
-}
 
 output "public_ssl_arn" {
   value = "${data.aws_acm_certificate.ssl_certificate_details.arn}"
