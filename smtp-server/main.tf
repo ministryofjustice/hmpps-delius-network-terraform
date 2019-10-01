@@ -48,21 +48,6 @@ data "terraform_remote_state" "iaps-sg" {
   }
 }
 
-####################################################
-# DATA SOURCE MODULES FROM OTHER TERRAFORM BACKENDS
-####################################################
-#-------------------------------------------------------------
-### Getting the common details
-#-------------------------------------------------------------
-data "terraform_remote_state" "common" {
-  backend = "s3"
-
-  config {
-    bucket = "${var.remote_state_bucket_name}"
-    key    = "${var.environment_type}/common/terraform.tfstate"
-    region = "${var.region}"
-  }
-}
 #-------------------------------------------------------------
 ### Getting the latest amazon ami
 #-------------------------------------------------------------
@@ -106,7 +91,11 @@ locals {
   ec2_policy_file      = "ec2_policy.json"
   ec2_role_policy_file = "policies/ec2.json"
   environment_name     = "${var.environment_type}"
-  private_subnet_ids   = ["${data.terraform_remote_state.common.private_subnet_ids}"]
+  private_subnet_ids   = [
+                            "${data.terraform_remote_state.vpc.vpc_private-subnet-az1}",
+                            "${data.terraform_remote_state.vpc.vpc_private-subnet-az2}",
+                            "${data.terraform_remote_state.vpc.vpc_private-subnet-az3}",
+                          ]
   iaps_sg_id = "${data.terraform_remote_state.iaps-sg.security_groups_sg_internal_instance_id}"
 }
 
