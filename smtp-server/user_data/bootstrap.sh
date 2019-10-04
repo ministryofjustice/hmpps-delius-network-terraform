@@ -15,6 +15,7 @@ MAIL_DOMAIN="${mail_domain}"
 MAIL_NETWORK="${mail_network}"
 SES_IAM_USER="${ses_iam_user}"
 INT_ZONE_ID="${private_zone_id}"
+SMTP_LOG_GROUP="${smtp_log_group}"
 
 
 EOF
@@ -32,6 +33,7 @@ export MAIL_DOMAIN="${mail_domain}"
 export MAIL_NETWORK="${mail_network}"
 export SES_IAM_USER="${ses_iam_user}"
 export INT_ZONE_ID="${private_zone_id}"
+export SMTP_LOG_GROUP="${smtp_log_group}"
 
 cd ~
 pip install ansible
@@ -230,6 +232,41 @@ postconf -e 'myorigin = $mydomain' \
   'local_recipient_maps ='         \
   'relay_domains = $mydestination' \
   'mydestination = $mydomain' ;
+
+
+#Install cwageant
+CONF_TEMPLATE="/tmp/awslogs.conf_template" ;
+touch $CONF_TEMPLATE ;
+CWAGENT_INSTALLER_URL="https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py" ;
+CWAGENT_INSTALLER="/tmp/awslogs-agent-setup.py" ;
+
+#Create config template
+cat << EOF > /tmp/awslogs.conf_template
+[general]
+state_file = /var/awslogs/state/agent-state
+
+[/var/log/maillog]
+datetime_format = %Y-%m-%d %H:%M:%S
+file = /var/log/maillog
+buffer_duration = 5000
+log_stream_name = {instance_id}
+initial_position = start_of_file
+log_group_name = $SMTP_LOG_GROUP
+EOF
+
+#Download installer
+curl $CWAGENT_INSTALLER_URL -o $CWAGENT_INSTALLER ;
+
+#Install cwagent
+python $CWAGENT_INSTALLER -n -c $CONF_TEMPLATE -r eu-west-2 ;
+
+#Remove tmp temp files
+rm -f $CONF_TEMPLATE $CWAGENT_INSTALLER ;
+
+#Enable awslogs Agent
+chkconfig awslogs on ;
+
+
 
 #Restart postfix service
 systemctl restart $${app}

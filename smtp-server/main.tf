@@ -155,7 +155,7 @@ data "template_file" "postfix_user_data" {
     ses_iam_user          = "${local.ses_iam_user}"
     env_identifier        = "${var.short_environment_identifier}"
     short_env_identifier  = "${var.short_environment_identifier}"
-
+    smtp_log_group        = "${aws_cloudwatch_log_group.smtp_log_group.name}"
   }
 }
 
@@ -186,7 +186,6 @@ resource "aws_launch_configuration" "launch_cfg" {
     create_before_destroy = true
   }
 }
-
 
 data "null_data_source" "tags" {
   count = "${length(keys(var.tags))}"
@@ -230,6 +229,12 @@ resource "aws_autoscaling_attachment" "smtp_attachment" {
 
 
 
+#Create log group
+resource "aws_cloudwatch_log_group" "smtp_log_group" {
+  name              = "${var.short_environment_identifier}/smtp_logs"
+  retention_in_days = "14"
+  tags              = "${merge(var.tags, map("Name", "smtp_logs"))}"
+}
 
 #-------------------------------------------------------------
 ### Create SG Rules
@@ -279,7 +284,6 @@ resource "aws_security_group_rule" "ses-out" {
     "0.0.0.0/0",
   ]
 }
-
 
 
 ### HTTPS out
