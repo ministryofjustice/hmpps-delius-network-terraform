@@ -78,17 +78,6 @@ resource "aws_security_group_rule" "eng_rman_catalog_db_in" {
   description              = "RMAN Catalog in"
 }
 
-# Use same SG for the OEM connections (SG name is not correct any more but this is quick)
-resource "aws_security_group_rule" "db_to_eng_oem_out_22" {
-  security_group_id        = "${aws_security_group.mis_out_to_delius_db.id}"
-  type                     = "egress"
-  protocol                 = "tcp"
-  from_port                = "22"
-  to_port                  = "22"
-  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
-  description              = "OEM out 22"
-}
-
 resource "aws_security_group_rule" "eng_oem_db_in_22" {
   security_group_id        = "${aws_security_group.mis_out_to_delius_db.id}"
   type                     = "ingress"
@@ -97,16 +86,6 @@ resource "aws_security_group_rule" "eng_oem_db_in_22" {
   to_port                  = "22"
   source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
   description              = "OEM in 22"
-}
-
-resource "aws_security_group_rule" "db_to_eng_oem_out_1521" {
-  security_group_id        = "${aws_security_group.mis_out_to_delius_db.id}"
-  type                     = "egress"
-  protocol                 = "tcp"
-  from_port                = "1521"
-  to_port                  = "1521"
-  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
-  description              = "OEM out 1521"
 }
 
 resource "aws_security_group_rule" "eng_oem_db_in_1521" {
@@ -119,16 +98,6 @@ resource "aws_security_group_rule" "eng_oem_db_in_1521" {
   description              = "OEM in 1521"
 }
 
-resource "aws_security_group_rule" "db_to_eng_oem_out_3872" {
-  security_group_id        = "${aws_security_group.mis_out_to_delius_db.id}"
-  type                     = "egress"
-  protocol                 = "tcp"
-  from_port                = "3872"
-  to_port                  = "3872"
-  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
-  description              = "OEM out 3872"
-}
-
 resource "aws_security_group_rule" "eng_oem_db_in_3872" {
   security_group_id        = "${aws_security_group.mis_out_to_delius_db.id}"
   type                     = "ingress"
@@ -137,6 +106,16 @@ resource "aws_security_group_rule" "eng_oem_db_in_3872" {
   to_port                  = "3872"
   source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
   description              = "OEM in 3872"
+}
+
+resource "aws_security_group_rule" "db_to_eng_oem_out_4903" {
+  security_group_id        = "${aws_security_group.mis_out_to_delius_db.id}"
+  type                     = "egress"
+  protocol                 = "tcp"
+  from_port                = "4903"
+  to_port                  = "4903"
+  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
+  description              = "OEM out 4903"
 }
 
 
@@ -178,17 +157,6 @@ resource "aws_security_group_rule" "eng_rman_catalog_mis_db_in" {
   description              = "RMAN Catalog in"
 }
 
-# Use same SG for the OEM connections (SG name is not correct any more but this is quick)
-resource "aws_security_group_rule" "mis_db_to_eng_oem_out_22" {
-  security_group_id        = "${aws_security_group.mis_db_in_out_rman_cat.id}"
-  type                     = "egress"
-  protocol                 = "tcp"
-  from_port                = "22"
-  to_port                  = "22"
-  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
-  description              = "OEM out 22"
-}
-
 resource "aws_security_group_rule" "eng_oem_mis_db_in_22" {
   security_group_id        = "${aws_security_group.mis_db_in_out_rman_cat.id}"
   type                     = "ingress"
@@ -197,16 +165,6 @@ resource "aws_security_group_rule" "eng_oem_mis_db_in_22" {
   to_port                  = "22"
   source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
   description              = "OEM in 22"
-}
-
-resource "aws_security_group_rule" "mis_db_to_eng_oem_out_1521" {
-  security_group_id        = "${aws_security_group.mis_db_in_out_rman_cat.id}"
-  type                     = "egress"
-  protocol                 = "tcp"
-  from_port                = "1521"
-  to_port                  = "1521"
-  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
-  description              = "OEM out 1521"
 }
 
 resource "aws_security_group_rule" "eng_oem_mis_db_in_1521" {
@@ -219,16 +177,6 @@ resource "aws_security_group_rule" "eng_oem_mis_db_in_1521" {
   description              = "OEM in 1521"
 }
 
-resource "aws_security_group_rule" "mis_db_to_eng_oem_out_3872" {
-  security_group_id        = "${aws_security_group.mis_db_in_out_rman_cat.id}"
-  type                     = "egress"
-  protocol                 = "tcp"
-  from_port                = "3872"
-  to_port                  = "3872"
-  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
-  description              = "OEM out 3872"
-}
-
 resource "aws_security_group_rule" "eng_oem_mis_db_in_3872" {
   security_group_id        = "${aws_security_group.mis_db_in_out_rman_cat.id}"
   type                     = "ingress"
@@ -237,4 +185,14 @@ resource "aws_security_group_rule" "eng_oem_mis_db_in_3872" {
   to_port                  = "3872"
   source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
   description              = "OEM in 3872"
+}
+
+resource "aws_security_group_rule" "eng_oem_mis_db_out_4903" {
+  security_group_id        = "${aws_security_group.mis_db_in_out_rman_cat.id}"
+  type                     = "egress"
+  protocol                 = "tcp"
+  from_port                = "4903"
+  to_port                  = "4903"
+  source_security_group_id = "${data.terraform_remote_state.ora_db_op_security_groups.sg_map_ids.oem}"
+  description              = "OEM out 4903"
 }
