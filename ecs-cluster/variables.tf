@@ -43,7 +43,7 @@ variable "ecs_instance_type" {
 
 variable "node_max_count" {
   description = "maximum ec2 instance count for shared ecs cluster"
-  default     = 5
+  default     = 10
 }
 
 variable "node_min_count" {
