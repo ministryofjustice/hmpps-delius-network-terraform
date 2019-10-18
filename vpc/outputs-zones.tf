@@ -14,7 +14,12 @@ output "public_zone_name" {
   value = "${local.public_domain}"
 }
 
-
+output "strategic_public_zone_id" {
+  value = "${aws_route53_zone.strategic_zone.*.id}"
+}
+output "strategic_public_zone_name" {
+  value =  "${local.strategic_public_domain}"
+}
 
 output "public_ssl_arn" {
   value = "${data.aws_acm_certificate.ssl_certificate_details.arn}"

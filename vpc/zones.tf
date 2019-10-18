@@ -13,17 +13,26 @@ resource "aws_route53_zone" "internal_zone" {
   }
 }
 
-
 #existing preprod.delius.probation.hmpps.dsd.ioy
 data "aws_route53_zone" "public_hosted_zone" {
   name = "${local.public_domain}"
 }
 
 
-
-
 data "aws_acm_certificate" "ssl_certificate_details" {
   domain      = "*.${local.public_domain}"
   types       = ["AMAZON_ISSUED"]
   most_recent = true
+}
+
+
+# Strategic gov.uk public domain
+resource "aws_route53_zone" "strategic_zone" {
+  # Prod strategic zone is handled by Ansible
+  # TODO once/if public zones are migrated to this strategic zone, prod zone should be managed by TF - this will require an import
+  count = "${var.environment_name != "delius-prod" ? 1 : 0}"
+  name = "${local.strategic_public_domain}"
+  vpc {
+    vpc_id = "${module.vpc.vpc_id}"
+  }
 }
