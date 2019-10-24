@@ -13,7 +13,7 @@ resource "aws_route53_zone" "internal_zone" {
   }
 }
 
-#existing preprod.delius.probation.hmpps.dsd.ioy
+# Existing preprod.delius.probation.hmpps.dsd.io
 data "aws_route53_zone" "public_hosted_zone" {
   name = "${local.public_domain}"
 }
