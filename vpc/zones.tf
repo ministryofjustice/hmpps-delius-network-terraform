@@ -32,7 +32,16 @@ resource "aws_route53_zone" "strategic_zone" {
   # TODO once/if public zones are migrated to this strategic zone, prod zone should be managed by TF - this will require an import
   count = "${var.environment_name != "delius-prod" ? 1 : 0}"
   name = "${local.strategic_public_domain}"
-  vpc {
-    vpc_id = "${module.vpc.vpc_id}"
-  }
+
+}
+
+resource "aws_route53_record" "delegation_record" {
+  # The zonde id of the prod R53 zone - switch to var
+  zone_id = "${var.strategic_parent_zone_id}"
+  name    = "${local.strategic_public_domain}"
+  type    = "NS"
+  ttl     = "300"
+  records = ["${aws_route53_zone.strategic_zone.name_servers}"]
+  # Use alternative provider which assumes cross account role in prod for managing R53 records
+  provider = "aws.delius_prod_acct_r53_delegation"
 }
