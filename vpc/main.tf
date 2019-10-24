@@ -8,6 +8,16 @@ provider "aws" {
   version = "~> 1.16"
 }
 
+provider "aws" {
+  alias = "delius_prod_acct_r53_delegation"
+  region  = "${var.region}"
+  version = "~> 1.16"
+  # Role in delius prod account for managing R53 NS delegation records
+  assume_role {
+    role_arn = "${var.strategic_parent_zone_delegation_role}"
+  }
+}
+
 #-------------------------------------------------------------
 ### Getting the current running account id
 #-------------------------------------------------------------
