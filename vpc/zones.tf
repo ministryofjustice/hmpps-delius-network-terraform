@@ -36,7 +36,7 @@ resource "aws_route53_zone" "strategic_zone" {
 }
 
 resource "aws_route53_record" "delegation_record" {
-  # The zonde id of the prod R53 zone - switch to var
+  # The zone id of the prod R53 zone
   zone_id = "${var.strategic_parent_zone_id}"
   name    = "${local.strategic_public_domain}"
   type    = "NS"
