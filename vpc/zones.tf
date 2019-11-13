@@ -31,7 +31,7 @@ resource "aws_route53_zone" "strategic_zone" {
   # Prod strategic zone is handled by Ansible
   # TODO once/if public zones are migrated to this strategic zone, prod zone should be managed by TF - this will require an import
   count = "${var.environment_name != "delius-prod" ? 1 : 0}"
-  name = "${local.strategic_public_domain}"
+  name  = "${local.strategic_public_domain}"
 
 }
 
@@ -46,32 +46,23 @@ resource "aws_route53_record" "delegation_record" {
   provider = "aws.delius_prod_acct_r53_delegation"
 }
 
-data "null_data_source" "tags" {
-  count = "${length(keys(var.tags))}"
-  inputs = {
-    key                 = "${element(keys(var.tags), count.index)}"
-    value               = "${element(values(var.tags), count.index)}"
-    propagate_at_launch = true
-  }
-}
-
 resource "aws_acm_certificate" "cert" {
   # TODO once/if public certs are migrated to terraform, prod and pre-prod certs should be managed by TF - this will require imports
-  count                     = "${var.environment_name != "delius-prod" && var.environment_name != "delius-pre-prod" ? 1 : 0}"
-  domain_name               = "*.${local.strategic_public_domain}"
-  validation_method         = "DNS"
-  tags                      = "${data.null_data_source.tags.*.outputs}"
+  count             = "${var.environment_name != "delius-prod" && var.environment_name != "delius-pre-prod" ? 1 : 0}"
+  domain_name       = "*.${local.strategic_public_domain}"
+  validation_method = "DNS"
+  tags              = "${merge(var.tags, map("Name", "${local.strategic_public_domain}"))}"
   lifecycle {
     create_before_destroy = true
   }
 }
 
 resource "aws_route53_record" "cert_validation" {
-  zone_id = "${aws_route53_zone.strategic_zone.zone_id}"
-  name    = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_name}"
-  type    = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_type}"
-  records = ["${aws_acm_certificate.cert.domain_validation_options.0.resource_record_value}"]
-  ttl     = 60
+  zone_id    = "${aws_route53_zone.strategic_zone.zone_id}"
+  name       = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_name}"
+  type       = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_type}"
+  records    = ["${aws_acm_certificate.cert.domain_validation_options.0.resource_record_value}"]
+  ttl        = 60
   depends_on = ["aws_acm_certificate.cert"]
 }
 
