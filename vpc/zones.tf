@@ -60,7 +60,7 @@ resource "aws_acm_certificate" "cert" {
   count                     = "${var.environment_name != "delius-prod" && var.environment_name != "delius-pre-prod" ? 1 : 0}"
   domain_name               = "*.${local.strategic_public_domain}"
   validation_method         = "DNS"
-  tags                      = "${data.null_data_source.tags.*.outputs}"
+  tags                      = "${merge(var.tags, map("Name", "${local.strategic_public_domain}"))}"
   lifecycle {
     create_before_destroy = true
   }
