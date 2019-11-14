@@ -47,8 +47,6 @@ resource "aws_route53_record" "delegation_record" {
 }
 
 resource "aws_acm_certificate" "cert" {
-  # TODO once/if public certs are migrated to terraform, prod and pre-prod certs should be managed by TF - this will require imports
-  count             = "${var.environment_name != "delius-prod" && var.environment_name != "delius-pre-prod" ? 1 : 0}"
   domain_name       = "*.${local.strategic_public_domain}"
   validation_method = "DNS"
   tags              = "${merge(var.tags, map("Name", "${local.strategic_public_domain}"))}"
