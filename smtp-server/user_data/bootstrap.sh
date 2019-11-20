@@ -276,7 +276,7 @@ temp_cron_file="/tmp/temp_cron_file" ;
 crontab -l > $temp_cron_file ;
 grep -q "@hourly update_users > /dev/null 2>&1" $temp_cron_file  ||  sed -i "s/update_users/update_users > \/dev\/null 2\>\&1/" $temp_cron_file ;
 if [[ $AZ == "2a" ]] ; then
-    grep -q "$rotate_script" $temp_cron_file || echo "00 21 * * 0 /usr/bin/sh $rotate_script > /dev/null 2>&1" >> $temp_cron_file && crontab $temp_cron_file
+    grep -q "$rotate_script" $temp_cron_file || echo "#00 21 * * 0 /usr/bin/sh $rotate_script > /dev/null 2>&1" >> $temp_cron_file && crontab $temp_cron_file
 else
     grep -q "$rotate_script" $temp_cron_file || echo "05 21 * * 0 /usr/bin/sh $rotate_script > /dev/null 2>&1" >> $temp_cron_file && crontab $temp_cron_file
 fi;
