@@ -24,7 +24,6 @@ output "public_ssl_domain" {
 
 output "strategic_public_zone_id" {
   value = "${join("", aws_route53_zone.strategic_zone.*.id)}"
-  type = "string"
 }
 
 output "strategic_public_zone_name" {
