@@ -212,7 +212,7 @@ pipeline {
 
         stage('Delius Shared Monitoring') {
           steps {
-            script {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               do_terraform(project.config, environment_name, project.network, 'shared-monitoring')
             }
           }
@@ -220,7 +220,7 @@ pipeline {
 
         stage('Delius SES') {
           steps {
-            script {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               do_terraform(project.config, environment_name, project.network, 'ses')
             }
           }
@@ -228,7 +228,7 @@ pipeline {
 
         stage('Delius SMTP-Server') {
           steps {
-            script {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               do_terraform(project.config, environment_name, project.network, 'smtp-server')
             }
           }
@@ -236,7 +236,7 @@ pipeline {
 
         stage('Delius Shared ECS Cluster') {
           steps {
-            script {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               do_terraform(project.config, environment_name, project.network, 'ecs-cluster')
             }
           }
@@ -244,7 +244,7 @@ pipeline {
 
         stage('Testing - Chaosmonkey') {
           steps {
-            script {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               do_terraform(project.config, environment_name, project.network, 'testing/chaosmonkey')
             }
           }
