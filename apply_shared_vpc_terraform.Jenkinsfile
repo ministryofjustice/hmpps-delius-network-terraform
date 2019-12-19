@@ -2,6 +2,21 @@ def project = [:]
 project.config    = 'hmpps-env-configs'
 project.network   = 'hmpps-delius-network-terraform'
 
+// Parameters required for job
+// parameters:
+//     choice:
+//       name: 'environment_name'
+//       description: 'Environment name.'
+//     string:
+//       name: 'CONFIG_BRANCH'
+//       description: 'Target Branch for hmpps-env-configs'
+//     string:
+//       name: 'NETWORK_BRANCH'
+//       description: 'Target Branch for hmpps-delius-network-terraform'
+//     booleanParam:
+//       name: 'confirmation'
+//       description: 'Whether to require manual confirmation of terraform plans.'
+
 def prepare_env() {
     sh '''
     #!/usr/env/bin bash
