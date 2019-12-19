@@ -37,17 +37,6 @@ data "terraform_remote_state" "security-groups" {
   }
 }
 
-
-data "terraform_remote_state" "iaps-sg" {
-  backend = "s3"
-
-  config {
-    bucket = "${var.remote_state_bucket_name}"
-    key    = "iaps/security-groups/terraform.tfstate"
-    region = "${var.region}"
-  }
-}
-
 #-------------------------------------------------------------
 ### Getting the latest amazon ami
 #-------------------------------------------------------------
@@ -84,6 +73,7 @@ locals {
   sg_bastion_in        = "${data.terraform_remote_state.security-groups.sg_ssh_bastion_in_id}"
   sg_smtp_ses          = "${data.terraform_remote_state.security-groups.sg_smtp_ses}"
   sg_https_out         = "${data.terraform_remote_state.security-groups.sg_https_out}"
+  sg_iaps_api_in       = "${data.terraform_remote_state.security-groups.sg_iaps_api_in}"
   bastion_inventory    = "${var.bastion_inventory}"
   private_zone_id      = "${data.terraform_remote_state.vpc.private_zone_id}"
   internal_domain      = "${data.terraform_remote_state.vpc.private_zone_name}"
@@ -96,7 +86,6 @@ locals {
                             "${data.terraform_remote_state.vpc.vpc_private-subnet-az2}",
                             "${data.terraform_remote_state.vpc.vpc_private-subnet-az3}",
                           ]
-  iaps_sg_id = "${data.terraform_remote_state.iaps-sg.security_groups_sg_internal_instance_id}"
 }
 
 
@@ -253,7 +242,7 @@ resource "aws_security_group_rule" "smtp-in" {
 
 resource "aws_security_group_rule" "iaps-smtp-in" {
   security_group_id        = "${local.sg_smtp_ses}"
-  source_security_group_id = "${local.iaps_sg_id}"
+  source_security_group_id = "${local.sg_iaps_api_in}"
   type                     = "ingress"
   protocol                 = "tcp"
   from_port                = "25"
