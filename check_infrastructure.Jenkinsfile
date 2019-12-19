@@ -1,10 +1,6 @@
 def project = [:]
 project.config    = 'hmpps-env-configs'
 project.network   = 'hmpps-delius-network-terraform'
-project.dcore     = 'hmpps-delius-core-terraform'
-project.alfresco  = 'hmpps-delius-alfresco-shared-terraform'
-project.spg       = 'hmpps-spg-terraform'
-//project.ndmis     = 'hmpps-ndmis-terraform' //
 
 def prepare_env() {
     sh '''
@@ -48,9 +44,8 @@ pipeline {
     agent { label "jenkins_slave" }
 
     parameters {
-        string(name: 'NETWORK_BRANCH', description: 'Target Branch for hmpps-delius-network-terraform', defaultValue: 'master')
-        string(name: 'DCORE_BRANCH', description: 'Target Branch for hmpps-delius-core-terraform', defaultValue: 'master')
         string(name: 'CONFIG_BRANCH', description: 'Target Branch for hmpps-env-configs', defaultValue: 'master')
+        string(name: 'NETWORK_BRANCH', description: 'Target Branch for hmpps-delius-new-tech-terraform', defaultValue: 'master')
     }
 
     stages {
@@ -62,9 +57,6 @@ pipeline {
                 }
                 dir( project.network ) {
                   git url: 'git@github.com:ministryofjustice/' + project.network, branch: env.NETWORK_BRANCH, credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
-                }
-                dir( project.dcore ) {
-                  git url: 'git@github.com:ministryofjustice/' + project.dcore, branch: env.DCORE_BRANCH, credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
                 }
 
                 prepare_env()

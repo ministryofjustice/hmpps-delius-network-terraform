@@ -13,3 +13,8 @@ output "sg_iaps_db_in" {
 output "sg_iaps_api_in" {
   value = "${aws_security_group.iaps_api_in.id}"
 }
+
+# iaps_api_out
+output "sg_iaps_api_out" {
+  value = "${aws_security_group.iaps_api_out.id}"
+}
