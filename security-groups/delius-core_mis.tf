@@ -118,6 +118,16 @@ resource "aws_security_group_rule" "db_to_eng_oem_out_4903" {
   description              = "OEM out 4903"
 }
 
+resource "aws_security_group_rule" "management_db_in" {
+  security_group_id        = "${aws_security_group.mis_out_to_delius_db.id}"
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = "1521"
+  to_port                  = "1521"
+  source_security_group_id = "${aws_security_group.management_server.id}"
+  description              = "Management server in"
+}
+
 
 #########################################################################
 ## Apply this SG to MIS to enable connection to RMAN Catalogue and OEM ##

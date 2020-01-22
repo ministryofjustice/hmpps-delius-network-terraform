@@ -36,3 +36,25 @@ resource "aws_security_group_rule" "interface_lb_iaps_ingress_tls" {
   to_port                  = "443"
   description              = "IAPS Ingress (TLS)"
 }
+
+# Delius management server
+resource "aws_security_group" "management_server" {
+  name        = "${var.environment_name}-management-server-sg"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  description = "Management instance SG"
+  tags        = "${merge(var.tags, map("Name", "${var.environment_name}-management-server-sg", "Type", "Private"))}"
+}
+
+output "sg_management_server_id" {
+  value = "${aws_security_group.management_server.id}"
+}
+
+resource "aws_security_group_rule" "management_db_out" {
+  security_group_id        = "${aws_security_group.management_server.id}"
+  type                     = "egress"
+  protocol                 = "tcp"
+  from_port                = "1521"
+  to_port                  = "1521"
+  source_security_group_id = "${aws_security_group.mis_out_to_delius_db.id}"
+  description              = "MIS DB out"
+}
