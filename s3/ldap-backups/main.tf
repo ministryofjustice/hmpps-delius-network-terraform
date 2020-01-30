@@ -29,6 +29,15 @@ resource "aws_s3_bucket" "ldap_backups" {
     prevent_destroy = true
   }
 
+  lifecycle_rule {
+    id      = "${local.bucket_name}-expiration"
+    enabled = true
+    prefix  = "ldap/"
+    expiration {
+      days = "${var.ldap_config["backup_retention_days"]}"
+    }
+  }
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
