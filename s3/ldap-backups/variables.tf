@@ -12,4 +12,7 @@ variable "region" {
 
 variable "ldap_config" {
   type = "map"
+  default = {
+    backup_retention_days = 90
+  }
 }
