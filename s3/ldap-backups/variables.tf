@@ -9,3 +9,7 @@ variable "tags" {
 variable "region" {
   description = "The AWS region."
 }
+
+variable "ldap_config" {
+  type = "map"
+}
