@@ -23,3 +23,13 @@ variable "short_environment_name" {}
 variable "instance_count" {
   default  = "3"
 }
+
+variable "autostop_key_value" {
+  description = "Auto stop tag value -true or false"
+  default     = "false"
+}
+
+variable "autostop_key" {
+  description = "Auto stop tag key"
+  default     = "autostop"
+}

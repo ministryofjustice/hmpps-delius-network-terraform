@@ -12,17 +12,19 @@ variable "stop_cloudwatch_schedule_expression" {
   description = "The time to stop instances"
 }
 
-variable "ec2_enable_schedule" {
+variable "ec2_schedule" {
   description = "Enable or disable the auto start and power off of instances"
   default     = "false"
 }
 
-variable "ec2_schedule_start_action" {
+variable "schedule_start_action" {
   description = "Define the schedule option - ie start or stop"
+  default     = "start"
 }
 
-variable "ec2_schedule_stop_action" {
+variable "schedule_stop_action" {
   description = "Define the schedule option - ie start or stop"
+  default     = "stop"
 }
 
 variable "spot_schedule" {
