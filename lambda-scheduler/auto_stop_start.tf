@@ -11,7 +11,7 @@ module "ec2-stop-pm" {
   autoscaling_schedule           = "${var.autoscaling_schedule}"
 
   resources_tag = {
-    key   = "auto-stop"
+    key   = "autostop"
     value = "true"
   }
 }
@@ -27,7 +27,7 @@ module "ec2-start-am" {
   autoscaling_schedule           = "${var.autoscaling_schedule}"
 
   resources_tag = {
-    key   = "auto-stop"
+    key   = "autostop"
     value = "true"
   }
 }

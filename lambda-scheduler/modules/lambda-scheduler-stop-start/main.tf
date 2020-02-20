@@ -1,3 +1,6 @@
+data "aws_region" "current" {}
+
+
 ################################################
 #
 #            IAM CONFIGURATION
@@ -135,9 +138,10 @@ resource "aws_iam_role_policy" "lambda_logging" {
         {
             "Action": [
                 "logs:CreateLogStream",
+                "logs:CreateLogGroup",
                 "logs:PutLogEvents"
             ],
-            "Resource": "arn:aws:logs:*:*:*",
+            "Resource": "*",
             "Effect": "Allow"
         }
     ]
@@ -170,6 +174,7 @@ resource "aws_lambda_function" "scheduler" {
 
   environment {
     variables = {
+      AWS_REGIONS          = "${var.aws_regions}"
       SCHEDULE_ACTION      = "${var.schedule_action}"
       TAG_KEY              = "${var.resources_tag["key"]}"
       TAG_VALUE            = "${var.resources_tag["value"]}"

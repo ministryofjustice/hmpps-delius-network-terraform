@@ -17,7 +17,7 @@ variable "name" {
 variable "aws_regions" {
   description = "A list of one or more aws regions where the lambda will be apply, default use the current region"
   type        = "string"
-  default     = "null"
+  default     = "eu-west-2"
 }
 
 variable "schedule_action" {
