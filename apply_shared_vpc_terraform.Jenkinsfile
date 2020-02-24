@@ -247,6 +247,14 @@ pipeline {
           }
         }
 
+        stage('Delius Lambda-Scheduler') {
+          steps {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              do_terraform(project.config, environment_name, project.network, 'lambda-scheduler')
+            }
+          }
+        }
+
         stage('Delius Shared ECS Cluster') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
