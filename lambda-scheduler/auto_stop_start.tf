@@ -17,8 +17,8 @@ module "ec2-stop-pm" {
   autoscaling_schedule           = "${var.autoscaling_schedule}"
 
   resources_tag = {
-    key   = "autostop"
-    value = "true"
+    key   = "autostop-${var.environment_type}"
+    value = "${var.stop_resources_tag}"
   }
 }
 
@@ -33,7 +33,7 @@ module "ec2-start-am" {
   autoscaling_schedule           = "${var.autoscaling_schedule}"
 
   resources_tag = {
-    key   = "autostop"
-    value = "true"
+    key   = "autostop-${var.environment_type}"
+    value = "${var.start_resources_tag}"
   }
 }
