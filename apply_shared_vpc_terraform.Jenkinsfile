@@ -133,7 +133,7 @@ pipeline {
 
     parameters {
         string(name: 'CONFIG_BRANCH', description: 'Target Branch for hmpps-env-configs', defaultValue: 'master')
-        string(name: 'NETWORK_BRANCH', description: 'Target Branch for hmpps-delius-new-tech-terraform', defaultValue: 'DAM_1018_auto_start_stop_instances')
+        string(name: 'NETWORK_BRANCH', description: 'Target Branch for hmpps-delius-new-tech-terraform', defaultValue: 'master')
     }
 
     stages {
