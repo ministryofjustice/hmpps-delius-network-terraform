@@ -194,7 +194,7 @@ resource "aws_lambda_function" "scheduler" {
 
 resource "aws_cloudwatch_event_rule" "scheduler" {
   name                = "${var.name}-trigger-lambda-scheduler"
-  description         = "Trigger lambda scheduler"
+  description         = "Daily Auto Start/Stop of EC2 Instances"
   schedule_expression = "${var.cloudwatch_schedule_expression}"
 }
 
@@ -218,6 +218,6 @@ resource "aws_lambda_permission" "scheduler" {
 ################################################
 
 resource "aws_cloudwatch_log_group" "scheduler" {
-  name              = "/aws/lambda/${var.name}-scheduler"
+  name              = "/aws/lambda/${var.name}"
   retention_in_days = 14
 }
