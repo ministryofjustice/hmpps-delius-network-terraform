@@ -28,6 +28,7 @@ module "stop_ec2_instance" {
   spot_schedule                  = "terminate"
   ec2_schedule                   = "true"
   rds_schedule                   = "false"
+  event_rule_enabled             = "false"
   resources_tag                  = {
     key   = "autostop-${var.environment_type}"
     value = "True"
@@ -43,6 +44,7 @@ module "start_ec2_instance" {
   spot_schedule                  = "false"
   ec2_schedule                   = "true"
   rds_schedule                   = "false"
+  event_rule_enabled             = "false"
   resources_tag                  = {
     key   = "autostop-${var.environment_type}"
     value = "True"
@@ -56,9 +58,10 @@ module "start_ec2_instance" {
 |------|-------------|------|---------|----------|
 | name | Define name to use for lambda function, cloudwatch event and iam role | string | n/a | yes |
 | cloudwatch_schedule_expression | The scheduling expression | string | `"cron(0 22 ? * MON-FRI *)"` | yes |
-| schedule_action | Define schedule action to apply on resources | string | `"stop"` | yes |
+| schedule_action | Define schedule action to apply on resources | string | `"stop/start"` | yes |
 | resources_tag | Set the tag use to identify resources to stop or start | map | { autostop-${var.environment_type} = "True" } | yes |
 | autoscaling_schedule | Enable scheduling on autoscaling resources | string | `"false"` | no |
 | spot_schedule | Enable scheduling on spot instance resources | string | `"false"` | no |
 | ec2_schedule | Enable scheduling on ec2 instance resources | string | `"false"` | no |
 | rds_schedule | Enable scheduling on rds resources | string | `"false"` | no |
+| event_rule_enabled | Whether event rule should be enabled | string | `"false"` | no |
