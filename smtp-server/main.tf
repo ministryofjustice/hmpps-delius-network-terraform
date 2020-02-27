@@ -202,7 +202,7 @@ resource "aws_autoscaling_group" "asg" {
     {
       key                 = "Name"
       value               = "${var.environment_name}-smtp"
-      propagate_at_launch = true
+      propagate_at_launch = "true"
     }
   ]
   lifecycle {
