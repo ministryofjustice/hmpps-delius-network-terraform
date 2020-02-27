@@ -54,3 +54,7 @@ variable "rds_schedule" {
   type        = "string"
   default     = "false"
 }
+
+variable "event_rule_enabled" {
+  description = "Whether the rule should be enabled"
+}
