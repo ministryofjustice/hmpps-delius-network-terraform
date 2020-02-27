@@ -55,3 +55,15 @@ variable "start_resources_tag" {
 description = "Autostop tag value used by lambda to start instances"
 default     = "True"
 }
+
+variable "auto_stop_rule_enabled" {
+  description = "Whether the rule should be enabled"
+  type        = "string"
+  default     = "false"
+}
+
+variable "auto_start_rule_enabled" {
+  description = "Whether the rule should be enabled"
+  type        = "string"
+  default     = "false"
+}

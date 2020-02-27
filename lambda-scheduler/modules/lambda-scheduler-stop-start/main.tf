@@ -196,6 +196,7 @@ resource "aws_cloudwatch_event_rule" "scheduler" {
   name                = "${var.name}-trigger-lambda-scheduler"
   description         = "Daily Auto Start/Stop of EC2 Instances"
   schedule_expression = "${var.cloudwatch_schedule_expression}"
+  is_enabled          = "${var.event_rule_enabled}"
 }
 
 resource "aws_cloudwatch_event_target" "scheduler" {
