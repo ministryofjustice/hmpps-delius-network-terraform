@@ -8,7 +8,7 @@ exports.handler = function(event, context) {
         const environment = process.env.ENVIRONMENT_TYPE;
         var heading = "EC2 Instance Auto-Stop Notification";
         var bodytext = "Please be advised EC2 Instances are scheduled to stop in approximately 60 mins.";
-        var channel="ndmis-non-prod-alerts";
+        var channel="delius_infra_ops";
         var url_path = "/services/T02DYEB3A/BS16X2JGY/r9e1CJYez7BDmwyliIl7WzLf";
         var icon_emoji=":sign-warning:";
 
