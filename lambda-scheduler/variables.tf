@@ -67,3 +67,8 @@ variable "auto_start_rule_enabled" {
   type        = "string"
   default     = "false"
 }
+
+variable "stop_cloudwatch_notification_schedule_expression" {
+  description = "Notify an hour before stopping instance"
+  default = "cron(00 19 ? * MON-FRI *)"
+}

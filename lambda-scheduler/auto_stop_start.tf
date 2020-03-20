@@ -39,3 +39,10 @@ module "ec2-start-am" {
     value = "${var.start_resources_tag}"
   }
 }
+
+module "autostop-notify" {
+  source                         = "modules/auto-stop-notify/"
+  name                           = "${var.environment_name}"
+  cloudwatch_schedule_expression = "${var.stop_cloudwatch_notification_schedule_expression}"
+  event_rule_enabled             = "${var.auto_stop_rule_enabled}"
+}
