@@ -4,12 +4,13 @@ var util = require('util');
 exports.handler = function(event, context) {
     console.log(JSON.stringify(event, null, 2));
 
-        var heading = "EC2 Instance Auto-Stop Notification";
-        var bodytext = "Instances shutting down";
+
         const environment = process.env.ENVIRONMENT_TYPE;
+        var heading = "EC2 Instance Auto-Stop Notification";
+        var bodytext = "Please be advised EC2 Instances are scheduled to stop in approximately 60 mins.";
         var channel="ndmis-non-prod-alerts";
         var url_path = "/services/T02DYEB3A/BS16X2JGY/r9e1CJYez7BDmwyliIl7WzLf";
-        var icon_emoji=":warning:";
+        var icon_emoji=":sign-warning:";
 
 
 
@@ -21,9 +22,9 @@ exports.handler = function(event, context) {
                        "channel": "# " + channel,
                        "username": "AWS SNS via Lambda :: EC2 Auto-stop notification",
                        "text": "**************************************************************************************************"
-                       + "\nHeading: " + heading
-                       + "\nbodytext: " + bodytext
-                       + "\nEnvironment: " + environment
+                       + "\nInfo: "  + heading
+                       + "\nDetails: "  + bodytext
+                       + "\nEnvironment: "  + environment
 
                        ,
                        "icon_emoji": icon_emoji,
