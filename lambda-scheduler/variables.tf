@@ -73,8 +73,11 @@ variable "stop_cloudwatch_notification_schedule_expression" {
   default = "cron(00 19 ? * MON-FRI *)"
 }
 
-
-######Calendar VARS
 variable "tags" {
   type     = "map"
+}
+
+variable "rate_schedule_expression" {
+  description = "Rate to check calendar events"
+  default     = "rate(15 minutes)"
 }
