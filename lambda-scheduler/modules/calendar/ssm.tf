@@ -84,6 +84,6 @@ resource "null_resource" "create_calendar" {
     always_run = "${timestamp()}"
   }
   provisioner "local-exec" {
-    command = "sh scripts/create_calendar.sh ${local.content_doc} ${local.calendar_name}-2 ${var.region}"
+    command = "sh scripts/create_calendar.sh ${var.calender_content_doc} ${local.calendar_name} ${var.region}"
   }
 }

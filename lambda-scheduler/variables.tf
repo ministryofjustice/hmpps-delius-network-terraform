@@ -68,6 +68,13 @@ variable "auto_start_rule_enabled" {
   default     = "false"
 }
 
+variable "calendar_rule_enabled" {
+  description = "Whether the Calendar rule should be enabled"
+  type        = "string"
+  default     = "false"
+}
+
+
 variable "stop_cloudwatch_notification_schedule_expression" {
   description = "Notify an hour before stopping instance"
   default = "cron(00 19 ? * MON-FRI *)"
@@ -80,4 +87,9 @@ variable "tags" {
 variable "rate_schedule_expression" {
   description = "Rate to check calendar events"
   default     = "rate(15 minutes)"
+}
+
+variable "calender_content_doc" {
+  description = "File for calendar ssm document"
+  default     = "file://files/calendar_content"
 }

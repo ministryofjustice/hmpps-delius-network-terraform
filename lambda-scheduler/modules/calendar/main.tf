@@ -11,5 +11,4 @@ locals {
   calendar_name  = "${var.environment_name}-calendar"
   start_doc_arn  = "${aws_ssm_document.start.arn}"
   stop_doc_arn   = "${aws_ssm_document.stop.arn}"
-  content_doc    = "file://files/calendar_content"
 }

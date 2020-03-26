@@ -15,7 +15,7 @@ module "ec2-stop-pm" {
   ec2_schedule                   = "${var.ec2_schedule}"
   rds_schedule                   = "${var.rds_schedule}"
   autoscaling_schedule           = "${var.autoscaling_schedule}"
-  event_rule_enabled             = "false"
+  event_rule_enabled             = "${var.auto_stop_rule_enabled}"
 
   resources_tag = {
     key   = "autostop-${var.environment_type}"
@@ -32,7 +32,7 @@ module "ec2-start-am" {
   ec2_schedule                   = "${var.ec2_schedule}"
   rds_schedule                   = "${var.rds_schedule}"
   autoscaling_schedule           = "${var.autoscaling_schedule}"
-  event_rule_enabled             = "false"
+  event_rule_enabled             = "${var.auto_start_rule_enabled}"
 
   resources_tag = {
     key   = "autostop-${var.environment_type}"
@@ -44,7 +44,7 @@ module "autostop-notify" {
   source                         = "modules/auto-stop-notify/"
   name                           = "${var.environment_name}"
   cloudwatch_schedule_expression = "${var.stop_cloudwatch_notification_schedule_expression}"
-  event_rule_enabled             = "${var.auto_stop_rule_enabled}"
+  event_rule_enabled             = "${var.calendar_rule_enabled}"
 }
 
 module "calendar" {
@@ -52,6 +52,7 @@ module "calendar" {
   environment_name               = "${var.environment_name}"
   tags                           = "${var.tags}"
   region                         = "${var.region}"
-  is_enabled                     = "${var.auto_stop_rule_enabled}"
+  is_enabled                     = "${var.calendar_rule_enabled}"
   schedule_expression            = "${var.rate_schedule_expression}"
+  calender_content_doc           = "${var.calender_content_doc}"
 }
