@@ -7,7 +7,7 @@
 #
 ################################################
 module "ec2-stop-pm" {
-  source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=issue_195_ALS_175//modules//auto-start//lambda-scheduler-stop-start"
+  source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//auto-start//lambda-scheduler-stop-start"
   name                           = "${var.environment_name}-stop-ec2"
   cloudwatch_schedule_expression = "${var.stop_cloudwatch_schedule_expression}"
   schedule_action                = "${var.schedule_stop_action}"
@@ -24,7 +24,7 @@ module "ec2-stop-pm" {
 }
 
 module "ec2-start-am" {
-  source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=issue_195_ALS_175//modules//auto-start//lambda-scheduler-stop-start"
+  source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//auto-start//lambda-scheduler-stop-start"
   name                           = "${var.environment_name}-start-ec2"
   cloudwatch_schedule_expression = "${var.start_cloudwatch_schedule_expression}"
   schedule_action                = "${var.schedule_start_action}"
@@ -41,14 +41,14 @@ module "ec2-start-am" {
 }
 
 module "autostop-notify" {
-  source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=issue_195_ALS_175//modules//auto-start//auto-stop-notify"
+  source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//auto-start//auto-stop-notify"
   name                           = "${var.environment_name}"
   cloudwatch_schedule_expression = "${var.stop_cloudwatch_notification_schedule_expression}"
   event_rule_enabled             = "${var.calendar_rule_enabled}"
 }
 
 module "calendar" {
-  source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=issue_195_ALS_175//modules//auto-start//calendar"
+  source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//auto-start//calendar"
   environment_name               = "${var.environment_name}"
   tags                           = "${var.tags}"
   region                         = "${var.region}"
