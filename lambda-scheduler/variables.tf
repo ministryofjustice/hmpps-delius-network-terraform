@@ -6,16 +6,6 @@ variable "region" {
   description = "The AWS region."
 }
 
-variable "start_cloudwatch_schedule_expression" {
-  description = "The time to start instances"
-  default = "cron(0 05 ? * MON-FRI *)"
-}
-
-variable "stop_cloudwatch_schedule_expression" {
-  description = "The time to stop instances"
-  default = "cron(0 19 ? * MON-FRI *)"
-}
-
 variable "schedule_start_action" {
   description = "Define the schedule option - ie start or stop"
   default     = "start"
@@ -46,26 +36,24 @@ variable "autoscaling_schedule" {
   default     = "false"
 }
 
-variable "stop_resources_tag" {
-description = "Autostop tag value used by lambda to stop instances"
-default     = "True"
+variable "stop_resources_tag_phase1" {
+  description = "Autostop tag value used by lambda to stop instances"
+  default     = "Phase1"
 }
 
-variable "start_resources_tag" {
-description = "Autostop tag value used by lambda to start instances"
-default     = "True"
+variable "stop_resources_tag_phase2" {
+  description = "Autostop tag value used by lambda to stop instances"
+  default     = "True"
 }
 
-variable "auto_stop_rule_enabled" {
-  description = "Whether the rule should be enabled"
-  type        = "string"
-  default     = "false"
+variable "start_resources_tag_phase1" {
+  description = "Autostop tag value used by lambda to start instances"
+  default     = "Phase1"
 }
 
-variable "auto_start_rule_enabled" {
-  description = "Whether the rule should be enabled"
-  type        = "string"
-  default     = "false"
+variable "start_resources_tag_phase2" {
+  description = "Autostop tag value used by lambda to start instances"
+  default     = "True"
 }
 
 variable "calendar_rule_enabled" {
@@ -74,10 +62,9 @@ variable "calendar_rule_enabled" {
   default     = "false"
 }
 
-
 variable "stop_cloudwatch_notification_schedule_expression" {
   description = "Notify an hour before stopping instance"
-  default = "cron(00 19 ? * MON-FRI *)"
+  default = "cron(00 18 ? * MON-FRI *)"
 }
 
 variable "tags" {
@@ -86,7 +73,7 @@ variable "tags" {
 
 variable "rate_schedule_expression" {
   description = "Rate to check calendar events"
-  default     = "rate(15 minutes)"
+  default     = "rate(20 minutes)"
 }
 
 variable "calender_content_doc" {
