@@ -92,4 +92,6 @@ module "autostop-notify" {
   name                           = "${var.environment_name}"
   cloudwatch_schedule_expression = "${var.stop_cloudwatch_notification_schedule_expression}"
   event_rule_enabled             = "${var.calendar_rule_enabled}"
+  channel                        = "${var.channel}"
+  url_path                       = "${var.url_path}"
 }

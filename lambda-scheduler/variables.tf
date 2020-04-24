@@ -80,3 +80,13 @@ variable "calender_content_doc" {
   description = "File for calendar ssm document"
   default     = "file://files/calendar_content"
 }
+
+variable "channel" {
+  description = "Slack channel to send notification"
+  default     = "delius_infra_ops"
+}
+
+variable "url_path" {
+  description = "Slack url path"
+  default     = "/services/T02DYEB3A/BS16X2JGY/r9e1CJYez7BDmwyliIl7WzLf"
+}
