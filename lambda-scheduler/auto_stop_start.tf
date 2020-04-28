@@ -91,7 +91,7 @@ module "autostop-notify" {
   source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//auto-start//auto-stop-notify"
   name                           = "${var.environment_name}"
   cloudwatch_schedule_expression = "${var.stop_cloudwatch_notification_schedule_expression}"
-  event_rule_enabled             = "${var.calendar_rule_enabled}"
+  event_rule_enabled             = "${var.autostop_notify_rule_enabled}"
   channel                        = "${var.channel}"
   url_path                       = "${var.url_path}"
 }
