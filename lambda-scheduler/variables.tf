@@ -90,3 +90,9 @@ variable "url_path" {
   description = "Slack url path"
   default     = "/services/T02DYEB3A/BS16X2JGY/r9e1CJYez7BDmwyliIl7WzLf"
 }
+
+variable "autostop_notify_rule_enabled" {
+  description = "Whether the notification rule should be enabled"
+  type        = "string"
+  default     = "false"
+}
