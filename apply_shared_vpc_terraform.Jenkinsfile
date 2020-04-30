@@ -223,13 +223,13 @@ pipeline {
           }
         }
 
-        stage('Delius Shared Monitoring') {
-          steps {
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              do_terraform(project.config, environment_name, project.network, 'shared-monitoring')
-            }
-          }
-        }
+        // stage('Delius Shared Monitoring') {
+        //   steps {
+        //     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+        //       do_terraform(project.config, environment_name, project.network, 'shared-monitoring')
+        //     }
+        //   }
+        // }
 
         stage('Delius SES') {
           steps {
