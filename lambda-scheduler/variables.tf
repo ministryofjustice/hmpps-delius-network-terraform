@@ -73,7 +73,7 @@ variable "tags" {
 
 variable "rate_schedule_expression" {
   description = "Rate to check calendar events"
-  default     = "rate(20 minutes)"
+  default     = "cron(0/20 * * * ? *)"
 }
 
 variable "calender_content_doc" {
