@@ -94,4 +94,5 @@ module "autostop-notify" {
   event_rule_enabled             = "${var.autostop_notify_rule_enabled}"
   channel                        = "${var.channel}"
   url_path                       = "${var.url_path}"
+  tagged_user                    = "${var.tagged_user}"
 }
