@@ -20,7 +20,7 @@ project.network_version   = ''
 //       description: 'Whether to require manual confirmation of terraform plans.'
 def get_version(env_name, repo_name, override_version) {
   ssm_param_version = sh (
-    script: "aws ssm get-parameters --region eu-west-2 --name \"/versions/delius-core/repo/${repo_name}/${env_name}\" --query Parameters | jq '.[] | select(.Name | test(\"${env_name}\")) | .Value' --raw-output",
+    script: "aws ssm get-parameters --region eu-west-2 --name \"/versions/vpc-network/repo/${repo_name}/${env_name}\" --query Parameters | jq '.[] | select(.Name | test(\"${env_name}\")) | .Value' --raw-output",
     returnStdout: true
   ).trim()
 
