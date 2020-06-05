@@ -1,6 +1,8 @@
 def project = [:]
 project.config    = 'hmpps-env-configs'
 project.network   = 'hmpps-delius-network-terraform'
+project.config_version  = ''
+project.network_version   = ''
 
 // Parameters required for job
 // parameters:
@@ -16,6 +18,44 @@ project.network   = 'hmpps-delius-network-terraform'
 //     booleanParam:
 //       name: 'confirmation'
 //       description: 'Whether to require manual confirmation of terraform plans.'
+def get_version(env_name, repo_name, override_version) {
+  ssm_param_version = sh (
+    script: "aws ssm get-parameters --region eu-west-2 --name \"/versions/vpc-network/repo/${repo_name}/${env_name}\" --query Parameters | jq '.[] | select(.Name | test(\"${env_name}\")) | .Value' --raw-output",
+    returnStdout: true
+  ).trim()
+
+  echo "ssm_param_version - " + ssm_param_version
+  echo "override_version - " + override_version
+
+  if (ssm_param_version!="" && override_version=="master") {
+    return ":refs/tags/" + ssm_param_version
+  } else {
+    return override_version
+  }
+}
+
+def checkout_version(git_project_dir, git_version) {
+  sh """
+    #!/usr/env/bin bash
+    set +e
+    pushd "${git_project_dir}"
+    git checkout "${git_version}"
+    echo `git symbolic-ref -q --short HEAD || git describe --tags --exact-match`
+    popd
+  """
+}
+
+def debug_env(git_project_dir, git_version) {
+  sh """
+    #!/usr/env/bin bash
+    set +e
+    pushd "${git_project_dir}"
+    git branch
+    git describe --tags
+    echo `git symbolic-ref -q --short HEAD || git describe --tags --exact-match`
+    popd
+  """
+}
 
 def prepare_env() {
     sh '''
@@ -140,12 +180,47 @@ pipeline {
 
         stage('setup') {
             steps {
+                script {
+                  def starttime = new Date()
+                  println ("Started on " + starttime)
+
+                  project.config_version = get_version(environment_name, project.config, env.CONFIG_BRANCH)
+                  println("Version from function (project.config_version) -- " + project.config_version)
+
+                  project.network_version  = get_version(environment_name, project.network, env.NETWORK_BRANCH)
+                  println("Version from function (project.network_version) -- " + project.network_version)
+
+                  def information = """
+                  Started on ${starttime}
+                  project.config_version -- ${project.config_version}
+                  project.network_version  -- ${project.network_version}
+                  """
+
+                  println information
+                }
+
+                slackSend(message: "\"Apply\" of \"${project.network_version}\" started on \"${environment_name}\" - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace(':8080','')}|Open>)")
+
                 dir( project.config ) {
-                  git url: 'git@github.com:ministryofjustice/' + project.config, branch: env.CONFIG_BRANCH, credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
+                  checkout scm: [$class: 'GitSCM',
+                              userRemoteConfigs:
+                                [[url: 'git@github.com:ministryofjustice/' + project.config, credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a' ]],
+                              branches:
+                                [[name: project.config_version]]],
+                              poll: false
                 }
+                debug_env(project.config, project.config_version)
+
+
                 dir( project.network ) {
-                  git url: 'git@github.com:ministryofjustice/' + project.network, branch: env.NETWORK_BRANCH, credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
+                  checkout scm: [$class: 'GitSCM',
+                              userRemoteConfigs:
+                                [[url: 'git@github.com:ministryofjustice/' + project.network, credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a' ]],
+                              branches:
+                                [[name: project.network_version]]],
+                              poll: false
                 }
+                debug_env(project.network, project.network_version)
 
                 prepare_env()
             }
@@ -275,7 +350,12 @@ pipeline {
     post {
         always {
             deleteDir()
-
+        }
+        success {
+            slackSend(message: "\"Apply\" of \"${project.network_version}\" completed on \"${environment_name}\" - ${env.JOB_NAME} ${env.BUILD_NUMBER} ", color: 'good')
+        }
+        failure {
+            slackSend(message: "\"Apply\" of \"${project.network_version}\" failed on \"${environment_name}\" - ${env.JOB_NAME} ${env.BUILD_NUMBER} ", color: 'danger')
         }
     }
 
