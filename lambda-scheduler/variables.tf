@@ -83,7 +83,9 @@ variable "calender_content_doc" {
 
 variable "channel" {
   description = "Slack channel to send notification"
-  default     = "delius_infra_ops"
+  #default     = "delius_infra_ops"
+  default     = "ndmis-non-prod-alerts"
+
 }
 
 variable "url_path" {
@@ -100,4 +102,11 @@ variable "autostop_notify_rule_enabled" {
 variable "tagged_user" {
   description = "Users to be tagged in alerts"
   default = ""
+}
+
+#Autostop Instance
+variable "bastion_inventory" {}
+
+variable "remote_state_bucket_name" {
+  description = "Terraform remote state bucket name"
 }
