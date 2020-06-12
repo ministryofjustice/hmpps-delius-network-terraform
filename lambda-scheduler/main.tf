@@ -58,6 +58,6 @@ locals {
   ec2_role_policy_file         = "policies/ec2.json"
   tags = "${merge(
     var.tags,
-    map("autostop-${var.environment_type}", "False")
+    map("autostop-${var.environment_type}", "Phase1")
   )}"
 }
