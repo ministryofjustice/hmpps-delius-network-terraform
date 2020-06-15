@@ -49,8 +49,6 @@ data "terraform_remote_state" "common" {
 
 locals {
   app_name                     = "auto-start"
-  environment_identifier       = "${data.terraform_remote_state.common.environment_identifier}"
-  short_environment_identifier = "${data.terraform_remote_state.common.short_environment_identifier}"
   internal_domain              = "${data.terraform_remote_state.vpc.private_zone_name}"
   sg_bastion_in                = "${data.terraform_remote_state.security-groups.sg_ssh_bastion_in_id}"
   sg_https_out                 = "${data.terraform_remote_state.security-groups.sg_https_out}"

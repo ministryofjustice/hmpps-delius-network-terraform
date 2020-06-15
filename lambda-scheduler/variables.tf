@@ -111,3 +111,7 @@ variable "remote_state_bucket_name" {
 variable "create_autostop_instance" {
   default     = "false"
 }
+
+variable "short_environment_identifier" {}
+
+variable "environment_identifier" {}
