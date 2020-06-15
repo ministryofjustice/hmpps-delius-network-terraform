@@ -40,7 +40,7 @@ data "template_file" "iam_policy_app" {
 module "iam_app_role" {
   source        = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//iam//role"
   policyfile    = "${local.ec2_policy_file}"
-  rolename      = "${local.short_environment_identifier}-${local.app_name}"
+  rolename      = "${var.short_environment_identifier}-${local.app_name}"
 }
 
 #-------------------------------------------------------------
@@ -74,8 +74,8 @@ data "template_file" "autostop_user_data" {
     private_domain        = "${local.internal_domain}"
     account_id            = "${data.terraform_remote_state.vpc.vpc_account_id}"
     environment_name      = "${var.environment_name}"
-    env_identifier        = "${local.environment_identifier}"
-    short_env_identifier  = "${local.short_environment_identifier}"
+    env_identifier        = "${var.environment_identifier}"
+    short_env_identifier  = "${var.short_environment_identifier}"
     region                = "${var.region}"
   }
 }
