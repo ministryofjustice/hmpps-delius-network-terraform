@@ -101,3 +101,13 @@ variable "tagged_user" {
   description = "Users to be tagged in alerts"
   default = ""
 }
+
+variable "bastion_inventory" {}
+
+variable "remote_state_bucket_name" {
+  description = "Terraform remote state bucket name"
+}
+
+variable "create_autostop_instance" {
+  default     = "false"
+}
