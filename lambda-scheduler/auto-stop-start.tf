@@ -88,7 +88,7 @@ module "calendar" {
 
 ###Notify in slack that instance will go down in 60mins
 module "autostop-notify" {
-  source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=ALS_867//modules//auto-start//auto-stop-notify"
+  source                         = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//auto-start//auto-stop-notify"
   name                           = "${var.environment_name}"
   cloudwatch_schedule_expression = "${var.stop_cloudwatch_notification_schedule_expression}"
   event_rule_enabled             = "${var.autostop_notify_rule_enabled}"
