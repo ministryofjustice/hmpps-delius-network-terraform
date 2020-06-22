@@ -81,7 +81,6 @@ def plan_submodule(config_dir, env_name, git_project_dir, submodule_name) {
                 if [ -d .terraform ]; then rm -rf .terraform; fi; sleep 5; \
                 terragrunt init; \
                 terragrunt plan -detailed-exitcode --out ${env_name}.plan > tf.plan.out; \
-                terragrunt apply ${env_name}.plan; \
                 exitcode=\\\"\\\$?\\\"; \
                 cat tf.plan.out; \
                 if [ \\\"\\\$exitcode\\\" == '1' ]; then exit 1; fi; \
@@ -118,6 +117,26 @@ def apply_submodule(config_dir, env_name, git_project_dir, submodule_name) {
     }
 }
 
+def 0_12_checklist_submodule(config_dir, env_name, git_project_dir, submodule_name) {
+    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
+        sh """
+        #!/usr/env/bin bash
+        echo "TF 0.12checklist for ${env_name} | ${submodule_name} - component from git project ${git_project_dir}"
+        set +e
+        cp -R -n "${config_dir}" "${git_project_dir}/env_configs"
+        cd "${git_project_dir}"
+        docker run --rm \
+        -v `pwd`:/home/tools/data \
+        -v ~/.aws:/home/tools/.aws mojdigitalstudio/hmpps-terraform-builder-0-11-14:latest \
+        bash -c "\
+            source env_configs/${env_name}/${env_name}.properties; \
+            cd ${submodule_name}; \
+            terragrunt 0.12checklist"
+        set -e
+        """
+    }
+}
+
 def confirm() {
     try {
         timeout(time: 15, unit: 'MINUTES') {
@@ -141,23 +160,25 @@ def confirm() {
 
 def do_terraform(config_dir, env_name, git_project, component) {
     plancode = plan_submodule(config_dir, env_name, git_project, component)
-    if (plancode == "2") {
-        if ("${confirmation}" == "true") {
-            confirm()
-        } else {
-            env.Continue = true
-        }
-        if (env.Continue == "true") {
-            apply_submodule(config_dir, env_name, git_project, component)
-        }
-    }
-    else if (plancode == "3") {
-        apply_submodule(config_dir, env_name, git_project, component)
-        env.Continue = true
-    }
-    else {
-        env.Continue = true
-    }
+    apply_submodule(config_dir, env_name, git_project, component)
+    0_12_checklist_submodule(config_dir, env_name, git_project, component)
+    // if (plancode == "2") {
+    //     if ("${confirmation}" == "true") {
+    //         confirm()
+    //     } else {
+    //         env.Continue = true
+    //     }
+    //     if (env.Continue == "true") {
+    //         apply_submodule(config_dir, env_name, git_project, component)
+    //     }
+    // }
+    // else if (plancode == "3") {
+    //     apply_submodule(config_dir, env_name, git_project, component)
+    //     env.Continue = true
+    // }
+    // else {
+    //     env.Continue = true
+    // }
 }
 
 def debug_env() {
