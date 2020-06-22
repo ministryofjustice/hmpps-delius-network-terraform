@@ -81,7 +81,7 @@ def plan_submodule(config_dir, env_name, git_project_dir, submodule_name) {
                 if [ -d .terraform ]; then rm -rf .terraform; fi; sleep 5; \
                 terragrunt init; \
                 terragrunt plan -detailed-exitcode --out ${env_name}.plan > tf.plan.out; \
-                terragrunt apply ${env_name}.plan \
+                terragrunt apply ${env_name}.plan; \
                 exitcode=\\\"\\\$?\\\"; \
                 cat tf.plan.out; \
                 if [ \\\"\\\$exitcode\\\" == '1' ]; then exit 1; fi; \
