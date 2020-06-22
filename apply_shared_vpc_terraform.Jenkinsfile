@@ -117,7 +117,7 @@ def apply_submodule(config_dir, env_name, git_project_dir, submodule_name) {
     }
 }
 
-def 0_12_checklist_submodule(config_dir, env_name, git_project_dir, submodule_name) {
+def checklist_submodule(config_dir, env_name, git_project_dir, submodule_name) {
     wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
         sh """
         #!/usr/env/bin bash
@@ -161,7 +161,7 @@ def confirm() {
 def do_terraform(config_dir, env_name, git_project, component) {
     plancode = plan_submodule(config_dir, env_name, git_project, component)
     apply_submodule(config_dir, env_name, git_project, component)
-    0_12_checklist_submodule(config_dir, env_name, git_project, component)
+    checklist_submodule(config_dir, env_name, git_project, component)
     // if (plancode == "2") {
     //     if ("${confirmation}" == "true") {
     //         confirm()
