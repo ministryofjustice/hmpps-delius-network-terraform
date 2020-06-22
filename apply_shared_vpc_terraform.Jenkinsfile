@@ -229,6 +229,7 @@ pipeline {
         stage('Delius VPC') {
           steps {
             script {
+              println("Delius VPC")
               do_terraform(project.config, environment_name, project.network, 'vpc')
             }
           }
@@ -237,6 +238,7 @@ pipeline {
         stage('Delius Peering Connection') {
           steps {
             script {
+              println("Delius Peering Connection")
               do_terraform(project.config, environment_name, project.network, 'peering-connection')
             }
           }
@@ -245,6 +247,7 @@ pipeline {
         stage('Delius Internetgateway') {
           steps {
             script {
+              println("Delius Internetgateway")
               do_terraform(project.config, environment_name, project.network, 'internetgateway')
             }
           }
@@ -253,6 +256,7 @@ pipeline {
         stage('Delius Natgateway') {
           steps {
             script {
+              println("Delius Natgateway")
               do_terraform(project.config, environment_name, project.network, 'natgateway')
             }
           }
@@ -261,6 +265,7 @@ pipeline {
         stage('Delius Routes') {
           steps {
             script {
+              println("Delius Routes")
               do_terraform(project.config, environment_name, project.network, 'routes')
             }
           }
@@ -269,6 +274,7 @@ pipeline {
         stage('Delius Security Groups') {
           steps {
             script {
+              println("Delius Security Groups")
               do_terraform(project.config, environment_name, project.network, 'security-groups')
             }
           }
@@ -277,6 +283,7 @@ pipeline {
         stage('Persistent eip') {
           steps {
             script {
+              println("Persistent eip")
               do_terraform(project.config, environment_name, project.network, 'persistent-eip')
             }
           }
@@ -285,6 +292,7 @@ pipeline {
         stage('S3 - OracleDB Backups') {
           steps {
             script {
+              println("S3 - OracleDB Backups")
               do_terraform(project.config, environment_name, project.network, 's3/oracledb-backups')
             }
           }
@@ -293,6 +301,7 @@ pipeline {
         stage('S3 - LDAP Backups') {
           steps {
             script {
+              println("S3 - LDAP Backups")
               do_terraform(project.config, environment_name, project.network, 's3/ldap-backups')
             }
           }
@@ -301,6 +310,7 @@ pipeline {
         // stage('Delius Shared Monitoring') {
         //   steps {
         //     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+        //           println("Delius Shared Monitoring")
         //       do_terraform(project.config, environment_name, project.network, 'shared-monitoring')
         //     }
         //   }
@@ -309,7 +319,8 @@ pipeline {
         stage('Delius SES') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              do_terraform(project.config, environment_name, project.network, 'ses')
+              println("Delius SES (SKIPPING)")
+              // do_terraform(project.config, environment_name, project.network, 'ses')
             }
           }
         }
@@ -317,6 +328,7 @@ pipeline {
         stage('Delius SMTP-Server') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              println("Delius SMTP-Server")
               do_terraform(project.config, environment_name, project.network, 'smtp-server')
             }
           }
@@ -325,6 +337,7 @@ pipeline {
         stage('Delius Lambda-Scheduler') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              println("Delius Lambda-Scheduler")
               do_terraform(project.config, environment_name, project.network, 'lambda-scheduler')
             }
           }
@@ -333,6 +346,7 @@ pipeline {
         stage('Delius Shared ECS Cluster') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              println("Delius Shared ECS Cluster")
               do_terraform(project.config, environment_name, project.network, 'ecs-cluster')
             }
           }
@@ -341,6 +355,7 @@ pipeline {
         stage('Testing - Chaosmonkey') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              println("Testing - Chaosmonkey")
               do_terraform(project.config, environment_name, project.network, 'testing/chaosmonkey')
             }
           }
