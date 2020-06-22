@@ -3,6 +3,7 @@ project.config    = 'hmpps-env-configs'
 project.network   = 'hmpps-delius-network-terraform'
 project.config_version  = ''
 project.network_version   = ''
+container_image = "mojdigitalstudio/hmpps-terraform-builder-0-11-14:latest"
 
 // Parameters required for job
 // parameters:
@@ -58,10 +59,10 @@ def debug_env(git_project_dir, git_version) {
 }
 
 def prepare_env() {
-    sh '''
+    sh """
     #!/usr/env/bin bash
-    docker pull mojdigitalstudio/hmpps-terraform-builder:latest
-    '''
+    docker pull ${env.container_image}
+    """
 }
 
 def plan_submodule(config_dir, env_name, git_project_dir, submodule_name) {
@@ -74,7 +75,7 @@ def plan_submodule(config_dir, env_name, git_project_dir, submodule_name) {
         cd "${git_project_dir}"
         docker run --rm \
             -v `pwd`:/home/tools/data \
-            -v ~/.aws:/home/tools/.aws mojdigitalstudio/hmpps-terraform-builder \
+            -v ~/.aws:/home/tools/.aws ${env.container_image} \
             bash -c "\
                 source env_configs/${env_name}/${env_name}.properties; \
                 cd ${submodule_name}; \
@@ -107,7 +108,7 @@ def apply_submodule(config_dir, env_name, git_project_dir, submodule_name) {
         cd "${git_project_dir}"
         docker run --rm \
         -v `pwd`:/home/tools/data \
-        -v ~/.aws:/home/tools/.aws mojdigitalstudio/hmpps-terraform-builder \
+        -v ~/.aws:/home/tools/.aws ${env.container_image} \
         bash -c "\
             source env_configs/${env_name}/${env_name}.properties; \
             cd ${submodule_name}; \
