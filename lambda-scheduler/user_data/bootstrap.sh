@@ -63,18 +63,12 @@ ansible-playbook ~/bootstrap.yml
 
 cat << EOF > /root/.started.sh
 #!/usr/bin/env bash
-date=$(date)
-aws lambda invoke --function-name arn:aws:lambda:$HMPPS_REGION:$HMPPS_ACCOUNT_ID:function:$HMPPS_ENVIRONMENT-auto-stop-notification --payload '{ "action": "start" }' start.response.json --invocation-type Event --region $HMPPS_REGION > /var/log/started.sh.log 2>&1
-exit_code=$?
-echo "$date Invoked function and got exit code $exit_code" >> /var/log/started.sh.log
+aws lambda invoke --function-name arn:aws:lambda:$HMPPS_REGION:$HMPPS_ACCOUNT_ID:function:$HMPPS_ENVIRONMENT-auto-stop-notification --payload '{ "action": "start" }' start.response.json --invocation-type Event --region $HMPPS_REGION
 EOF
 
 cat << EOF > /root/.stopped.sh
 #!/usr/bin/env bash
-date=$(date)
-aws lambda invoke --function-name arn:aws:lambda:$HMPPS_REGION:$HMPPS_ACCOUNT_ID:function:$HMPPS_ENVIRONMENT-auto-stop-notification --payload '{ "action": "stop" }' stop.response.json --invocation-type Event  --region $HMPPS_REGION  > /var/log/stopped.sh.log 2>&1
-exit_code=$?
-echo "$date Invoked function and got exit code $exit_code" >> /var/log/stopped.sh.log
+aws lambda invoke --function-name arn:aws:lambda:$HMPPS_REGION:$HMPPS_ACCOUNT_ID:function:$HMPPS_ENVIRONMENT-auto-stop-notification --payload '{ "action": "stop" }' stop.response.json --invocation-type Event  --region $HMPPS_REGION
 EOF
 
 chmod +x /root/.st*.sh
@@ -112,7 +106,6 @@ ExecStop=/root/.stopped.sh
 WantedBy=multi-user.target
 EOF
 
-touch /var/log/stopped.sh.log  /var/log/started.sh.log
 systemctl daemon-reload
 systemctl enable notifystop.service
 systemctl enable notifystart.service
