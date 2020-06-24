@@ -1,9 +1,9 @@
 variable "environment_name" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "region" {
@@ -32,7 +32,7 @@ variable "spg_app_name" {
 
 variable "jenkins_access_cidr_blocks" {
   description = "CIDRS for Jenkins to access"
-  type        = "list"
+  type        = list(string)
 }
 
 # MIS vars
@@ -49,6 +49,7 @@ variable "iaps_app_name" {
 
 # Engineering remote state (for RMAN security group details)
 variable "oracle_db_operation" {
-  type        = "map"
+  type        = map(string)
   description = "Engineering remote state and arn for Oracle OPs security groups"
 }
+

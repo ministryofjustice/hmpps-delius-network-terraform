@@ -1,10 +1,12 @@
 terraform {
   # The configuration for this backend will be filled in by Terragrunt
-  backend "s3" {}
+  # The configuration for this backend will be filled in by Terragrunt
+  backend "s3" {
+  }
 }
 
 provider "aws" {
-  region  = "${var.region}"
+  region  = var.region
   version = "~> 2.65"
 }
 
@@ -14,10 +16,10 @@ provider "aws" {
 data "terraform_remote_state" "vpc" {
   backend = "s3"
 
-  config {
-    bucket = "${var.remote_state_bucket_name}"
+  config = {
+    bucket = var.remote_state_bucket_name
     key    = "vpc/terraform.tfstate"
-    region = "${var.region}"
+    region = var.region
   }
 }
 
@@ -27,10 +29,11 @@ data "terraform_remote_state" "vpc" {
 data "terraform_remote_state" "ora_db_op_security_groups" {
   backend = "s3"
 
-  config {
-    bucket   = "${var.oracle_db_operation["eng_remote_state_bucket_name"]}"
+  config = {
+    bucket   = var.oracle_db_operation["eng_remote_state_bucket_name"]
     key      = "oracle-db-operation/security-groups/terraform.tfstate"
-    region   = "${var.region}"
-    role_arn = "${var.oracle_db_operation["eng_role_arn"]}"
+    region   = var.region
+    role_arn = var.oracle_db_operation["eng_role_arn"]
   }
 }
+

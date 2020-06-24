@@ -2,9 +2,15 @@
 # External
 resource "aws_security_group" "alfresco_external_lb_in" {
   name        = "${var.environment_name}-delius-core-${var.alfresco_app_name}-external-lb-in"
-  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
   description = "External LB incoming"
-  tags        = "${merge(var.tags, map("Name", "${var.environment_name}_${var.alfresco_app_name}_external-lb_in_in", "Type", "WEB"))}"
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "${var.environment_name}_${var.alfresco_app_name}_external-lb_in_in"
+      "Type" = "WEB"
+    },
+  )
 
   lifecycle {
     create_before_destroy = true
@@ -14,9 +20,15 @@ resource "aws_security_group" "alfresco_external_lb_in" {
 # NGINX
 resource "aws_security_group" "alfresco_nginx_in" {
   name        = "${var.environment_name}-delius-core-${var.alfresco_app_name}-nginx-in"
-  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
   description = "Nginx incoming"
-  tags        = "${merge(var.tags, map("Name", "${var.environment_name}_${var.alfresco_app_name}_nginx_in", "Type", "WEB"))}"
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "${var.environment_name}_${var.alfresco_app_name}_nginx_in"
+      "Type" = "WEB"
+    },
+  )
 
   lifecycle {
     create_before_destroy = true
@@ -26,33 +38,52 @@ resource "aws_security_group" "alfresco_nginx_in" {
 # RDS
 resource "aws_security_group" "alfresco_db_in" {
   name        = "${var.environment_name}-delius-core-${var.alfresco_app_name}-db-in"
-  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
   description = "db incoming"
-  tags        = "${merge(var.tags, map("Name", "${var.environment_name}_${var.alfresco_app_name}_db_in", "Type", "DB"))}"
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "${var.environment_name}_${var.alfresco_app_name}_db_in"
+      "Type" = "DB"
+    },
+  )
 
   lifecycle {
     create_before_destroy = true
   }
 }
 
-
 resource "aws_security_group_rule" "alfresco_db_in" {
-  security_group_id = "${aws_security_group.alfresco_db_in.id}"
+  security_group_id = aws_security_group.alfresco_db_in.id
   type              = "ingress"
   protocol          = "tcp"
   from_port         = "5432"
   to_port           = "5432"
-  cidr_blocks       = [ "${data.terraform_remote_state.vpc.eng_vpc_cidr}" ]
-  description       = "TF - alfresco_db_in"
+  # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
+  # force an interpolation expression to be interpreted as a list by wrapping it
+  # in an extra set of list brackets. That form was supported for compatibility in
+  # v0.11, but is no longer supported in Terraform v0.12.
+  #
+  # If the expression in the following list itself returns a list, remove the
+  # brackets to avoid interpretation as a list of lists. If the expression
+  # returns a single list item then leave it as-is and remove this TODO comment.
+  cidr_blocks = [data.terraform_remote_state.vpc.outputs.eng_vpc_cidr]
+  description = "TF - alfresco_db_in"
 }
 
 #API
 # Internal
 resource "aws_security_group" "alfresco_internal_lb_in" {
   name        = "${var.environment_name}-delius-core-${var.alfresco_app_name}-internal-lb-in"
-  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
   description = "internal LB incoming"
-  tags        = "${merge(var.tags, map("Name", "${var.environment_name}_${var.alfresco_app_name}_internal-lb_in_in", "Type", "WEB"))}"
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "${var.environment_name}_${var.alfresco_app_name}_internal-lb_in_in"
+      "Type" = "WEB"
+    },
+  )
 
   lifecycle {
     create_before_destroy = true
@@ -61,9 +92,15 @@ resource "aws_security_group" "alfresco_internal_lb_in" {
 
 resource "aws_security_group" "alfresco_api_in" {
   name        = "${var.environment_name}-delius-core-${var.alfresco_app_name}-api-in"
-  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
   description = "api incoming"
-  tags        = "${merge(var.tags, map("Name", "${var.environment_name}_${var.alfresco_app_name}_api_in", "Type", "API"))}"
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "${var.environment_name}_${var.alfresco_app_name}_api_in"
+      "Type" = "API"
+    },
+  )
 
   lifecycle {
     create_before_destroy = true
@@ -73,9 +110,15 @@ resource "aws_security_group" "alfresco_api_in" {
 # Elasticache
 resource "aws_security_group" "alfresco_elasticache_in" {
   name        = "${var.environment_name}-${var.alfresco_app_name}-elasticache-in"
-  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
   description = "elasticache incoming"
-  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}_${var.alfresco_app_name}_elasticache_in", "Type", "DB"))}"
+  tags = merge(
+    data.terraform_remote_state.vpc.outputs.tags,
+    {
+      "Name" = "${var.environment_name}_${var.alfresco_app_name}_elasticache_in"
+      "Type" = "DB"
+    },
+  )
 
   lifecycle {
     create_before_destroy = true
@@ -85,9 +128,15 @@ resource "aws_security_group" "alfresco_elasticache_in" {
 # EFS
 resource "aws_security_group" "alfresco_efs_in" {
   name        = "${var.environment_name}-${var.alfresco_app_name}-efs-in"
-  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
   description = "efs incoming"
-  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}_${var.alfresco_app_name}_efs_in", "Type", "DB"))}"
+  tags = merge(
+    data.terraform_remote_state.vpc.outputs.tags,
+    {
+      "Name" = "${var.environment_name}_${var.alfresco_app_name}_efs_in"
+      "Type" = "DB"
+    },
+  )
 
   lifecycle {
     create_before_destroy = true
@@ -97,11 +146,18 @@ resource "aws_security_group" "alfresco_efs_in" {
 # Elasticsearch
 resource "aws_security_group" "alfresco_es_in" {
   name        = "${var.environment_name}-${var.alfresco_app_name}-elasticsearch-in"
-  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
   description = "elasticsearch"
-  tags        = "${merge(data.terraform_remote_state.vpc.tags, map("Name", "${var.environment_name}_${var.alfresco_app_name}_elasticsearch_in", "Type", "DB"))}"
+  tags = merge(
+    data.terraform_remote_state.vpc.outputs.tags,
+    {
+      "Name" = "${var.environment_name}_${var.alfresco_app_name}_elasticsearch_in"
+      "Type" = "DB"
+    },
+  )
 
   lifecycle {
     create_before_destroy = true
   }
 }
+
