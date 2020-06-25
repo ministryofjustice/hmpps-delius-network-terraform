@@ -1,9 +1,4 @@
-terraform {
-  # The configuration for this backend will be filled in by Terragrunt
-  backend "s3" {}
-}
-
-provider "aws" {
-  region  = "${var.region}"
-  version = "~> 2.65"
-}
+## The configuration for this backend will be filled in by Terragrunt
+## it will create these files from ../terragrunt.hcl
+## provider.tf
+## backend.tf
