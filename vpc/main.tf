@@ -1,12 +1,7 @@
-terraform {
-  # The configuration for this backend will be filled in by Terragrunt
-  backend "s3" {}
-}
-
-provider "aws" {
-  region  = "${var.region}"
-  version = "~> 2.65"
-}
+## The configuration for this backend will be filled in by Terragrunt
+## it will create these files from ../terragrunt.hcl
+## provider.tf
+## backend.tf
 
 provider "aws" {
   alias = "delius_prod_acct_r53_delegation"
@@ -55,7 +50,7 @@ data "terraform_remote_state" "bastion_remote_vpc" {
 ## Lambda to snapshot volumes periodically
 
 module "create_snapshot_lambda" {
-  source            = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git?ref=master//modules//ebs-backup"
+  source            = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git//modules/ebs-backup?ref=ALS-884-TF_12Spike_0.1.0_tf0.12"
   cron_expression   = "30 1 * * ? *"
   regions           = ["${var.region}"]
   rolename_prefix   = "${var.environment_identifier}"
