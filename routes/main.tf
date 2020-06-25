@@ -70,7 +70,7 @@ locals {
 # MODULES
 ############################
 module "route-to-internet" {
-  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git//modules/routes/internetgateway?ref=master"
+  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git//modules/routes/internetgateway?ref=ALS-884-TF_12Spike_0.1.0_tf0.12"
   route_table_id         = local.route_table_public_ids
   destination_cidr_block = local.destination_cidr_blocks
   gateway_id             = data.terraform_remote_state.internetgateway.outputs.internetgateway_env_igw_id
@@ -81,7 +81,7 @@ module "route-to-internet" {
 # ## be deleted.
 # # PRIVATE NETWORK
 module "route-private-to-nat" {
-  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git//modules/routes/natgateway?ref=master"
+  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git//modules/routes/natgateway?ref=ALS-884-TF_12Spike_0.1.0_tf0.12"
   route_table_id         = local.route_table_private_ids
   destination_cidr_block = local.destination_cidr_blocks
   nat_gateway_id         = local.nat_gateway_ids
@@ -92,9 +92,8 @@ module "route-private-to-nat" {
 # ## be deleted.
 # # DB NETWORK
 module "route-db-to-nat" {
-  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git//modules/routes/natgateway?ref=master"
+  source                 = "git::https://github.com/ministryofjustice/hmpps-terraform-modules.git//modules/routes/natgateway?ref=ALS-884-TF_12Spike_0.1.0_tf0.12"
   route_table_id         = local.route_table_db_ids
   destination_cidr_block = local.destination_cidr_blocks
   nat_gateway_id         = local.nat_gateway_ids
 }
-
