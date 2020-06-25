@@ -1,9 +1,9 @@
 variable "environment_name" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "remote_state_bucket_name" {
@@ -12,5 +12,6 @@ variable "remote_state_bucket_name" {
 
 variable "region" {
   description = "AWS Region"
-  type        = "string"
+  type        = string
 }
+
