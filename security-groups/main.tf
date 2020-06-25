@@ -1,15 +1,3 @@
-terraform {
-  # The configuration for this backend will be filled in by Terragrunt
-  # The configuration for this backend will be filled in by Terragrunt
-  backend "s3" {
-  }
-}
-
-provider "aws" {
-  region  = var.region
-  version = "~> 2.65"
-}
-
 #-------------------------------------------------------------
 ### Getting the current vpc
 #-------------------------------------------------------------
@@ -36,4 +24,3 @@ data "terraform_remote_state" "ora_db_op_security_groups" {
     role_arn = var.oracle_db_operation["eng_role_arn"]
   }
 }
-
