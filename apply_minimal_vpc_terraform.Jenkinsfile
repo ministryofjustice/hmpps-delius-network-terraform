@@ -151,45 +151,45 @@ pipeline {
             }
         }
 
-        stage('Delius VPC') {
+        stage('Delius Minimal VPC') {
           steps {
             script {
-              do_terraform(project.config, environment_name, project.network, 'vpc')
+              do_terraform(project.config, environment_name, project.network, 'vpc-minimal-only')
             }
           }
         }
-
-        stage('Delius Peering Connection') {
-          steps {
-            script {
-              do_terraform(project.config, environment_name, project.network, 'peering-connection')
-            }
-          }
-        }
-
-        stage('Delius Internetgateway') {
-          steps {
-            script {
-              do_terraform(project.config, environment_name, project.network, 'internetgateway')
-            }
-          }
-        }
-
-        stage('Delius Natgateway') {
-          steps {
-            script {
-              do_terraform(project.config, environment_name, project.network, 'natgateway')
-            }
-          }
-        }
-
-        stage('Delius Routes') {
-          steps {
-            script {
-              do_terraform(project.config, environment_name, project.network, 'routes')
-            }
-          }
-        }
+//
+//        stage('Delius Peering Connection') {
+//          steps {
+//            script {
+//              do_terraform(project.config, environment_name, project.network, 'peering-connection')
+//            }
+//          }
+//        }
+//
+//        stage('Delius Internetgateway') {
+//          steps {
+//            script {
+//              do_terraform(project.config, environment_name, project.network, 'internetgateway')
+//            }
+//          }
+//        }
+//
+//        stage('Delius Natgateway') {
+//          steps {
+//            script {
+//              do_terraform(project.config, environment_name, project.network, 'natgateway')
+//            }
+//          }
+//        }
+//
+//        stage('Delius Routes') {
+//          steps {
+//            script {
+//              do_terraform(project.config, environment_name, project.network, 'routes')
+//            }
+//          }
+//        }
 
 
 //THESE STAGES ARE COMMENTED OUT AS NOT REQUIRED BY SPG NEW STACK
