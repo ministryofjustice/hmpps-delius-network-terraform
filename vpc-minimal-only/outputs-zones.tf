@@ -1,4 +1,9 @@
 
+output "private_zone_id" {
+  value = "${aws_route53_zone.internal_zone.zone_id}"
+}
+
+
 output "strategic_public_zone_id" {
   # Currently we do not create the strategic_zone in Production, as it is still managed by Ansible unlike the other
   # environments. We conditionally create this by using a tertiary statement in the `count` field on the relevant
