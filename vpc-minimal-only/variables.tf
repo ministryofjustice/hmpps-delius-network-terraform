@@ -19,10 +19,7 @@ variable "remote_state_bucket_name" {
   description = "Terraform remote state bucket name for the sub vpc (ie sandpit2, sandpit3)"
 }
 
-variable "network_and_legacy_spg_remote_state_bucket_name" {
-  default="n/a"
-  description = "Terraform remote state bucket name for the parent vpc (ie sandpit)"
-}
+
 
 
 variable "region" {

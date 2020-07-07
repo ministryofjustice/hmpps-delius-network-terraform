@@ -10,7 +10,7 @@ resource "aws_route53_zone" "internal_zone" {
   name = "${local.route53_internal_domain}"
 
   vpc {
-    vpc_id = "${data.terraform_remote_state.vpc_main.vpc_id}"
+    vpc_id = "${data.terraform_remote_state.vpc_main_sandpit.vpc_id}"
   }
 }
 
