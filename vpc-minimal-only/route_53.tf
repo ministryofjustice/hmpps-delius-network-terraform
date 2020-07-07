@@ -5,6 +5,16 @@ locals {
 }
 
 
+# Private internal zone for easier lookups
+resource "aws_route53_zone" "internal_zone" {
+  name = "${local.route53_internal_domain}"
+
+  vpc {
+    vpc_id = "${data.terraform_remote_state.vpc_main.vpc_id}"
+  }
+}
+
+
 # Strategic *.probation.service.justice.gov.uk public domain
 resource "aws_route53_zone" "strategic_zone" {
   # Prod strategic zone is handled by Ansible
