@@ -2,6 +2,25 @@ def project = [:]
 project.config    = 'hmpps-env-configs'
 project.network   = 'hmpps-delius-network-terraform'
 
+
+//This module is purely for adding additional sandpit environments such as
+//
+//delius-core-sandpit-2
+//delius-core-sandpit-3
+//
+//etc
+//
+//only the hosted zones are required to make these environments work for the spg new stack
+//the extra environments are required due to contention on the regular sandpit environment.
+//
+//
+//this module is only built with "apply_domains_for_additional_sandpit_environments.Jenkinsfile"
+//
+//Non used components have been commented out in this file, should other developers wish to use this pattern
+//and require other modules
+
+
+
 // Parameters required for job
 // parameters:
 //     choice:
@@ -154,7 +173,7 @@ pipeline {
         stage('Delius Minimal VPC') {
           steps {
             script {
-              do_terraform(project.config, environment_name, project.network, 'vpc-minimal-only')
+              do_terraform(project.config, environment_name, project.network, 'domains-for-additional-sandpit-environments')
             }
           }
         }
