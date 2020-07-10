@@ -1,12 +1,6 @@
 #smtp lb
-
-locals {
- smtp_lb_name     = "${var.short_environment_identifier}-${local.app_name}"
-}
-
-
 resource "aws_elb" "smtp_lb" {
- name                  = "${local.smtp_lb_name}-elb"
+ name                  = "${var.environment_name}-${local.app_name}-elb"
  internal              = true
  subnets               = ["${local.private_subnet_ids}"]
  tags                  = "${var.tags}"
