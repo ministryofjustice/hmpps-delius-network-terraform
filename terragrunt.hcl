@@ -39,7 +39,7 @@ generate "provider" {
   contents  = <<EOF
 provider "aws" {
   region  = "${get_env("TG_REGION", "AWS-REGION")}"
-  version = "~> 2.65"
+  version = ">= 2.65"
 
   # Only these AWS Account IDs may be operated on by this template
   allowed_account_ids = ["${get_env("TG_ACCOUNT_ID", "ACCOUNT_ID")}"]
