@@ -58,10 +58,10 @@ def debug_env(git_project_dir, git_version) {
 }
 
 def prepare_env() {
-    sh '''
+    sh """
     #!/usr/env/bin bash
-    docker pull mojdigitalstudio/hmpps-terraform-builder:latest
-    '''
+    docker pull mojdigitalstudio/hmpps-terraform-builder-0-11-14:latest
+    """
 }
 
 def plan_submodule(config_dir, env_name, git_project_dir, submodule_name) {
@@ -74,20 +74,19 @@ def plan_submodule(config_dir, env_name, git_project_dir, submodule_name) {
         cd "${git_project_dir}"
         docker run --rm \
             -v `pwd`:/home/tools/data \
-            -v ~/.aws:/home/tools/.aws mojdigitalstudio/hmpps-terraform-builder \
+            -v ~/.aws:/home/tools/.aws \
+            mojdigitalstudio/hmpps-terraform-builder-0-11-14:latest \
             bash -c "\
                 source env_configs/${env_name}/${env_name}.properties; \
                 cd ${submodule_name}; \
                 if [ -d .terraform ]; then rm -rf .terraform; fi; sleep 5; \
                 terragrunt init; \
+                terragrunt refresh; \
                 terragrunt plan -detailed-exitcode --out ${env_name}.plan > tf.plan.out; \
                 exitcode=\\\"\\\$?\\\"; \
+                echo \\\"\\\$exitcode\\\" > plan_ret; \
                 cat tf.plan.out; \
                 if [ \\\"\\\$exitcode\\\" == '1' ]; then exit 1; fi; \
-                if [ \\\"\\\$exitcode\\\" == '2' ]; then \
-                    parse-terraform-plan -i tf.plan.out | jq '.changedResources[] | (.action != \\\"update\\\") or (.changedAttributes | to_entries | map(.key != \\\"tags.source-hash\\\") | reduce .[] as \\\$item (false; . or \\\$item))' | jq -e -s 'reduce .[] as \\\$item (false; . or \\\$item) == false'; \
-                    if [ \\\"\\\$?\\\" == '1' ]; then exitcode=2 ; else exitcode=3; fi; \
-                fi; \
                 echo \\\"\\\$exitcode\\\" > plan_ret;" \
             || exitcode="\$?"; \
             if [ "\$exitcode" == '1' ]; then exit 1; else exit 0; fi
@@ -107,11 +106,32 @@ def apply_submodule(config_dir, env_name, git_project_dir, submodule_name) {
         cd "${git_project_dir}"
         docker run --rm \
         -v `pwd`:/home/tools/data \
-        -v ~/.aws:/home/tools/.aws mojdigitalstudio/hmpps-terraform-builder \
+        -v ~/.aws:/home/tools/.aws \
+        mojdigitalstudio/hmpps-terraform-builder-0-11-14:latest \
         bash -c "\
             source env_configs/${env_name}/${env_name}.properties; \
             cd ${submodule_name}; \
             terragrunt apply ${env_name}.plan"
+        set -e
+        """
+    }
+}
+
+def checklist_submodule(config_dir, env_name, git_project_dir, submodule_name) {
+    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
+        sh """
+        #!/usr/env/bin bash
+        echo "TF 0.12checklist for ${env_name} | ${submodule_name} - component from git project ${git_project_dir}"
+        set +e
+        cp -R -n "${config_dir}" "${git_project_dir}/env_configs"
+        cd "${git_project_dir}"
+        docker run --rm \
+        -v `pwd`:/home/tools/data \
+        -v ~/.aws:/home/tools/.aws mojdigitalstudio/hmpps-terraform-builder-0-11-14:latest \
+        bash -c "\
+            source env_configs/${env_name}/${env_name}.properties; \
+            cd ${submodule_name}; \
+            terragrunt 0.12checklist"
         set -e
         """
     }
@@ -140,6 +160,7 @@ def confirm() {
 
 def do_terraform(config_dir, env_name, git_project, component) {
     plancode = plan_submodule(config_dir, env_name, git_project, component)
+    // checklist_submodule(config_dir, env_name, git_project, component)
     if (plancode == "2") {
         if ("${confirmation}" == "true") {
             confirm()
@@ -149,10 +170,6 @@ def do_terraform(config_dir, env_name, git_project, component) {
         if (env.Continue == "true") {
             apply_submodule(config_dir, env_name, git_project, component)
         }
-    }
-    else if (plancode == "3") {
-        apply_submodule(config_dir, env_name, git_project, component)
-        env.Continue = true
     }
     else {
         env.Continue = true
@@ -229,6 +246,7 @@ pipeline {
         stage('Delius VPC') {
           steps {
             script {
+              println("Delius VPC")
               do_terraform(project.config, environment_name, project.network, 'vpc')
             }
           }
@@ -237,6 +255,7 @@ pipeline {
         stage('Delius Peering Connection') {
           steps {
             script {
+              println("Delius Peering Connection")
               do_terraform(project.config, environment_name, project.network, 'peering-connection')
             }
           }
@@ -245,6 +264,7 @@ pipeline {
         stage('Delius Internetgateway') {
           steps {
             script {
+              println("Delius Internetgateway")
               do_terraform(project.config, environment_name, project.network, 'internetgateway')
             }
           }
@@ -253,6 +273,7 @@ pipeline {
         stage('Delius Natgateway') {
           steps {
             script {
+              println("Delius Natgateway")
               do_terraform(project.config, environment_name, project.network, 'natgateway')
             }
           }
@@ -261,6 +282,7 @@ pipeline {
         stage('Delius Routes') {
           steps {
             script {
+              println("Delius Routes")
               do_terraform(project.config, environment_name, project.network, 'routes')
             }
           }
@@ -269,6 +291,7 @@ pipeline {
         stage('Delius Security Groups') {
           steps {
             script {
+              println("Delius Security Groups")
               do_terraform(project.config, environment_name, project.network, 'security-groups')
             }
           }
@@ -277,6 +300,7 @@ pipeline {
         stage('Persistent eip') {
           steps {
             script {
+              println("Persistent eip")
               do_terraform(project.config, environment_name, project.network, 'persistent-eip')
             }
           }
@@ -285,6 +309,7 @@ pipeline {
         stage('S3 - OracleDB Backups') {
           steps {
             script {
+              println("S3 - OracleDB Backups")
               do_terraform(project.config, environment_name, project.network, 's3/oracledb-backups')
             }
           }
@@ -293,6 +318,7 @@ pipeline {
         stage('S3 - LDAP Backups') {
           steps {
             script {
+              println("S3 - LDAP Backups")
               do_terraform(project.config, environment_name, project.network, 's3/ldap-backups')
             }
           }
@@ -301,6 +327,7 @@ pipeline {
         // stage('Delius Shared Monitoring') {
         //   steps {
         //     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+        //           println("Delius Shared Monitoring")
         //       do_terraform(project.config, environment_name, project.network, 'shared-monitoring')
         //     }
         //   }
@@ -309,7 +336,8 @@ pipeline {
         stage('Delius SES') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              do_terraform(project.config, environment_name, project.network, 'ses')
+              println("Delius SES (SKIPPING)")
+              // do_terraform(project.config, environment_name, project.network, 'ses')
             }
           }
         }
@@ -317,6 +345,7 @@ pipeline {
         stage('Delius SMTP-Server') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              println("Delius SMTP-Server")
               do_terraform(project.config, environment_name, project.network, 'smtp-server')
             }
           }
@@ -325,6 +354,7 @@ pipeline {
         stage('Delius Lambda-Scheduler') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              println("Delius Lambda-Scheduler")
               do_terraform(project.config, environment_name, project.network, 'lambda-scheduler')
             }
           }
@@ -333,6 +363,7 @@ pipeline {
         stage('Delius Shared ECS Cluster') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              println("Delius Shared ECS Cluster")
               do_terraform(project.config, environment_name, project.network, 'ecs-cluster')
             }
           }
@@ -341,6 +372,7 @@ pipeline {
         stage('Testing - Chaosmonkey') {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              println("Testing - Chaosmonkey")
               do_terraform(project.config, environment_name, project.network, 'testing/chaosmonkey')
             }
           }

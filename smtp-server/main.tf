@@ -5,7 +5,7 @@ terraform {
 
 provider "aws" {
   region  = "${var.region}"
-  version = "~> 1.16"
+  version = ">= 2.65"
 }
 
 ####################################################
@@ -41,6 +41,7 @@ data "terraform_remote_state" "security-groups" {
 ### Getting the latest amazon ami
 #-------------------------------------------------------------
 data "aws_ami" "amazon_ami" {
+  owners      = ["895523100917"]
   most_recent = true
 
   filter {

@@ -61,3 +61,8 @@ run.sh
 
 .idea/
 *.iml
+
+*.out
+*.plan
+*/backend.tf
+*/provider.tf
