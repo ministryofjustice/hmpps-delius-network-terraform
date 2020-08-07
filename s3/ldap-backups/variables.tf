@@ -10,9 +10,12 @@ variable "region" {
   description = "The AWS region."
 }
 
-variable "ldap_config" {
+variable "default_ldap_config" {
+  description = "Default values to be overridden by ldap_config"
   type = "map"
-  default = {
-    backup_retention_days = 90
-  }
+}
+
+variable "ldap_config" {
+  description = "LDAP configuration"
+  type = "map"
 }
