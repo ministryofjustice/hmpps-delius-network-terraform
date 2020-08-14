@@ -1,9 +1,9 @@
 variable "environment_name" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "region" {
@@ -22,13 +22,17 @@ variable "route53_domain_private" {
   description = "Our private domain"
 }
 
-variable "short_environment_identifier" {}
+variable "short_environment_identifier" {
+}
 
-variable "project_name" {}
+variable "project_name" {
+}
 
-variable "environment_type" {}
+variable "environment_type" {
+}
 
-variable "bastion_inventory" {}
+variable "bastion_inventory" {
+}
 
 variable "project_name_abbreviated" {
   description = "Shortened environment name"
@@ -80,3 +84,4 @@ variable "cloudstor_plugin_version" {
   description = "Docker cloudstor ebs volume plugin version"
   default     = "docker4x/cloudstor:18.09.2-ce-aws1"
 }
+

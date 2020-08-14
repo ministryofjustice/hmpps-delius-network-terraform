@@ -38,7 +38,7 @@ output "monitoring_server_internal_url" {
 # }
 
 output "monitoring_server_client_sg_id" {
-  value = "${local.sg_monitoring_client}"
+  value = local.sg_monitoring_client
 }
 
 # EFS
@@ -57,11 +57,11 @@ output "monitoring_server_client_sg_id" {
 # s3buckets
 
 output "monitoring_server_bucket_name" {
-  value = "${aws_s3_bucket.backups.id}"
+  value = aws_s3_bucket.backups.id
 }
 
 output "monitoring_server_bucket_arn" {
-  value = "${aws_s3_bucket.backups.arn}"
+  value = aws_s3_bucket.backups.arn
 }
 
 # IAM
@@ -77,14 +77,13 @@ output "monitoring_server_bucket_arn" {
 
 # KMS Key
 output "monitoring_kms_arn" {
-  value = "${module.kms_key.kms_arn}"
+  value = module.kms_key.kms_arn
 }
 
 # logstash
 # output "internal_logstash_host" {
 #   value = "${aws_route53_record.internal_logstash_dns.fqdn}"
 # }
-
 # output "external_logstash_host" {
 #   value = "${aws_route53_record.external_logstash_dns.fqdn}"
 # }

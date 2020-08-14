@@ -57,12 +57,11 @@ fabric.properties
 
 env_configs/inspec*.properties
 attributes/*
-run.sh
 
 .idea/
 *.iml
 
 *.out
 *.plan
-*/backend.tf
-*/provider.tf
+**/backend.tf
+**/provider.tf

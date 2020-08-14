@@ -1,9 +1,9 @@
 variable "environment_name" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "region" {
@@ -22,17 +22,21 @@ variable "route53_domain_private" {
   description = "Our private domain"
 }
 
-variable "short_environment_identifier" {}
+variable "short_environment_identifier" {
+}
 
-variable "project_name" {}
+variable "project_name" {
+}
 
-variable "environment_type" {}
+variable "environment_type" {
+}
 
-variable "bastion_inventory" {}
+variable "bastion_inventory" {
+}
 
 variable "ce_instances" {
   description = "List of permitted EC2 instance types to use for AWS Batch compute Environment"
-  type        = "list"
+  type        = list(string)
 }
 
 variable "ce_max_vcpu" {
@@ -42,9 +46,11 @@ variable "ce_max_vcpu" {
 variable "ce_min_vcpu" {
   description = "Lower bound for active VCPUs in the AWS Batch Compute Environment. 0 means env will be scaled down when not required"
 }
+
 variable "ce_queue_state" {
   description = "State of the Batch Queue: ENABLED or DISABLED"
 }
+
 variable "chaosmonkey_job_image" {
   description = "Chaosmonkey Docker Image"
 }
@@ -59,15 +65,19 @@ variable "chaosmonkey_job_memory" {
 
 variable "chaosmonkey_job_retries" {
   description = "Number of retries for a failed Chaosmonkey job"
-  default = "1"
+  default     = "1"
 }
 
 variable "chaosmonkey_job_envvars" {
   description = "List of aps of Environment Variables to pass to Chaosmonkey batch job"
-  type        = "list"
+  type        = list(object({
+    name = string
+    value = string
+  }))
 }
 
 variable "chaosmonkey_job_ulimits" {
   description = "List of maps for ulimit values for Chaosmonkey batch job definition"
-  type        = "list"
+  type        = list(string)
 }
+

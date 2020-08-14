@@ -1,43 +1,58 @@
 # Instance variables
 
-variable "app_name" {}
-
-variable "environment_identifier" {}
-
-variable "ami_id" {}
-
-variable "instance_type" {}
-
-variable "subnet_id" {}
-
-variable "instance_profile" {}
-
-variable "user_data" {}
-
-variable "instance_tags" {
-  type = "map"
+variable "app_name" {
 }
 
-variable "ssh_deployer_key" {}
+variable "environment_identifier" {
+}
+
+variable "ami_id" {
+}
+
+variable "instance_type" {
+}
+
+variable "subnet_id" {
+}
+
+variable "instance_profile" {
+}
+
+variable "user_data" {
+}
+
+variable "instance_tags" {
+  type = map(string)
+}
+
+variable "ssh_deployer_key" {
+}
 
 variable "security_groups" {
-  type = "list"
+  type = list(string)
 }
 
 # Ebs volume variables
 variable "volume_tags" {
-  type = "map"
+  type = map(string)
 }
 
-variable "volume_availability_zone" {}
+variable "volume_availability_zone" {
+}
 
-variable "volume_size" {}
+variable "volume_size" {
+}
 
 #Route53
-variable "instance_id" {}
+variable "instance_id" {
+}
 
-variable "zone_name" {}
+variable "zone_name" {
+}
 
-variable "zone_id" {}
+variable "zone_id" {
+}
 
-variable "hostname" {}
+variable "hostname" {
+}
+

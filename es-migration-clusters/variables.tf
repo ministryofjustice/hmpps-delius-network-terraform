@@ -1,9 +1,9 @@
 variable "environment_name" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "region" {
@@ -22,15 +22,15 @@ variable "route53_domain_private" {
   description = "Our private domain"
 }
 
-variable "whitelist_monitoring_ips" {
-  description = "List of ips allowed to access the monitoring front end"
-  type = "list"
+variable "short_environment_identifier" {
 }
 
-variable "short_environment_identifier" {}
+variable "project_name" {
+}
 
-variable "project_name" {}
+variable "environment_type" {
+}
 
-variable "environment_type" {}
+variable "bastion_inventory" {
+}
 
-variable "bastion_inventory" {}
