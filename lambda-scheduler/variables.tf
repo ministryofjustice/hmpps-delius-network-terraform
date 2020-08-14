@@ -1,6 +1,8 @@
-variable "environment_name" {}
+variable "environment_name" {
+}
 
-variable "environment_type" {}
+variable "environment_type" {
+}
 
 variable "region" {
   description = "The AWS region."
@@ -58,17 +60,17 @@ variable "start_resources_tag_phase2" {
 
 variable "calendar_rule_enabled" {
   description = "Whether the Calendar rule should be enabled"
-  type        = "string"
+  type        = string
   default     = "false"
 }
 
 variable "stop_cloudwatch_notification_schedule_expression" {
   description = "Notify an hour before stopping instance"
-  default = "cron(00 18 ? * MON-FRI *)"
+  default     = "cron(00 18 ? * MON-FRI *)"
 }
 
 variable "tags" {
-  type     = "map"
+  type = map(string)
 }
 
 variable "rate_schedule_expression" {
@@ -93,25 +95,29 @@ variable "url_path" {
 
 variable "autostop_notify_rule_enabled" {
   description = "Whether the notification rule should be enabled"
-  type        = "string"
+  type        = string
   default     = "false"
 }
 
 variable "tagged_user" {
   description = "Users to be tagged in alerts"
-  default = ""
+  default     = ""
 }
 
-variable "bastion_inventory" {}
+variable "bastion_inventory" {
+}
 
 variable "remote_state_bucket_name" {
   description = "Terraform remote state bucket name"
 }
 
 variable "create_autostop_instance" {
-  default     = "false"
+  default = "false"
 }
 
-variable "short_environment_identifier" {}
+variable "short_environment_identifier" {
+}
 
-variable "environment_identifier" {}
+variable "environment_identifier" {
+}
+

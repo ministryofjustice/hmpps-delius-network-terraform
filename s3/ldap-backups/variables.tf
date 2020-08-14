@@ -1,9 +1,9 @@
 variable "tiny_environment_identifier" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "region" {
@@ -12,10 +12,11 @@ variable "region" {
 
 variable "default_ldap_config" {
   description = "Default values to be overridden by ldap_config"
-  type = "map"
+  type        = map(string)
 }
 
 variable "ldap_config" {
   description = "LDAP configuration"
-  type = "map"
+  type        = map(string)
 }
+

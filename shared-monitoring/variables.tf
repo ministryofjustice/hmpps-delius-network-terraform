@@ -1,4 +1,5 @@
-variable "region" {}
+variable "region" {
+}
 
 variable "remote_state_bucket_name" {
   description = "Terraform remote state bucket name"
@@ -12,7 +13,8 @@ variable "short_environment_identifier" {
   description = "short resource label or name"
 }
 
-variable "environment_type" {}
+variable "environment_type" {
+}
 
 variable "cloudwatch_log_retention" {
   default = "14"
@@ -22,7 +24,8 @@ variable "bastion_inventory" {
   default = "dev"
 }
 
-variable "environment_name" {}
+variable "environment_name" {
+}
 
 # Elasticsearch
 
@@ -77,12 +80,13 @@ variable "connection_draining_timeout" {
 
 variable "access_logs" {
   description = "An access logs block"
-  type        = "list"
+  type        = list(string)
   default     = []
 }
 
 # s3
-variable "lb_account_id" {}
+variable "lb_account_id" {
+}
 
 variable "s3_lb_policy_file" {
   default = "./policies/s3_alb_policy.json"
@@ -103,7 +107,7 @@ variable "sg_create_outbound_web_rules" {
 }
 
 variable "user_access_cidr_blocks" {
-  type    = "list"
+  type    = list(string)
   default = []
 }
 
@@ -113,7 +117,7 @@ variable "kibana_short_name" {
 }
 
 variable "elk_backups_config" {
-  type = "map"
+  type = map(string)
   default = {
     transition_days                 = 7
     expiration_days                 = 14
@@ -131,10 +135,11 @@ variable "volume_type" {
 }
 
 variable "elk_asg_props" {
-  type = "map"
+  type = map(string)
   default = {
     min_size = 4
     max_size = 4
     desired  = 4
   }
 }
+

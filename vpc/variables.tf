@@ -1,18 +1,18 @@
 variable "environment_name" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "vpc_supernet" {
   description = "Supernet for the whole VPC that all subnets will be in"
-  type        = "string"
+  type        = string
 }
 
 variable "role_arn" {
-  type = "string"
+  type = string
 }
 
 variable "remote_state_bucket_name" {
@@ -21,22 +21,22 @@ variable "remote_state_bucket_name" {
 
 variable "region" {
   description = "AWS Region"
-  type        = "string"
+  type        = string
 }
 
 variable "project_name" {
   description = "The project name - delius-core"
-  type        = "string"
+  type        = string
 }
 
 variable "environment_type" {
   description = "The environment type - e.g. dev"
-  type        = "string"
+  type        = string
 }
 
 variable "bastion_inventory" {
   description = "The bastion inventory eg dev"
-  type        = "string"
+  type        = string
 }
 
 ## remote states
@@ -58,37 +58,36 @@ variable "bastion_role_arn" {
 
 # vpc
 variable "route53_domain_private" {
-  type = "string"
+  type = string
 }
 
 variable "public_dns_parent_zone" {
-  type = "string"
+  type        = string
   description = "for strategic .gov domain. set in common.properties"
 }
 
 variable "public_dns_child_zone" {
-  type = "string"
+  type        = string
   description = "for strategic .gov domain. set in common.properties."
 }
 
-
-
-
 variable "aws_nameserver" {
-  type = "string"
+  type = string
 }
 
 variable "availability_zone" {
   description = "List of the three AZs we want to use"
-  type = "map"
+  type        = map(string)
 }
 
-variable "environment_identifier" {}
+variable "environment_identifier" {
+}
 
-variable "subdomain" {}
+variable "subdomain" {
+}
 
-variable "snapshot_retention_days" {}
-
+variable "snapshot_retention_days" {
+}
 
 # Variables to support managing strategic (*.probation.service.justice.gov.uk) delegation records in the production account parent R53 zone
 variable "strategic_parent_zone_delegation_role" {
@@ -98,3 +97,4 @@ variable "strategic_parent_zone_delegation_role" {
 variable "strategic_parent_zone_id" {
   description = "Parent R53 Zone ID for strategic domain (probation.service.justice.gov.uk)"
 }
+

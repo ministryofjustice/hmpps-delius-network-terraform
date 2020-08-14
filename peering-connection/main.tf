@@ -1,17 +1,8 @@
-terraform {
-  # The configuration for this backend will be filled in by Terragrunt
-  backend "s3" {}
-}
-
-provider "aws" {
-  region  = "${var.region}"
-  version = ">= 2.65"
-}
-
 #-------------------------------------------------------------
 ### Getting aws_caller_identity
 #-------------------------------------------------------------
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {
+}
 
 #-------------------------------------------------------------
 ### Getting the current vpc
@@ -19,10 +10,10 @@ data "aws_caller_identity" "current" {}
 data "terraform_remote_state" "vpc" {
   backend = "s3"
 
-  config {
-    bucket = "${var.remote_state_bucket_name}"
+  config = {
+    bucket = var.remote_state_bucket_name
     key    = "vpc/terraform.tfstate"
-    region = "${var.region}"
+    region = var.region
   }
 }
 
@@ -32,10 +23,11 @@ data "terraform_remote_state" "vpc" {
 data "terraform_remote_state" "bastion_remote_vpc" {
   backend = "s3"
 
-  config {
-    bucket   = "${var.bastion_remote_state_bucket_name}"
+  config = {
+    bucket   = var.bastion_remote_state_bucket_name
     key      = "bastion-vpc/terraform.tfstate"
-    region   = "${var.region}"
-    role_arn = "${var.bastion_role_arn}"
+    region   = var.region
+    role_arn = var.bastion_role_arn
   }
 }
+

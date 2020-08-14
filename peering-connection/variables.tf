@@ -1,9 +1,9 @@
 variable "environment_name" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "region" {
@@ -25,3 +25,4 @@ variable "bastion_remote_state_bucket_name" {
 variable "bastion_role_arn" {
   description = "arn to use for bastion terraform"
 }
+
