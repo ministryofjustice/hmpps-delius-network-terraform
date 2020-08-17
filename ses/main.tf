@@ -15,7 +15,7 @@ data "terraform_remote_state" "vpc" {
 # Create SES domain
 ####################################################
 resource "aws_ses_domain_identity" "ses_domain" {
-  domain = data.terraform_remote_state.vpc.outputs.public_zone_name
+  domain = data.terraform_remote_state.vpc.outputs.strategic_public_zone_name
 }
 
 ####################################################
@@ -23,7 +23,7 @@ resource "aws_ses_domain_identity" "ses_domain" {
 ####################################################
 resource "aws_route53_record" "amazonses_verification_record" {
   zone_id = data.terraform_remote_state.vpc.outputs.public_zone_id
-  name    = "_amazonses.${data.terraform_remote_state.vpc.outputs.public_zone_name}"
+  name    = "_amazonses.${data.terraform_remote_state.vpc.outputs.strategic_public_zone_name}"
   type    = "TXT"
   ttl     = "600"
   records = [aws_ses_domain_identity.ses_domain.verification_token]
@@ -67,7 +67,7 @@ resource "aws_route53_record" "ses_domain_mail_from_mx" {
   name    = aws_ses_domain_mail_from.ses_domain_from.mail_from_domain
   type    = "MX"
   ttl     = "600"
-  records = ["10 feedback-smtp.eu-west-1.amazonses.com"]
+  records = ["10 feedback-smtp.${var.region}.amazonses.com"]
 }
 
 # Route53 TXT record for SPF
@@ -78,4 +78,3 @@ resource "aws_route53_record" "ses_domain_mail_from_txt" {
   ttl     = "600"
   records = ["v=spf1 include:amazonses.com -all"]
 }
-

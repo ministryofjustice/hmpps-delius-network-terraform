@@ -133,6 +133,7 @@ data "template_file" "postfix_user_data" {
     env_identifier       = var.short_environment_identifier
     short_env_identifier = var.short_environment_identifier
     smtp_log_group       = aws_cloudwatch_log_group.smtp_log_group.name
+    region               = var.region
   }
 }
 
@@ -285,4 +286,3 @@ resource "aws_security_group_rule" "http-out" {
     "0.0.0.0/0",
   ]
 }
-
