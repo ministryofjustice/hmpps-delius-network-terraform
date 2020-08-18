@@ -19,8 +19,10 @@ SES_IAM_USER="${ses_iam_user}"
 INT_ZONE_ID="${private_zone_id}"
 SMTP_LOG_GROUP="${smtp_log_group}"
 REGION="${region}"
+set +x
 ses_user="${ses_user}"
 ses_pass="${ses_pass}"
+set -x
 EOF
 
 export HMPPS_ROLE="${app_name}"
@@ -37,8 +39,10 @@ export SES_IAM_USER="${ses_iam_user}"
 export INT_ZONE_ID="${private_zone_id}"
 export SMTP_LOG_GROUP="${smtp_log_group}"
 export REGION="${region}"
+set +x
 export SES_USER="${ses_user}"
 export SES_PASS="${ses_pass}"
+set -x
 cd ~
 pip install ansible
 
