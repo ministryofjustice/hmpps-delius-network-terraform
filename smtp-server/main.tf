@@ -126,8 +126,8 @@ data "template_file" "postfix_user_data" {
     private_zone_id      = local.private_zone_id
     account_id           = data.terraform_remote_state.vpc.outputs.vpc_account_id
     environment_name     = local.environment_name
-    mail_hostname        = "${local.app_name}.${data.terraform_remote_state.vpc.outputs.strategic_public_zone_name}"
-    mail_domain          = data.terraform_remote_state.vpc.outputs.strategic_public_zone_name
+    mail_hostname        = "${local.app_name}.${data.terraform_remote_state.vpc.outputs.public_zone_name}"
+    mail_domain          = data.terraform_remote_state.vpc.outputs.public_zone_name
     mail_network         = data.terraform_remote_state.vpc.outputs.vpc_cidr_block
     ses_iam_user         = local.ses_iam_user
     env_identifier       = var.short_environment_identifier
@@ -184,6 +184,7 @@ resource "aws_autoscaling_group" "asg" {
   min_size             = var.instance_count
   max_size             = var.instance_count
   desired_capacity     = var.instance_count
+  health_check_type    = "ELB"
   tags = concat(data.null_data_source.tags.*.outputs, [{
     key                 = "Name"
     value               = "${var.environment_name}-smtp"
