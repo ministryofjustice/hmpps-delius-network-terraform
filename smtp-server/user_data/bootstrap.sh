@@ -19,10 +19,8 @@ SES_IAM_USER="${ses_iam_user}"
 INT_ZONE_ID="${private_zone_id}"
 SMTP_LOG_GROUP="${smtp_log_group}"
 REGION="${region}"
-set +x
-ses_user="${ses_user}"
-ses_pass="${ses_pass}"
-set -x
+SES_KEY_ID_PARAM="${ses_key_id_param}"
+SES_PASSWORD_PARAM="${ses_password_param}"
 EOF
 
 export HMPPS_ROLE="${app_name}"
@@ -39,10 +37,8 @@ export SES_IAM_USER="${ses_iam_user}"
 export INT_ZONE_ID="${private_zone_id}"
 export SMTP_LOG_GROUP="${smtp_log_group}"
 export REGION="${region}"
-set +x
-export SES_USER="${ses_user}"
-export SES_PASS="${ses_pass}"
-set -x
+export SES_KEY_ID_PARAM="${ses_key_id_param}"
+export SES_PASSWORD_PARAM="${ses_password_param}"
 cd ~
 pip install ansible
 
@@ -72,8 +68,8 @@ mail_hostnme: $MAIL_HOSTNAME
 mail_domain: $MAIL_DOMAIN
 mail_network: $MAIL_NETWORK
 ses_iam_user: $SES_IAM_USER
-ses_user: $SES_USER
-ses_pass: $SES_PASS
+ses_key_id_param: $SES_KEY_ID_PARAM
+ses_password_param: $SES_PASSWORD_PARAM
 EOF
 
 cat << EOF > ~/bootstrap.yml
