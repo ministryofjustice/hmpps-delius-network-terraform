@@ -134,6 +134,8 @@ data "template_file" "postfix_user_data" {
     short_env_identifier = var.short_environment_identifier
     smtp_log_group       = aws_cloudwatch_log_group.smtp_log_group.name
     region               = var.region
+    ses_user             = local.ses_user
+    ses_pass             = local.ses_pass
   }
 }
 
