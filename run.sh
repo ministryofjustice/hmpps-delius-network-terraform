@@ -30,22 +30,23 @@ set -e
 # Print usage if ENVIRONMENT not set:
 if [ "${ENVIRONMENT}" == "" ]; then grep '^##' "${0}" && exit; fi
 
+# Print heading items. Note CodeBuild doesn't support color/formatting
+heading() { [ -n "${CODEBUILD_CI}" ] && echo "${*}" || echo -e "\n\033[1m${*}\033[0m"; }
+
 # Start container with mounted config:
 if [ -z "${TF_IN_AUTOMATION}" ]; then
 
   if [ -z "${CONFIG_LOCATION}" ]; then
-    echo No config provided. Attempting to use defaults...
+    heading No config provided. Using defaults...
     if [ "${ENVIRONMENT}" == "dev" ]; then CONFIG_LOCATION="$(pwd)/../hmpps-engineering-platform-terraform"
                                       else CONFIG_LOCATION="$(pwd)/../hmpps-env-configs"; fi
     if [ -d "${CONFIG_LOCATION}" ];   then echo "Mounting config from ${CONFIG_LOCATION}";
                                       else (echo "Couldn't find config at ${CONFIG_LOCATION}" && exit 1); fi
-    echo
   fi
 
-  echo Starting container...
+  heading Starting container...
   CONTAINER=${CONTAINER:-mojdigitalstudio/hmpps-terraform-builder-0-12}
   echo "${CONTAINER}"
-  echo
   aws_env="$(env | grep ^AWS_ | sed 's/^/-e /')"
   docker run \
     ${aws_env} \
@@ -60,7 +61,7 @@ if [ -z "${TF_IN_AUTOMATION}" ]; then
   exit $?
 fi
 
-echo Parsing arguments...
+heading Parsing arguments...
 action=${*}
 options=""
 if [ -n "${CODEBUILD_CI}" ];        then options="${options} -no-color"; fi
@@ -69,16 +70,19 @@ if [ "${action}" == "apply" ];      then options="${options} ${ENVIRONMENT}.plan
 echo "Environment: ${ENVIRONMENT:--}"
 echo "Component:   ${COMPONENT:--}"
 echo "Command:     ${action}"
-echo
 
-echo Loading configuration...
+heading Loading configuration...
 test -f "env_configs/${ENVIRONMENT}/${ENVIRONMENT}.properties" && source "env_configs/${ENVIRONMENT}/${ENVIRONMENT}.properties"
 test -f "env_configs/env_configs/${ENVIRONMENT}.properties" && source "env_configs/env_configs/${ENVIRONMENT}.properties"
 export TERRAGRUNT_IAM_ROLE="${TERRAGRUNT_IAM_ROLE/admin/terraform}"
 echo "Loaded $(env | grep -Ec '^(TF|TG)') properties"
-echo
 
-echo Running terragrunt...
+heading Setting up workspace...
 cd "${COMPONENT}"
+rm -rf ./.terraform/terraform.tfstate
+pwd
+
+heading Running terragrunt...
+set -o pipefail
 set -x
-terragrunt ${action} ${options}
+terragrunt ${action} ${options} | tee "${ENVIRONMENT}.plan.log"
