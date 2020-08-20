@@ -133,6 +133,9 @@ data "template_file" "postfix_user_data" {
     env_identifier       = var.short_environment_identifier
     short_env_identifier = var.short_environment_identifier
     smtp_log_group       = aws_cloudwatch_log_group.smtp_log_group.name
+    region               = var.region
+    ses_key_id_param     = local.ses_key_id_param
+    ses_password_param   = local.ses_password_param
   }
 }
 
@@ -183,11 +186,14 @@ resource "aws_autoscaling_group" "asg" {
   min_size             = var.instance_count
   max_size             = var.instance_count
   desired_capacity     = var.instance_count
+  health_check_type    = "ELB"
+
   tags = concat(data.null_data_source.tags.*.outputs, [{
     key                 = "Name"
     value               = "${var.environment_name}-smtp"
     propagate_at_launch = "true"
   }])
+
   lifecycle {
     create_before_destroy = true
   }
@@ -285,4 +291,3 @@ resource "aws_security_group_rule" "http-out" {
     "0.0.0.0/0",
   ]
 }
-

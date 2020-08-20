@@ -1,3 +1,9 @@
+locals {
+  ses_iam_user       = aws_iam_user.ses.id
+  ses_key_id_param   = aws_ssm_parameter.ses_access_key.id
+  ses_password_param = aws_ssm_parameter.ses_password.id
+}
+
 ###########################
 #Create IAM user for smtp
 ###########################
@@ -7,6 +13,10 @@ resource "aws_iam_user" "ses" {
   path          = "/"
   force_destroy = true
   tags          = var.tags
+}
+
+resource "aws_iam_access_key" "smtp_user" {
+  user = aws_iam_user.ses.name
 }
 
 ####Create group
@@ -49,7 +59,19 @@ resource "aws_iam_group_membership" "ses_group_membership" {
   ]
 }
 
-locals {
-  ses_iam_user = aws_iam_user.ses.id
+# Add to SES Creds to SSM
+resource "aws_ssm_parameter" "ses_access_key" {
+  name        = "${aws_iam_user.ses.id}-access-key-id"
+  description = "SMTP User for SES"
+  type        = "String"
+  value       = aws_iam_access_key.smtp_user.id
+  tags        = var.tags
 }
 
+resource "aws_ssm_parameter" "ses_password" {
+  name        = "${aws_iam_user.ses.id}-ses-password"
+  description = "SMTP Password for SES"
+  type        = "SecureString"
+  value       = aws_iam_access_key.smtp_user.ses_smtp_password_v4
+  tags        = var.tags
+}
