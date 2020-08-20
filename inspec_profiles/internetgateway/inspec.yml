@@ -1,8 +1,0 @@
-name: internetgateway
-title: MOJ HMPPS Shared VPC Internet Gateway
-maintainer: moj-aws-migration
-copyright: MOJ
-copyright_email: moj@moj.local
-license: Apache-2.0
-summary: An InSpec Compliance Profile
-version: 0.1.0

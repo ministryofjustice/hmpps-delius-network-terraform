@@ -36,6 +36,10 @@ void do_terraform(String repo, String component) {
     if (plan_status == 0 || (plan_status == 2 && confirm(component))) {
       def apply_status = sh(script: "COMPONENT=${component} ./run.sh apply", returnStatus: true)
       if (apply_status != 0) error("Error applying changes to ${component}")
+      if (params.run_tests && fileExists("inspec_profiles/${component}/inspec.yml")) {
+        def test_status = sh(script: "COMPONENT=${component} ./test.sh", returnStatus: true)
+        if (test_status != 0) error("Test failures in ${component}")
+      }
     }
   }
 }
@@ -48,6 +52,7 @@ pipeline {
     string(name: 'CONFIG_BRANCH', description: 'Target Branch for hmpps-env-configs', defaultValue: 'master')
     string(name: 'NETWORK_BRANCH', description: 'Target Branch for hmpps-delius-network-terraform', defaultValue: 'master')
     booleanParam(name: 'confirmation', description: 'Confirm Terraform changes?', defaultValue: true)
+    booleanParam(name: 'run_tests', description: 'Run inspec tests?', defaultValue: true)
   }
 
   environment {
