@@ -197,8 +197,6 @@ resource "aws_autoscaling_group" "asg" {
   lifecycle {
     create_before_destroy = true
   }
-
-  depends_on = [aws_ssm_parameter.ses_access_key]
 }
 
 #smtp lb attachment
