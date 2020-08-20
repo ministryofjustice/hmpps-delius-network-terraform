@@ -14,15 +14,16 @@ def get_version(String repo_name, String override_version) {
   }
 }
 
-def confirm(String message) {
+def confirm(String component) {
   if (!params.confirmation) return true;
+  def changes = sh(script: "grep 'Plan:' '${component}/${env.ENVIRONMENT}.plan.log' | sed -E 's/^.{18}(.+).{4}/\1/'", returnStdout: true).trim()
   try {
     timeout(time: 15, unit: 'MINUTES') {
-      return input(message: message, parameters: [[$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Proceed?']])
+      return input(message: "Apply changes to ${component}?", parameters: [[$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: changes]])
     }
   } catch (err) { // timeout reached or input false
     String user = err.getCauses()[0].getUser()
-    if ('SYSTEM' == user) error("Confirmation timed out") else echo "Aborted by [${user}}]"
+    if ('SYSTEM' == user) error("Confirmation timed out") else echo "Aborted by [${user}]"
     return false;
   }
 }
@@ -32,9 +33,13 @@ void do_terraform(String repo, String component) {
     def plan_status = sh(script: "COMPONENT=${component} ./run.sh plan", returnStatus: true)
     // 0 = No changes, 1 = Error, 2 = Changes
     if (plan_status == 1) error("Error generating plan for ${component}")
-    if (plan_status == 0 || (plan_status == 2 && confirm("Apply changes to ${component}?"))) {
+    if (plan_status == 0 || (plan_status == 2 && confirm(component))) {
       def apply_status = sh(script: "COMPONENT=${component} ./run.sh apply", returnStatus: true)
       if (apply_status != 0) error("Error applying changes to ${component}")
+      if (params.run_tests && fileExists("inspec_profiles/${component}/inspec.yml")) {
+        def test_status = sh(script: "COMPONENT=${component} ./test.sh", returnStatus: true)
+        if (test_status != 0) error("Test failures in ${component}")
+      }
     }
   }
 }
@@ -47,6 +52,7 @@ pipeline {
     string(name: 'CONFIG_BRANCH', description: 'Target Branch for hmpps-env-configs', defaultValue: 'master')
     string(name: 'NETWORK_BRANCH', description: 'Target Branch for hmpps-delius-network-terraform', defaultValue: 'master')
     booleanParam(name: 'confirmation', description: 'Confirm Terraform changes?', defaultValue: true)
+    booleanParam(name: 'run_tests', description: 'Run inspec tests?', defaultValue: true)
   }
 
   environment {

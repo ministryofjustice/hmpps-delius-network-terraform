@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
-## HMPPS Terragrunt wrapper script.
-## This script takes any number of arguments and will pass them to Terragrunt.
+## HMPPS Inspec wrapper script.
+## Run inspec tests for a given Terraform component/module.
 ##
 ## Example usage:
-##    AWS_PROFILE=hmpps ENVIRONMENT=delius-test COMPONENT=vpc ./run.sh plan
+##    ENVIRONMENT=delius-test COMPONENT=vpc ./test.sh
 ##
 ##
 ## Environment variables are used to configure the script:
@@ -16,16 +16,8 @@ set -e
 ##                                 Defaults to current directory.
 ##  * CONTAINER          Optional. The container to run the Terragrunt commands in. Defaults to
 ##                                 mojdigitalstudio/hmpps-terraform-builder-0-12.
-## Any environment variables prefixed with AWS_ will also be passed to the Terragrunt container.
-##
-##
-## The following shows a convenient way of temporarily set env vars once for multiple terragrunt
-## commands:
-##    AWS_PROFILE=hmpps ENVIRONMENT=delius-test COMPONENT=vpc ${SHELL}
-##     ./run.sh plan -out tfplan
-##     ./run.sh apply tfplan
-##     ...
-##    Then press Ctrl+D to reset env vars
+##  * INSPEC_DIR         Optional. The directory containing the inspec tests. Defaults to
+#                                  inspec_profiles.
 
 # Print usage if ENVIRONMENT not set:
 if [ "${ENVIRONMENT}" == "" ]; then grep '^##' "${0}" && exit; fi
@@ -47,29 +39,28 @@ if [ -z "${TF_IN_AUTOMATION}" ]; then
   heading Starting container...
   CONTAINER=${CONTAINER:-mojdigitalstudio/hmpps-terraform-builder-0-12}
   echo "${CONTAINER}"
-  aws_env="$(env | grep ^AWS_ | sed 's/^/-e /')"
   docker run \
-    ${aws_env} \
     -e "COMPONENT=${COMPONENT}" \
     -e "ENVIRONMENT=${ENVIRONMENT}" \
-    -e "GITHUB_TOKEN=${GITHUB_TOKEN}" \
+    -e "CHEF_LICENSE=accept" \
     -e TF_IN_AUTOMATION=True \
     -v "${HOME}/.aws:/home/tools/.aws:ro" \
     -v "$(pwd):/home/tools/data" \
     -v "${CONFIG_LOCATION}:/home/tools/data/env_configs:ro" \
+    -u root \
   "${CONTAINER}" bash -c "${0} ${*}"
   exit $?
 fi
 
-heading Parsing arguments...
-action=${*}
-options=""
-if [ -n "${CODEBUILD_CI}" ];        then options="${options} -no-color"; fi
-if [ "${action}" == "plan" ];       then options="${options} -detailed-exitcode -compact-warnings -out ${ENVIRONMENT}.plan"; fi
-if [ "${action}" == "apply" ];      then options="${options} ${ENVIRONMENT}.plan"; fi
-echo "Environment: ${ENVIRONMENT:--}"
-echo "Component:   ${COMPONENT:--}"
-echo "Command:     ${action}"
+heading Checking workspace...
+INSPEC_DIR="${INSPEC_DIR:-inspec_profiles}"
+echo "${INSPEC_DIR}/${COMPONENT}"
+if [ ! -d "${INSPEC_DIR}/${COMPONENT}" ]; then echo No tests found; exit 0; fi
+
+heading Installing inspec...
+# TODO move this installation into the docker image
+gem install --no-document inspec inspec-bin
+su - tools
 
 heading Loading configuration...
 test -f "env_configs/${ENVIRONMENT}/${ENVIRONMENT}.properties" && source "env_configs/${ENVIRONMENT}/${ENVIRONMENT}.properties"
@@ -77,12 +68,15 @@ test -f "env_configs/env_configs/${ENVIRONMENT}.properties" && source "env_confi
 export TERRAGRUNT_IAM_ROLE="${TERRAGRUNT_IAM_ROLE/admin/terraform}"
 echo "Loaded $(env | grep -Ec '^(TF|TG)') properties"
 
-heading Setting up workspace...
+heading Generating outputs...
 cd "${COMPONENT}"
-rm -rf ./.terraform/terraform.tfstate
-pwd
+terragrunt output -json | tee "../${INSPEC_DIR}/${COMPONENT}/files/terraform.json"
 
-heading Running terragrunt...
-set -o pipefail
-set -x
-terragrunt ${action} ${options} | tee "${ENVIRONMENT}.plan.log"
+heading Assuming IAM role...
+CREDS=$(aws sts assume-role --role-arn "${TERRAGRUNT_IAM_ROLE}" --role-session-name "testing-${RANDOM}" --duration-seconds 900)
+export AWS_ACCESS_KEY_ID=$(echo "${CREDS}" | jq .Credentials.AccessKeyId | xargs)
+export AWS_SESSION_TOKEN=$(echo "${CREDS}" | jq .Credentials.SessionToken | xargs)
+export AWS_SECRET_ACCESS_KEY=$(echo "${CREDS}" | jq .Credentials.SecretAccessKey | xargs)
+
+heading Running inspec...
+inspec exec "../${INSPEC_DIR}/${COMPONENT}" -t "aws://${TG_REGION}"

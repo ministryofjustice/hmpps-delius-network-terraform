@@ -55,8 +55,7 @@ crashlytics-build.properties
 fabric.properties
 .idea/httpRequests
 
-env_configs/inspec*.properties
-attributes/*
+inspec_profiles/**/terraform.json
 
 .idea/
 *.iml
