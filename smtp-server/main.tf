@@ -187,14 +187,18 @@ resource "aws_autoscaling_group" "asg" {
   max_size             = var.instance_count
   desired_capacity     = var.instance_count
   health_check_type    = "ELB"
+
   tags = concat(data.null_data_source.tags.*.outputs, [{
     key                 = "Name"
     value               = "${var.environment_name}-smtp"
     propagate_at_launch = "true"
   }])
+
   lifecycle {
     create_before_destroy = true
   }
+
+  depends_on = ["aws_ssm_parameter.ses_access_key"]
 }
 
 #smtp lb attachment
