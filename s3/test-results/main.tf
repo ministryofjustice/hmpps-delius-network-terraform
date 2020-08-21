@@ -3,7 +3,7 @@
 # "region-environment_name" prepended
 
 locals {
-  bucket_name = "${var.tiny_environment_identifier}-test_results"
+  bucket_name = "${var.tiny_environment_identifier}-test-results"
 }
 
 resource "aws_s3_bucket" "test_results" {
@@ -23,4 +23,3 @@ resource "aws_s3_bucket" "test_results" {
     { "Name" = local.bucket_name },
   )
 }
-
