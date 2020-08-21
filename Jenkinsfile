@@ -85,6 +85,7 @@ pipeline {
         stage('Persistent EIP') { steps { do_terraform(project.network, 'persistent-eip') } }
         stage('DB Backups Bucket') { steps { do_terraform(project.network, 's3/oracledb-backups') } }
         stage('LDAP Backups Bucket') { steps { do_terraform(project.network, 's3/ldap-backups') } }
+        stage('Test Results Bucket') { steps { do_terraform(project.network, 's3/test-results') } }
       }
     }
 
