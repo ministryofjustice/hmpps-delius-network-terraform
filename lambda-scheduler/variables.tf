@@ -66,7 +66,7 @@ variable "calendar_rule_enabled" {
 
 variable "stop_cloudwatch_notification_schedule_expression" {
   description = "Notify an hour before stopping instance"
-  default     = "cron(00 18 ? * MON-FRI *)"
+  default     = "cron(00 19 ? * MON-FRI *)"
 }
 
 variable "tags" {
@@ -120,4 +120,3 @@ variable "short_environment_identifier" {
 
 variable "environment_identifier" {
 }
-
