@@ -1,7 +1,7 @@
 locals {
-  # Handle mixed environments project name
-  short_project_name = replace(var.project_name, "delius-core", "delius")
-  name_prefix        = "${var.project_name_abbreviated}-${local.short_project_name}"
+  # Handle mixed environments project name. This accounts for naming conflicts related to Dev/Sandpit environments running in the same account.
+  project_name = var.project_name == "delius-core" ? var.short_environment_name : var.project_name
+  name_prefix  = "${var.project_name_abbreviated}-${local.project_name}"
 
   private_subnet_ids = [
     data.terraform_remote_state.vpc.outputs.vpc_private-subnet-az1,
