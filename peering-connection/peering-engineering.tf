@@ -29,6 +29,6 @@ module "route-to-eng" {
 
   destination_cidr_block = data.terraform_remote_state.vpc.outputs.eng_vpc_cidr
   vpc_peer_id            = aws_vpc_peering_connection.peering-eng-vpc.id
-  create                 = 1
+  create                 = true
 }
 
