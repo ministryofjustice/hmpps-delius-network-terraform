@@ -20,6 +20,7 @@ resource "aws_s3_bucket" "test_results" {
 
   tags = merge(
     var.tags,
-    { "Name" = local.bucket_name },
+  { "Name" = local.bucket_name },
+  { "TestTag" = "test" },
   )
 }
