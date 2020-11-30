@@ -1,4 +1,7 @@
 # hmpps-delius-network-terraform
+
+![DevDeploy](https://codebuild.eu-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiZEZWYkx6UFM3WHdrMGNkcUl1WHUwTmhWNEk5aXRkWS95OHdTbUx4SU9ieG82bUxvVktaSUJVbnZhTHRFY25QYTBYTlVIVkdrTEdOeWluT2UxVDN1bk9rPSIsIml2UGFyYW1ldGVyU3BlYyI6IkxwRzFOaFVaLzRRYzA2OUwiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
+
 Delius Network repo for creating VPC/subnets and shared things for environments.
 
 This will create the base VPC, Subnets and Routes for any Delius environment.
