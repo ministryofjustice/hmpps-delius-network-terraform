@@ -30,13 +30,17 @@ data "terraform_remote_state" "security-groups" {
 #-------------------------------------------------------------
 ### Getting the latest amazon ami
 #-------------------------------------------------------------
+data "aws_ssm_parameter" "ami_version" {
+  name = "/versions/delius-network/ami/smtp/${var.environment_name}"
+}
+
 data "aws_ami" "amazon_ami" {
   owners      = ["895523100917"]
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["HMPPS Base CentOS *"]
+    values = [data.aws_ssm_parameter.ami_version.value]
   }
 
   filter {
