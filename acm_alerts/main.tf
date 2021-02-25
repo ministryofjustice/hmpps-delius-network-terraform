@@ -15,7 +15,7 @@ data "aws_ssm_parameter" "ssm_token" {
 
 locals {
   acm_alerts_info = var.acm_alerts_info
-  function_name   = "acm_alerts_handler"
+  function_name   = "${var.environment_name}_acm_alerts_handler"
   tags            = data.terraform_remote_state.vpc.outputs.tags
   log_group       = "/aws/lambda/${local.function_name}"
   ssm_token_arn   = data.aws_ssm_parameter.ssm_token.arn
