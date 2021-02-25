@@ -3,5 +3,5 @@ include {
 }
 
 dependencies {
-  paths = []
+  paths = ["../vpc"]
 }
