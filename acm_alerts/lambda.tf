@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "assume" {
 }
 
 resource "aws_iam_role" "lambda" {
-  name               = local.function_name
+  name               = local.common_name
   assume_role_policy = data.aws_iam_policy_document.assume.json
   description        = local.function_name
   tags               = local.tags
@@ -58,22 +58,21 @@ data "aws_iam_policy_document" "policy" {
 }
 
 resource "aws_iam_role_policy" "lambda" {
-  name   = local.function_name
+  name   = local.common_name
   role   = aws_iam_role.lambda.id
   policy = data.aws_iam_policy_document.policy.json
 }
 
 resource "aws_lambda_function" "lambda" {
-  s3_bucket         = local.acm_alerts_info["bucket"]
-  s3_key            = "${local.acm_alerts_info["s3Key"]}/${local.function_name}/function.zip"
-  s3_object_version = "mRwvdaUGGV2ocQyF9pnDc2r.zl2IxMD4"
-  function_name     = local.function_name
-  role              = aws_iam_role.lambda.arn
-  handler           = "main.lambda_handler"
-  runtime           = "python3.8"
-  publish           = true
-  memory_size       = 256
-  timeout           = 30
+  s3_bucket     = local.acm_alerts_info["bucket"]
+  s3_key        = "${local.acm_alerts_info["s3Key"]}/${local.function_name}/function.zip"
+  function_name = local.common_name
+  role          = aws_iam_role.lambda.arn
+  handler       = "main.lambda_handler"
+  runtime       = "python3.8"
+  publish       = true
+  memory_size   = 256
+  timeout       = 30
 
   environment {
     variables = {
@@ -87,13 +86,13 @@ resource "aws_lambda_function" "lambda" {
   tags = merge(
     local.tags,
     {
-      "Name" = local.function_name
+      "Name" = local.common_name
     },
   )
 }
 
 resource "aws_cloudwatch_event_rule" "lambda" {
-  name                = local.function_name
+  name                = local.common_name
   description         = "Scheduled Cloudwatch Event for ${local.function_name}"
   schedule_expression = local.acm_alerts_info["schedule_expression"]
 }

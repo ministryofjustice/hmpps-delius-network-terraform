@@ -18,6 +18,15 @@ variable "environment_identifier" {
   description = "resource label or name"
 }
 
+variable "short_environment_name" {
+  type = string
+}
+
+variable "acm_alerts_config" {
+  type    = map(string)
+  default = {}
+}
+
 variable "acm_alerts_info" {
   type = map(string)
   default = {
