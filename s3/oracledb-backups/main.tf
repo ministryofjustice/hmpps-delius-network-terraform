@@ -73,7 +73,7 @@ resource "aws_s3_bucket_policy" "oracledb_backups_inventory_policy" {
 
 resource "aws_s3_bucket_inventory" "oracledb_backups_inventory" {
   bucket = aws_s3_bucket.oracledb_backups.id
-  name   = "OracleBackupBucketDaily"
+  name   = "${var.tiny_environment_identifier}-oracledb-backup-inventory"
 
   included_object_versions = "Current"
 
