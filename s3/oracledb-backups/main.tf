@@ -65,7 +65,7 @@ data "template_file" "oracledb_backups_inventory_policy" {
   }
 }
 
-resource "aws_s3_bucket_inventory" "oracledb_backups_inventory_s3bucket" {
+resource "aws_s3_bucket_inventory" "oracledb_backups_inventory" {
   bucket = aws_s3_bucket.oracledb_backups.id
   name   = "OracleBackupBucketDaily"
 
