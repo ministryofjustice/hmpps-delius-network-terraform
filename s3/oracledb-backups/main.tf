@@ -4,8 +4,8 @@
 
 locals {
   bucket_name = "${var.tiny_environment_identifier}-oracledb-backups"
-  inventory_bucket_name = "${var.environment_identifier}-oracledb-backups-inventory-s3bucket"
-  inventory_name = "${var.environment_identifier}-oracledb-backups-inventory"
+  inventory_bucket_name = "${var.tiny_environment_identifier}-oracledb-backups-inventory-s3bucket"
+  inventory_name = "${var.tiny_environment_identifier}-oracledb-backups-inventory"
 }
 
 resource "aws_s3_bucket" "oracledb_backups" {
@@ -53,7 +53,8 @@ resource "aws_s3_bucket" "oracledb_backups_inventory_s3bucket" {
     },
   )
 }
-
+data "aws_caller_identity" "current" {
+}
 data "template_file" "oracledb_backups_inventory_policy" {
   template = file("./policies/oracledb_backups_inventory.json")
 
