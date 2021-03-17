@@ -68,7 +68,7 @@ data "template_file" "oracledb_backups_inventory_policy_file" {
 resource "aws_s3_bucket_policy" "oracledb_backups_inventory_policy" {
   bucket = aws_s3_bucket.oracledb_backups_inventory_s3bucket.id
 
-  policy = data.oracledb_backups_inventory_policy_file.rendered
+  policy = data.template_file.oracledb_backups_inventory_policy_file.rendered
 }
 
 resource "aws_s3_bucket_inventory" "oracledb_backups_inventory" {
