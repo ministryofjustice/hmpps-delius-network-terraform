@@ -55,7 +55,7 @@ resource "aws_s3_bucket" "oracledb_backups_inventory_s3bucket" {
 }
 data "aws_caller_identity" "current" {
 }
-data "template_file" "oracledb_backups_inventory_policy" {
+data "template_file" "oracledb_backups_inventory_policy_file" {
   template = file("./policies/oracledb_backups_inventory.json")
 
   vars = {
@@ -63,6 +63,12 @@ data "template_file" "oracledb_backups_inventory_policy" {
     inventory_s3bucket_arn = aws_s3_bucket.oracledb_backups_inventory_s3bucket.arn
     aws_account_id = data.aws_caller_identity.current.account_id
   }
+}
+
+resource "aws_s3_bucket_policy" "oracledb_backups_inventory_policy" {
+  bucket = aws_s3_bucket.oracledb_backups_inventory_s3bucket.id
+
+  policy = data.oracledb_backups_inventory_policy_file.rendered
 }
 
 resource "aws_s3_bucket_inventory" "oracledb_backups_inventory" {
