@@ -59,8 +59,8 @@ data "template_file" "oracledb_backups_inventory_policy" {
   template = file("./policies/oracledb_backups_inventory.json")
 
   vars = {
-    backup_s3bucket_arn = module.s3_oracledb_backups.arn
-    inventory_s3bucket_arn = module.s3_oracledb_backups_inventory_s3bucket.arn
+    backup_s3bucket_arn = s3_oracledb_backups.arn
+    inventory_s3bucket_arn = s3_oracledb_backups_inventory_s3bucket.arn
     aws_account_id = data.aws_caller_identity.current.account_id
   }
 }
