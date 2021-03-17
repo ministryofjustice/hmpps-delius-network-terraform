@@ -4,6 +4,8 @@
 
 locals {
   bucket_name = "${var.tiny_environment_identifier}-oracledb-backups"
+  inventory_bucket_name = "${var.environment_identifier}-oracledb-backups-inventory-s3bucket"
+  inventory_name = "${var.environment_identifier}-oracledb-backups-inventory"
 }
 
 resource "aws_s3_bucket" "oracledb_backups" {
@@ -32,3 +34,52 @@ resource "aws_s3_bucket" "oracledb_backups" {
   )
 }
 
+
+resource "aws_s3_bucket" "oracledb_backups_inventory_s3bucket" {
+  bucket = local.inventory_bucket_name
+  acl    = "private"
+
+  versioning {
+    enabled = false
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      "Name" = local.inventory_bucket_name
+    },
+    {
+      "Purpose" = "Inventory of Oracle DB Backup Pieces"
+    },
+  )
+}
+
+data "template_file" "oracledb_backups_inventory_policy" {
+  template = file("./policies/oracledb_backups_inventory.json")
+
+  vars = {
+    backup_s3bucket_arn = var.oracledb_backups.s3_bucket_arn
+    inventory_s3bucket_arn = var.oracledb_backups_inventory_s3bucket.s3_bucket_arn
+    aws_account_id = data.aws_caller_identity.current.account_id
+  }
+}
+
+resource "aws_s3_bucket_inventory" "oracledb_backups_inventory_s3bucket" {
+  bucket = aws_s3_bucket.oracledb_backups.id
+  name   = "OracleBackupBucketDaily"
+
+  included_object_versions = "Current"
+
+  optional_fields = ["Size","LastModifiedDate"]
+
+  schedule {
+    frequency = "Daily"
+  }
+
+  destination {
+    bucket {
+      format     = "CSV"
+      bucket_arn = aws_s3_bucket.oracledb_backups_inventory_s3bucket.arn
+    }
+  }
+}
