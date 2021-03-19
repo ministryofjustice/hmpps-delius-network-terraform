@@ -4,8 +4,8 @@
 
 locals {
   bucket_name = "${var.tiny_environment_identifier}-oracledb-backups"
-  inventory_bucket_name = "${var.tiny_environment_identifier}-oracledb-backups-inventory-s3bucket"
-  inventory_name = "${var.tiny_environment_identifier}-oracledb-backups-inventory"
+  inventory_bucket_name = "${var.tiny_environment_identifier}-oracledb-backups-inventory"
+  inventory_name = "${var.tiny_environment_identifier}-oracledb-backuppieces"
 }
 
 resource "aws_s3_bucket" "oracledb_backups" {
@@ -35,7 +35,7 @@ resource "aws_s3_bucket" "oracledb_backups" {
 }
 
 
-resource "aws_s3_bucket" "oracledb_backups_inventory_s3bucket" {
+resource "aws_s3_bucket" "oracledb_backups_inventory" {
   bucket = local.inventory_bucket_name
   acl    = "private"
 
@@ -60,20 +60,20 @@ data "template_file" "oracledb_backups_inventory_policy_file" {
 
   vars = {
     backup_s3bucket_arn = aws_s3_bucket.oracledb_backups.arn
-    inventory_s3bucket_arn = aws_s3_bucket.oracledb_backups_inventory_s3bucket.arn
+    inventory_s3bucket_arn = aws_s3_bucket.oracledb_backups_inventory.arn
     aws_account_id = data.aws_caller_identity.current.account_id
   }
 }
 
 resource "aws_s3_bucket_policy" "oracledb_backups_inventory_policy" {
-  bucket = aws_s3_bucket.oracledb_backups_inventory_s3bucket.id
+  bucket = aws_s3_bucket.oracledb_backups_inventory.id
 
   policy = data.template_file.oracledb_backups_inventory_policy_file.rendered
 }
 
-resource "aws_s3_bucket_inventory" "oracledb_backups_inventory" {
+resource "aws_s3_bucket_inventory" "oracledb_backuppieces" {
   bucket = aws_s3_bucket.oracledb_backups.id
-  name   = "${var.tiny_environment_identifier}-oracledb-backups-inventory"
+  name   = local.inventory_name
 
   included_object_versions = "Current"
 
@@ -86,7 +86,7 @@ resource "aws_s3_bucket_inventory" "oracledb_backups_inventory" {
   destination {
     bucket {
       format     = "CSV"
-      bucket_arn = aws_s3_bucket.oracledb_backups_inventory_s3bucket.arn
+      bucket_arn = aws_s3_bucket.oracledb_backups_inventory.arn
     }
   }
 }
