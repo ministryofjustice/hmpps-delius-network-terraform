@@ -54,12 +54,11 @@ resource "aws_security_group" "ecs_efs_sg" {
 # ECS Cluster
 resource "aws_ecs_cluster" "ecs" {
   name = "${local.name_prefix}-ecscluster-private-ecs"
-  tags = merge(
-    var.tags,
-    {
-      "Name" = "${local.name_prefix}-ecscluster-private-ecs"
-    },
-  )
+  setting {
+    name = "containerInsights"
+    value = "enabled"
+  }
+  tags = merge(var.tags, { Name = "${local.name_prefix}-ecscluster-private-ecs" })
 }
 
 # Create a private service namespace to allow tasks to discover & communicate with each other
