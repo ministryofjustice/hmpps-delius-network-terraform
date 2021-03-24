@@ -1,12 +1,17 @@
 #!/bin/bash
 set -x
 # Install additional packages
-sudo yum install -y amazon-efs-utils nfs-utils jq awslogs
+sudo yum install -y amazon-efs-utils nfs-utils jq awslogs unzip
 # Install and start SSM Agent service - will always want the latest - used for remote access via aws console/cli
 # Avoids need to manage users identity in 2 places and install ansible/dependencies
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 sudo systemctl enable amazon-ssm-agent
 sudo systemctl start amazon-ssm-agent
+
+# Install the X-Ray Java Agent
+curl --location https://github.com/aws/aws-xray-java-agent/releases/latest/download/xray-agent.zip --output /xray-agent.zip
+unzip /xray-agent.zip -d /xray-agent
+rm -f /xray-agent.zip
 
 # Install any docker plugins
 # Volume plugin for providing EBS/EFS docker volumes
