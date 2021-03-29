@@ -12,6 +12,8 @@ sudo systemctl start amazon-ssm-agent
 curl --location https://github.com/aws/aws-xray-java-agent/releases/latest/download/xray-agent.zip --output /xray-agent.zip
 unzip /xray-agent.zip -d /xray-agent
 rm -f /xray-agent.zip
+# Install the AWS OpenTelemetry Agent
+curl --location https://github.com/aws-observability/aws-otel-java-instrumentation/releases/latest/download/aws-opentelemetry-agent.jar --output /xray-agent/aws-opentelemetry-agent.jar
 
 # Install any docker plugins
 # Volume plugin for providing EBS/EFS docker volumes
