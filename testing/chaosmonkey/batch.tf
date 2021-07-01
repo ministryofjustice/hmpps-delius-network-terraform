@@ -40,8 +40,11 @@ resource "aws_batch_compute_environment" "batch_ce" {
 
     type = "EC2"
 
-    tags = var.tags
-  }
+    tags = merge(
+    var.tags,
+    {
+      "Name" = "${local.name_prefix}-asg"
+    },
 
   service_role = aws_iam_role.batch_service_role.arn
   type         = "MANAGED"
