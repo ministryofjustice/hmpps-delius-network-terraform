@@ -31,11 +31,9 @@ variable "project_name_abbreviated" {
   description = "Shortened environment name"
 }
 
-# Note that to use cloudsto volume plugin, nitro based ECS instances can't be used atm
-# This means cannot use t3, m5, c5 or r5 instance types until plugin supports new volume names used on nitro instances
 variable "ecs_instance_type" {
   description = "EC2 instance type for ECS Hosts"
-  default     = "t2.medium"
+  default     = "m5.large"
 }
 
 variable "node_max_count" {
@@ -72,9 +70,3 @@ variable "ecs_cluster_namespace_name" {
   description = "Private namespace domain name value"
   default     = "ecs.cluster"
 }
-
-variable "cloudstor_plugin_version" {
-  description = "Docker cloudstor ebs volume plugin version"
-  default     = "docker4x/cloudstor:18.09.2-ce-aws1"
-}
-
