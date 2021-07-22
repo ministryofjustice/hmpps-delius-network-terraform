@@ -13,12 +13,7 @@ resource "aws_security_group" "ecs_host_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(
-    var.tags,
-    {
-      "Name" = "${local.name_prefix}-ecscluster-private-sg"
-    },
-  )
+  tags = merge(var.tags, { Name = "${local.name_prefix}-ecscluster-private-sg" })
 }
 
 # Security Group for docker EFS volumes used for persistent storage
@@ -43,22 +38,22 @@ resource "aws_security_group" "ecs_efs_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(
-    var.tags,
-    {
-      "Name" = "${local.name_prefix}-ecsefs-private-sg"
-    },
-  )
+  tags = merge(var.tags, { Name = "${local.name_prefix}-ecsefs-private-sg" })
 }
 
 # ECS Cluster
 resource "aws_ecs_cluster" "ecs" {
-  name = "${local.name_prefix}-ecscluster-private-ecs"
+  name = local.ecs_cluster_name
+  capacity_providers = [aws_ecs_capacity_provider.ecs_capacity_provider.name]
+  default_capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.ecs_capacity_provider.name
+    weight            = 1
+  }
   setting {
-    name = "containerInsights"
+    name  = "containerInsights"
     value = "enabled"
   }
-  tags = merge(var.tags, { Name = "${local.name_prefix}-ecscluster-private-ecs" })
+  tags = merge(var.tags, { Name = local.ecs_cluster_name })
 }
 
 # Create a private service namespace to allow tasks to discover & communicate with each other
@@ -97,8 +92,9 @@ resource "aws_autoscaling_group" "ecs_asg" {
   launch_configuration = aws_launch_configuration.ecs_host_lc.id
 
   # Not setting desired count as that could cause scale in when deployment runs and lead to resource exhaustion
-  max_size = var.node_max_count
-  min_size = var.node_min_count
+  max_size              = var.node_max_count
+  min_size              = var.node_min_count
+  protect_from_scale_in = true # scale-in is managed by ECS
 
   vpc_zone_identifier = local.private_subnet_ids
 
@@ -118,104 +114,29 @@ resource "aws_autoscaling_group" "ecs_asg" {
     ignore_changes        = [desired_capacity]
   }
 
-  tags = concat(data.null_data_source.tags.*.outputs, [{
-    key                 = "Name"
-    value               = "${local.name_prefix}-ecscluster-private-asg"
-    propagate_at_launch = true
-  }])
-}
-
-# Autoscaling Policies and trigger alarms
-resource "aws_autoscaling_policy" "ecs_host_scaleup" {
-  name                   = "${local.name_prefix}-ecssclup-pri-asg"
-  scaling_adjustment     = "1"
-  adjustment_type        = "ChangeInCapacity"
-  autoscaling_group_name = aws_autoscaling_group.ecs_asg.name
-}
-
-resource "aws_autoscaling_policy" "ecs_host_scaledown" {
-  name                   = "${local.name_prefix}-ecsscldown-pri-asg"
-  scaling_adjustment     = "-1"
-  adjustment_type        = "ChangeInCapacity"
-  autoscaling_group_name = aws_autoscaling_group.ecs_asg.name
-}
-
-resource "aws_cloudwatch_metric_alarm" "ecs_scaleup_alarm" {
-  alarm_name          = "${local.name_prefix}-ecssclup-cpu-cwa"
-  alarm_description   = "ECS cluster scaling metric above threshold"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "2"
-  metric_name         = "CPUReservation"
-  namespace           = "AWS/ECS"
-  period              = "60"
-  statistic           = "Maximum"
-  threshold           = var.ecs_scale_up_cpu_threshold
-  alarm_actions       = [aws_autoscaling_policy.ecs_host_scaleup.arn]
-
-  dimensions = {
-    ClusterName = aws_ecs_cluster.ecs.name
-  }
-}
-
-resource "aws_cloudwatch_metric_alarm" "ecs_scaleup_mem_alarm" {
-  alarm_name          = "${local.name_prefix}-ecssclup-mem-cwa"
-  alarm_description   = "ECS cluster scaling metric above threshold"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "2"
-  metric_name         = "MemoryReservation"
-  namespace           = "AWS/ECS"
-  period              = "60"
-  statistic           = "Maximum"
-  threshold           = var.ecs_scale_up_cpu_threshold
-  alarm_actions       = [aws_autoscaling_policy.ecs_host_scaleup.arn]
-
-  dimensions = {
-    ClusterName = aws_ecs_cluster.ecs.name
-  }
-}
-
-# Scaling down must only happen if both cpu and mem reservations are below the threshold
-resource "aws_cloudwatch_metric_alarm" "ecs_scaledown_alarm" {
-  alarm_name          = "${local.name_prefix}-ecsscldown-cpu-cwa"
-  alarm_description   = "ECS cluster scaling metric under threshold"
-  comparison_operator = "LessThanThreshold"
-  evaluation_periods  = "5"
-  threshold           = "1"
-  alarm_actions       = [aws_autoscaling_policy.ecs_host_scaledown.arn]
-
-  metric_query {
-    id          = "mq"
-    expression  = "CEIL((cpu-${var.ecs_scale_down_cpu_threshold})/100)+CEIL((mem-${var.ecs_scale_down_mem_threshold})/100)"
-    label       = "ECS Cluster CPU and Mem Reservations are BOTH Below Threshold for Scale Down"
-    return_data = "true"
-  }
-
-  metric_query {
-    id = "cpu"
-    metric {
-      metric_name = "CPUReservation"
-      namespace   = "AWS/ECS"
-      period      = "120"
-      stat        = "Maximum"
-      unit        = "Percent"
-      dimensions = {
-        ClusterName = aws_ecs_cluster.ecs.name
-      }
-    }
-  }
-
-  metric_query {
-    id = "mem"
-    metric {
-      metric_name = "MemoryReservation"
-      namespace   = "AWS/ECS"
-      period      = "120"
-      stat        = "Maximum"
-      unit        = "Percent"
-      dimensions = {
-        ClusterName = aws_ecs_cluster.ecs.name
-      }
+  dynamic "tag" {
+    for_each = merge(var.tags, {
+      Name             = "${local.name_prefix}-ecscluster-private-asg"
+      AmazonECSManaged = "" # Required when using ecs_capacity_provider for scaling
+    })
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
     }
   }
 }
 
+resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
+  name = "${local.name_prefix}-ecscluster-private-capacity-provider"
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = aws_autoscaling_group.ecs_asg.arn
+    managed_termination_protection = "ENABLED"
+    managed_scaling {
+      status                    = "ENABLED"
+      target_capacity           = var.ecs_cluster_target_capacity
+      maximum_scaling_step_size = 10
+    }
+  }
+  tags = merge(var.tags, { Name = "${local.name_prefix}-ecscluster-private-capacity-provider" })
+}

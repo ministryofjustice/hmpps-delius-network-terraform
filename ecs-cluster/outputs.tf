@@ -18,3 +18,10 @@ output "private_cluster_namespace" {
   }
 }
 
+output "capacity_provider" {
+  value = {
+    arn = aws_ecs_capacity_provider.ecs_capacity_provider.arn
+    name = aws_ecs_capacity_provider.ecs_capacity_provider.name
+  }
+}
+
