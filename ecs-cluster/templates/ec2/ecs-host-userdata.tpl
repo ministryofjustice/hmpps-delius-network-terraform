@@ -9,11 +9,16 @@ sudo systemctl enable amazon-ssm-agent
 sudo systemctl start amazon-ssm-agent
 
 # Install the X-Ray Java Agent
-curl --location https://github.com/aws/aws-xray-java-agent/releases/latest/download/xray-agent.zip --output /xray-agent.zip
+curl --location 'https://github.com/aws/aws-xray-java-agent/releases/latest/download/xray-agent.zip' --output /xray-agent.zip
 unzip /xray-agent.zip -d /xray-agent
 rm -f /xray-agent.zip
 # Install the AWS OpenTelemetry Agent
-curl --location https://github.com/aws-observability/aws-otel-java-instrumentation/releases/latest/download/aws-opentelemetry-agent.jar --output /xray-agent/aws-opentelemetry-agent.jar
+curl --location 'https://github.com/aws-observability/aws-otel-java-instrumentation/releases/latest/download/aws-opentelemetry-agent.jar' --output /xray-agent/aws-opentelemetry-agent.jar
+
+# Install the Prometheus JMX Exporter
+mkdir -p /jmx-exporter
+curl --location 'https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.16.1/jmx_prometheus_javaagent-0.16.1.jar' --output /jmx-exporter/jmx_prometheus_javaagent.jar
+echo -e 'lowercaseOutputName: true\nlowercaseOutputLabelNames: true' > /jmx-exporter/config.yaml
 
 # Install any docker plugins
 # Volume plugin for providing EBS/EFS docker volumes
