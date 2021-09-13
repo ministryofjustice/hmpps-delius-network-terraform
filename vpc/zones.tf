@@ -69,9 +69,9 @@ resource "aws_route53_record" "cert_validation" {
   # TODO once/if public zones are migrated to this strategic zone, prod zone should be managed by TF - this will require an import
   count      = var.environment_name != "delius-prod" ? 1 : 0
   zone_id    = aws_route53_zone.strategic_zone[0].zone_id
-  name       = aws_acm_certificate.cert[0].domain_validation_options[0].resource_record_name
-  type       = aws_acm_certificate.cert[0].domain_validation_options[0].resource_record_type
-  records    = [aws_acm_certificate.cert[0].domain_validation_options[0].resource_record_value]
+  name       = tolist(aws_acm_certificate.cert[0].domain_validation_options)[0].resource_record_name
+  type       = tolist(aws_acm_certificate.cert[0].domain_validation_options)[0].resource_record_type
+  records    = [tolist(aws_acm_certificate.cert[0].domain_validation_options)[0].resource_record_value]
   ttl        = 60
   depends_on = [aws_acm_certificate.cert]
 }
