@@ -18,3 +18,6 @@ output "bastion_remote_state_bucket_name" {
   value = var.bastion_remote_state_bucket_name
 }
 
+output "vpn_vpc_cidr" {
+  value = data.terraform_remote_state.vpn_remote_vpc.outputs.vpc["cidr"]
+}

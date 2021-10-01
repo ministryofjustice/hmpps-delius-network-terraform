@@ -43,6 +43,17 @@ data "terraform_remote_state" "bastion_remote_vpc" {
   }
 }
 
+data "terraform_remote_state" "vpn_remote_vpc" {
+  backend = "s3"
+
+  config = {
+    bucket   = "tf-eu-west-2-hmpps-bastion-dev-remote-state"
+    key      = "vpn-vpc/terraform.tfstate"
+    region   = var.region
+    role_arn = "arn:aws:iam::895523100917:role/terraform"
+  }
+}
+
 ## Lambda to snapshot volumes periodically
 
 module "create_snapshot_lambda" {
