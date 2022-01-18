@@ -81,23 +81,6 @@ resource "aws_security_group_rule" "iaps_egress_interface_lb_tls" {
 }
 
 #IAPS Proxy
-resource "aws_security_group" "iaps_proxy_lb" {
-  name        = "${var.environment_name}-${var.iaps_app_name}-proxy-lb"
-  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
-  description = "IAPS Proxy LB SG"
-  tags = merge(
-    var.tags,
-    {
-      "Name" = "${var.environment_name}-${var.iaps_app_name}-proxy-lb"
-      "Type" = "LB"
-    },
-  )
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 resource "aws_security_group" "iaps_proxy_ec2" {
   name        = "${var.environment_name}-${var.iaps_app_name}-proxy-ec2"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
