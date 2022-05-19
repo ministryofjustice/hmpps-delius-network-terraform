@@ -93,4 +93,3 @@ module "autostop-notify" {
   url_path                       = var.url_path
   tagged_user                    = var.tagged_user
 }
-
