@@ -25,5 +25,10 @@ resource "aws_vpc_endpoint" "s3-endpoint" {
   vpc_id            = module.vpc.vpc_id
   vpc_endpoint_type = "Gateway"
   route_table_ids   = local.route_table_for_endpoint_ids
-  tags              = var.tags
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "${var.environment_identifier}-${var.s3_gateway_endpoint_name}"
+    },
+  )
 }
