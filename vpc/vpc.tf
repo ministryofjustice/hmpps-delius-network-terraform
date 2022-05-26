@@ -38,7 +38,7 @@ resource "aws_vpc_endpoint" "s3-endpoint" {
   tags = merge(
     var.tags,
     {
-      "Name" = "${var.environment_identifier}-${var.s3_gateway_endpoint_name}-${format("web-%03d", count.index + 1)}"
+      "Name" = "${var.environment_identifier}-${var.s3_gateway_endpoint_name}-${format("%d", count.index + 1)}"
     },
   )
 }
