@@ -89,6 +89,10 @@ variable "subdomain" {
 variable "snapshot_retention_days" {
 }
 
+variable "s3_gateway_endpoint_name" {
+  default = "s3-gateway-endpoint"
+}
+
 # Variables to support managing strategic (*.probation.service.justice.gov.uk) delegation records in the production account parent R53 zone
 variable "strategic_parent_zone_delegation_role" {
   description = "Cross account IAM Role ARN in Prod Acct for assuming and managing strategic domain delegation (NS) records"
@@ -97,4 +101,3 @@ variable "strategic_parent_zone_delegation_role" {
 variable "strategic_parent_zone_id" {
   description = "Parent R53 Zone ID for strategic domain (probation.service.justice.gov.uk)"
 }
-
