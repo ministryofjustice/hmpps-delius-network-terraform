@@ -21,16 +21,3 @@ output "peering_eng_vpc_id" {
 output "peering_eng_vpc_id_string" {
   value = "${aws_vpc_peering_connection.peering-eng-vpc.id},${data.terraform_remote_state.vpc.outputs.vpc_cidr_block},${var.environment_name}"
 }
-
-#vpn
-output "peering_vpn_vpc_accept_status" {
-  value = aws_vpc_peering_connection.peering-vpn-vpc.accept_status
-}
-
-output "peering_vpn_vpc_id" {
-  value = aws_vpc_peering_connection.peering-vpn-vpc.id
-}
-
-output "peering_vpn_vpc_id_string" {
-  value = "${aws_vpc_peering_connection.peering-vpn-vpc.id},${data.terraform_remote_state.vpc.outputs.vpc_cidr_block},${var.environment_name}"
-}
