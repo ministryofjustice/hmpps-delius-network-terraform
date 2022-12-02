@@ -79,7 +79,7 @@ resource "aws_route53_record" "cert_validation" {
 # This resource allows terraform to wait till the certificate has been validated using the above r53 record
 resource "aws_acm_certificate_validation" "cert_validation" {
   # TODO once/if public zones are migrated to this strategic zone, prod zone should be managed by TF - this will require an import
-  count                   = var.environment_name != "delius-prod" ? 1 : 0
+  count                   = var.environment_name != "delius-prod" && var.environment_name != "delius-pre-prod" ? 1 : 0
   certificate_arn         = aws_acm_certificate.cert[0].arn
   validation_record_fqdns = [aws_route53_record.cert_validation[0].fqdn]
 }
