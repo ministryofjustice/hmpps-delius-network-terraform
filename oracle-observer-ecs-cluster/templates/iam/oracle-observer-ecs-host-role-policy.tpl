@@ -27,27 +27,6 @@
             "Resource": "*"
         },
         {
-            "Sid": "AllowEFSVolumeManagement",
-            "Effect": "Allow",
-            "Action": [
-            "elasticfilesystem:CreateFileSystem",
-            "elasticfilesystem:CreateMountTarget",
-            "ec2:DescribeSubnets",
-            "ec2:DescribeNetworkInterfaces",
-            "ec2:CreateNetworkInterface",
-            "elasticfilesystem:CreateTags",
-            "elasticfilesystem:DeleteFileSystem",
-            "elasticfilesystem:DeleteMountTarget",
-            "ec2:DeleteNetworkInterface",
-            "elasticfilesystem:Describe*",
-            "ec2:DescribeNetworkInterfaceAttribute",
-            "ec2:DescribeSecurityGroups",
-            "ec2:DescribeVpcAttribute",
-            "ec2:DescribeVpcs"
-            ],
-            "Resource": "*"
-        },
-        {
             "Sid": "AllowECRReadOnly",
             "Effect": "Allow",
             "Action": [
