@@ -54,12 +54,12 @@ data "aws_ami" "ecs_ami" {
 }
 
 # IAM Templates
-data "template_file" "ecs_assume_role_template" {
-  template = file("${path.module}/templates/iam/ecs-host-assumerole-policy.tpl")
+data "template_file" "oracle_observer_ecs_assume_role_template" {
+  template = file("${path.module}/templates/iam/oracle-observer-ecs-host-assumerole-policy.tpl")
   vars = {}
 }
 
-data "template_file" "ecs_host_role_policy_template" {
-  template = file("${path.module}/templates/iam/ecs-host-role-policy.tpl")
+data "template_file" "oracle_observer_ecs_host_role_policy_template" {
+  template = file("${path.module}/templates/iam/oracle-observer-ecs-host-role-policy.tpl")
   vars     = {}
 }
