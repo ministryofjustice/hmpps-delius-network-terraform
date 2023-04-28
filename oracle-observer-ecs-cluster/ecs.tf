@@ -37,7 +37,6 @@ resource "aws_launch_configuration" "oracle_observer_ecs_host_lc" {
 
   security_groups = [
     aws_security_group.oracle_observer_ecs_host_sg.id,
-    aws_security_group.oracle_observer_ecs_efs_sg.id,
     data.terraform_remote_state.vpc_security_groups.outputs.sg_ssh_bastion_in_id,
   ]
 
