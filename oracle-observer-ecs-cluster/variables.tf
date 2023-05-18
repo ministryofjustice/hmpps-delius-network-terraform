@@ -33,5 +33,5 @@ variable "project_name_abbreviated" {
 
 variable "ecs_instance_type" {
   description = "EC2 instance type for ECS Hosts"
-  default     = "m5.large"
+  default     = "t3.nano"
 }
