@@ -20,6 +20,16 @@ data "terraform_remote_state" "vpc_security_groups" {
   }
 }
 
+data "terraform_remote_state" "delius_core_security_groups" {
+  backend = "s3"
+
+  config = {
+    bucket = var.remote_state_bucket_name
+    key    = "delius-core/security-groups/terraform.tfstate"
+    region = var.region
+  }
+}
+
 # Get current context for things like account id
 data "aws_caller_identity" "current" {
 }
@@ -59,7 +69,37 @@ data "template_file" "oracle_observer_ecs_assume_role_template" {
   vars = {}
 }
 
+data "terraform_remote_state" "database_failover" {
+  backend = "s3"
+
+  config = {
+    bucket = var.remote_state_bucket_name
+    key    = "delius-core/database_failover/terraform.tfstate"
+    region = var.region
+  }
+}
+
 data "template_file" "oracle_observer_ecs_host_role_policy_template" {
   template = file("${path.module}/templates/iam/oracle-observer-ecs-host-role-policy.tpl")
   vars     = {}
+}
+
+data "template_file" "oracle_observer_ecs_host_userdata_template" {
+  template = file("${path.module}/templates/ec2/ecs-host-userdata.tpl")
+
+  vars = {
+    ecs_cluster_name         = local.oracle_observer_ecs_cluster_name
+    region                   = var.region
+  }
+}
+
+data "template_file" "oracle_observer_task_policy_template" {
+  template = file("${path.module}/templates/iam/oracle-observer-task-policy.tpl")
+  vars     = {
+    oradb_sys_password_parameter       = local.oradb_sys_password_parameter
+    }
+}
+
+data "template_file" "oracle_observer_task_assumerole_policy_template" {
+  template = file("${path.module}/templates/iam/oracle-observer-task-assumerole-policy.tpl")
 }

@@ -31,7 +31,22 @@ variable "project_name_abbreviated" {
   description = "Shortened environment name"
 }
 
-variable "ecs_instance_type" {
-  description = "EC2 instance type for ECS Hosts"
+variable "oracle_observer_ecs_instance_type" {
+  description = "EC2 instance type for Oracle Observer ECS Hosts"
   default     = "t3.nano"
+}
+
+variable "oracle_observer_cpu" {
+   description = "CPU available to Oracle Observer Container"
+   default     = 1024
+}
+
+variable "oracle_observer_memory" {
+   description = "Memory (Mb) available to Oracle Observer Container"
+   default     = 128
+}
+
+variable "database_high_availability_count" {
+  description = "number of standby databases"
+  type        = map(number)
 }

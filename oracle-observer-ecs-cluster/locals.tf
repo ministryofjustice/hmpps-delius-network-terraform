@@ -16,5 +16,11 @@ locals {
     data.terraform_remote_state.vpc.outputs.vpc_db-subnet-az2,
     data.terraform_remote_state.vpc.outputs.vpc_db-subnet-az3,
   ]
+
+  sys_password_path = "/${var.environment_name}/${var.project_name}/delius-database/db/oradb_sys_password"
+
+  oradb_sys_password_parameter = "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter${local.sys_password_path}"
+
+  ecs_task_execution_role = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ecsTaskExecutionRole"
 }
 

@@ -1,21 +1,3 @@
-# Host Security Group - with ssh inbound from bastion
-# Defined here rather than in central security groups as it is standalone. Each task will have a dedicated sg
-resource "aws_security_group" "oracle_observer_ecs_host_sg" {
-  name        = "${local.name_prefix}-oracle_observer_ecscluster-private-sg"
-  description = "Oracle Observer ECS Cluster Hosts Security Group"
-  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
-
-  # Allow all outbound
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(var.tags, { Name = "${local.name_prefix}-oracle-observer-ecscluster-private-sg" })
-}
-
 # ECS Cluster
 resource "aws_ecs_cluster" "oracle_observer_ecs" {
   name = local.oracle_observer_ecs_cluster_name
@@ -33,14 +15,16 @@ resource "aws_launch_configuration" "oracle_observer_ecs_host_lc" {
   associate_public_ip_address = false
   iam_instance_profile        = aws_iam_instance_profile.oracle_observer_ecs_host_profile.name
   image_id                    = data.aws_ami.ecs_ami.id
-  instance_type               = var.ecs_instance_type
+  instance_type               = var.oracle_observer_ecs_instance_type
 
   security_groups = [
-    aws_security_group.oracle_observer_ecs_host_sg.id,
+    data.terraform_remote_state.delius_core_security_groups.outputs.sg_delius_db_in_id,
+    data.terraform_remote_state.delius_core_security_groups.outputs.sg_delius_db_out_id,
     data.terraform_remote_state.vpc_security_groups.outputs.sg_ssh_bastion_in_id,
   ]
 
   key_name         = data.terraform_remote_state.vpc.outputs.ssh_deployer_key
+  user_data_base64 = base64encode(data.template_file.oracle_observer_ecs_host_userdata_template.rendered)
 
   lifecycle {
     create_before_destroy = true
@@ -86,4 +70,46 @@ resource "aws_autoscaling_group" "oracle_observer_ecs_asg" {
       propagate_at_launch = true
     }
   }
+}
+
+resource "aws_ecs_task_definition" "oracle_observer_task_definition" {
+  family                   = "${local.name_prefix}-oracle-observer-task-definition"
+  task_role_arn            = aws_iam_role.oracle_observer_task_role.arn
+  execution_role_arn       = local.ecs_task_execution_role
+  requires_compatibilities = ["EC2"]
+  cpu                      = var.oracle_observer_cpu
+  memory                   = var.oracle_observer_memory
+  tags                     = merge(var.tags, { Name = "${local.name_prefix}-oracle-observer-task-definition" })
+
+  container_definitions = jsonencode([{
+    name  = "${local.name_prefix}-oracle-observer-container"
+    image = "895523100917.dkr.ecr.eu-west-2.amazonaws.com/hmpps/oracle-dg-observer"
+    environment = [
+      {
+        name  = "PASSWORD_PARAMETER_PATH"
+        value = "${local.sys_password_path}"
+      },
+      {
+        name  = "TNS_PRIMARYDB"
+        value = "${data.terraform_remote_state.database_failover.outputs.tns_delius_primarydb}"
+      },
+      {
+        name  = "TNS_STANDBYDB1"
+        value = var.database_high_availability_count["delius"] >= 1 ? "${data.terraform_remote_state.database_failover.outputs.tns_delius_standbydb1}" : "NONE"
+      },
+      {
+        name  = "TNS_STANDBYDB2"
+        value = var.database_high_availability_count["delius"] >= 2 ? "${data.terraform_remote_state.database_failover.outputs.tns_delius_standbydb2}" : "NONE"
+      }
+    ]
+  }])
+
+  }
+
+# Define an ECS Service which will attempt to run a single instance of the Oracle Data Guard Observer Docker image within the Cluster
+  resource "aws_ecs_service" "oracle_observer_service" {
+  name                               = "${local.name_prefix}-oracle-observer-service"
+  cluster                            = aws_ecs_cluster.oracle_observer_ecs.arn
+  task_definition                    = aws_ecs_task_definition.oracle_observer_task_definition.arn
+  scheduling_strategy                = "DAEMON"
 }
