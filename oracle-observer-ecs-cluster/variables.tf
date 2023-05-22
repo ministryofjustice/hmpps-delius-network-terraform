@@ -33,7 +33,7 @@ variable "project_name_abbreviated" {
 
 variable "oracle_observer_ecs_instance_type" {
   description = "EC2 instance type for Oracle Observer ECS Hosts"
-  default     = "t3.nano"
+  default     = "t3.micro"
 }
 
 variable "oracle_observer_cpu" {

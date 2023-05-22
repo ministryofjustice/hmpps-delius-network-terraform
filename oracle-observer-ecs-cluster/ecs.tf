@@ -21,6 +21,7 @@ resource "aws_launch_configuration" "oracle_observer_ecs_host_lc" {
     data.terraform_remote_state.delius_core_security_groups.outputs.sg_delius_db_in_id,
     data.terraform_remote_state.delius_core_security_groups.outputs.sg_delius_db_out_id,
     data.terraform_remote_state.vpc_security_groups.outputs.sg_ssh_bastion_in_id,
+    data.terraform_remote_state.delius_core_security_groups.outputs.sg_common_out_id
   ]
 
   key_name         = data.terraform_remote_state.vpc.outputs.ssh_deployer_key
@@ -72,6 +73,15 @@ resource "aws_autoscaling_group" "oracle_observer_ecs_asg" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "oracle_observer_log_group" {
+  name = "/oracle-observer-ecs/run-observer-logs"
+  retention_in_days = 14
+}
+
+resource "random_id" "container_id" {
+  byte_length = 8
+}
+
 resource "aws_ecs_task_definition" "oracle_observer_task_definition" {
   family                   = "${local.name_prefix}-oracle-observer-task-definition"
   task_role_arn            = aws_iam_role.oracle_observer_task_role.arn
@@ -80,10 +90,18 @@ resource "aws_ecs_task_definition" "oracle_observer_task_definition" {
   cpu                      = var.oracle_observer_cpu
   memory                   = var.oracle_observer_memory
   tags                     = merge(var.tags, { Name = "${local.name_prefix}-oracle-observer-task-definition" })
-
   container_definitions = jsonencode([{
     name  = "${local.name_prefix}-oracle-observer-container"
     image = "895523100917.dkr.ecr.eu-west-2.amazonaws.com/hmpps/oracle-dg-observer"
+    hostname = "${local.name_prefix}-oracle-observer-container-${random_id.container_id.hex}"
+    logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group = aws_cloudwatch_log_group.oracle_observer_log_group.name
+          awslogs-region = "${var.region}"
+          awslogs-stream-prefix = "oracle-observer-ecs"
+        }
+    }
     environment = [
       {
         name  = "PASSWORD_PARAMETER_PATH"
