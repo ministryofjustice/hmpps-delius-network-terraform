@@ -63,12 +63,6 @@ data "aws_ami" "ecs_ami" {
   }
 }
 
-# IAM Templates
-data "template_file" "oracle_observer_ecs_assume_role_template" {
-  template = file("${path.module}/templates/iam/oracle-observer-ecs-host-assumerole-policy.tpl")
-  vars = {}
-}
-
 data "terraform_remote_state" "database_failover" {
   backend = "s3"
 
