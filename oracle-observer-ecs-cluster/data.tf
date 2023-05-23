@@ -79,11 +79,6 @@ data "terraform_remote_state" "database_failover" {
   }
 }
 
-data "template_file" "oracle_observer_ecs_host_role_policy_template" {
-  template = file("${path.module}/templates/iam/oracle-observer-ecs-host-role-policy.tpl")
-  vars     = {}
-}
-
 data "template_file" "oracle_observer_ecs_host_userdata_template" {
   template = file("${path.module}/templates/ec2/ecs-host-userdata.tpl")
 
