@@ -41,12 +41,6 @@ variable "mis_app_name" {
   default     = "mis"
 }
 
-# IAPS vars
-variable "iaps_app_name" {
-  description = "label for IAPS"
-  default     = "iaps"
-}
-
 # Engineering remote state (for RMAN security group details)
 variable "oracle_db_operation" {
   type        = map(string)

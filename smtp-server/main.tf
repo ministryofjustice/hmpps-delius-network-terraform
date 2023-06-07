@@ -68,7 +68,6 @@ locals {
   sg_bastion_in        = data.terraform_remote_state.security-groups.outputs.sg_ssh_bastion_in_id
   sg_smtp_ses          = data.terraform_remote_state.security-groups.outputs.sg_smtp_ses
   sg_https_out         = data.terraform_remote_state.security-groups.outputs.sg_https_out
-  sg_iaps_api_in       = data.terraform_remote_state.security-groups.outputs.sg_iaps_api_in
   bastion_inventory    = var.bastion_inventory
   private_zone_id      = data.terraform_remote_state.vpc.outputs.private_zone_id
   internal_domain      = data.terraform_remote_state.vpc.outputs.private_zone_name
@@ -235,16 +234,6 @@ resource "aws_security_group_rule" "smtp-in" {
   to_port           = "25"
   self              = "true"
   description       = "TF - SMTP In"
-}
-
-resource "aws_security_group_rule" "iaps-smtp-in" {
-  security_group_id        = local.sg_smtp_ses
-  source_security_group_id = local.sg_iaps_api_in
-  type                     = "ingress"
-  protocol                 = "tcp"
-  from_port                = "25"
-  to_port                  = "25"
-  description              = "IAPS SMTP In"
 }
 
 ### SMTP out
