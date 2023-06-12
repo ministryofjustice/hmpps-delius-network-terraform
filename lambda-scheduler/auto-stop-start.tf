@@ -29,7 +29,7 @@ module "ec2-start-phase2" {
   schedule_action      = var.schedule_start_action
   spot_schedule        = var.spot_schedule
   ec2_schedule         = var.ec2_schedule
-  rds_schedule         = var.rds_schedule
+  rds_schedule         = false # RDS instances should always be started first
   autoscaling_schedule = var.autoscaling_schedule
   environment_name     = var.environment_name
 
@@ -62,7 +62,7 @@ module "ec2-stop-phase2" {
   schedule_action      = var.schedule_stop_action
   spot_schedule        = var.spot_schedule
   ec2_schedule         = var.ec2_schedule
-  rds_schedule         = var.rds_schedule
+  rds_schedule         = false # RDS instances should always be stopped last
   autoscaling_schedule = var.autoscaling_schedule
   environment_name     = var.environment_name
 
@@ -93,4 +93,3 @@ module "autostop-notify" {
   url_path                       = var.url_path
   tagged_user                    = var.tagged_user
 }
-
