@@ -85,7 +85,7 @@ resource "random_id" "container_id" {
 resource "aws_ecs_task_definition" "oracle_observer_task_definition" {
   family                   = "${local.name_prefix}-oracle-observer-task-definition"
   task_role_arn            = aws_iam_role.oracle_observer_task_role.arn
-  execution_role_arn       = local.ecs_task_execution_role
+  execution_role_arn       = aws_iam_role.oracle_observer_ecs_exec_role.arn
   requires_compatibilities = ["EC2"]
   cpu                      = var.oracle_observer_cpu
   memory                   = var.oracle_observer_memory
