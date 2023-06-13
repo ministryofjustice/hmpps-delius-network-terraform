@@ -34,6 +34,7 @@ resource "aws_launch_configuration" "oracle_observer_ecs_host_lc" {
 
 # Host ASG
 resource "aws_autoscaling_group" "oracle_observer_ecs_asg" {
+  count                = var.database_high_availability_count["delius"] >= 1 ? 1 : 0
   name                 = "${local.name_prefix}-oracle-observer-ecscluster-private-asg"
   launch_configuration = aws_launch_configuration.oracle_observer_ecs_host_lc.id
 
@@ -83,9 +84,10 @@ resource "random_id" "container_id" {
 }
 
 resource "aws_ecs_task_definition" "oracle_observer_task_definition" {
+  count                    =  var.database_high_availability_count["delius"] >= 1 ? 1 : 0
   family                   = "${local.name_prefix}-oracle-observer-task-definition"
   task_role_arn            = aws_iam_role.oracle_observer_task_role.arn
-  execution_role_arn       = local.ecs_task_execution_role
+  execution_role_arn       = aws_iam_role.oracle_observer_ecs_exec_role.arn
   requires_compatibilities = ["EC2"]
   cpu                      = var.oracle_observer_cpu
   memory                   = var.oracle_observer_memory
@@ -125,9 +127,10 @@ resource "aws_ecs_task_definition" "oracle_observer_task_definition" {
   }
 
 # Define an ECS Service which will attempt to run a single instance of the Oracle Data Guard Observer Docker image within the Cluster
-  resource "aws_ecs_service" "oracle_observer_service" {
+resource "aws_ecs_service" "oracle_observer_service" {
+  count                              = var.database_high_availability_count["delius"] >= 1 ? 1 : 0
   name                               = "${local.name_prefix}-oracle-observer-service"
   cluster                            = aws_ecs_cluster.oracle_observer_ecs.arn
-  task_definition                    = aws_ecs_task_definition.oracle_observer_task_definition.arn
+  task_definition                    = aws_ecs_task_definition.oracle_observer_task_definition[0].arn
   scheduling_strategy                = "DAEMON"
 }
