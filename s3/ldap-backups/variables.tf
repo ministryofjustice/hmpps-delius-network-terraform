@@ -2,6 +2,10 @@ variable "tiny_environment_identifier" {
   type = string
 }
 
+variable "environment_name" {
+  type = string
+}
+
 variable "tags" {
   type = map(string)
 }
@@ -20,3 +24,8 @@ variable "ldap_config" {
   type        = map(string)
 }
 
+variable "ldap_migration_bucket_name" {
+  description = "S3 bucket name where ldap data is transferred to. This bucket is created in the Mod Platform account"
+  type        = string
+  default     = "delius-core-development-ldap-20230614093955452600000001"
+}

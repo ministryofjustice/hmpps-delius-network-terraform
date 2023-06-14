@@ -3,8 +3,10 @@
 # "region-environment_name" prepended
 
 locals {
-  bucket_name = "${var.tiny_environment_identifier}-ldap-backups"
-  ldap_config = merge(var.default_ldap_config, var.ldap_config)
+  bucket_name           = "${var.tiny_environment_identifier}-ldap-backups"
+  migration_bucket_name = var.ldap_migration_bucket_name
+  ldap_config           = merge(var.default_ldap_config, var.ldap_config)
+  lambda_name           = "ldap-data-migration-lambda"
 }
 
 resource "aws_s3_bucket" "ldap_backups" {
