@@ -27,5 +27,5 @@ variable "ldap_config" {
 variable "ldap_migration_bucket_name" {
   description = "S3 bucket name where ldap data is transferred to. This bucket is created in the Mod Platform account"
   type        = string
-  default     = "ldap-s3-to-s3-data-migration-test-bucket"
+  default     = "delius-core-development-ldap-20230614093955452600000001"
 }
