@@ -54,7 +54,7 @@ resource "aws_iam_policy" "lambda_policy" {
                 "s3:ListBucket",
                 "s3:GetObject"
             ],
-            "Resource": "arn:aws:s3:::${local.migration_bucket_name}/*",
+            "Resource": "arn:aws:s3:::${local.migration_bucket_name}/*"
         }
     ]
 }
@@ -84,13 +84,16 @@ resource "aws_lambda_function" "data_transfer_lambda" {
     role             = aws_iam_role.lambda_role[count.index].arn
     handler          = "${local.lambda_name}.handler"
     runtime          = "python3.8"
+    memory_size      = 5120
     timeout          = 300
 
   # Environment variables
     environment {
         variables = {
             SOURCE_BUCKET       = local.bucket_name
+            SOURCE_PREFIX       = "migration/"
             DESTINATION_BUCKET  = local.migration_bucket_name
+            DESTINATION_FOLDER  = "migration/"
         }
     }
 }
