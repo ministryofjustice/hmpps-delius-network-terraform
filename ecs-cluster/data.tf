@@ -20,6 +20,15 @@ data "terraform_remote_state" "vpc_security_groups" {
   }
 }
 
+data "terraform_remote_state" "alerts" {
+  backend = "s3"
+  config = {
+    bucket = var.remote_state_bucket_name
+    key    = "delius-core/alerts/terraform.tfstate"
+    region = var.region
+  }
+}
+
 # Get current context for things like account id
 data "aws_caller_identity" "current" {
 }
