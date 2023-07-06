@@ -46,7 +46,7 @@ cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<- EOF
             "log_group_name": "${log_group_name}",
             "log_stream_name": "{instance_id}/dmesg",
             "retention_in_days": -1
-          }
+          },
           {
             "file_path": "/var/log/ecs/audit.log.*",
             "log_group_name": "${log_group_name}",
@@ -80,16 +80,9 @@ cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<- EOF
     }
   },
   "metrics": {
-    "aggregation_dimensions": [
-      [
-        "InstanceId"
-      ]
-    ],
     "append_dimensions": {
       "AutoScalingGroupName": "\$${aws:AutoScalingGroupName}",
-      "ImageId": "\$${aws:ImageId}",
-      "InstanceId": "\$${aws:InstanceId}",
-      "InstanceType": "\$${aws:InstanceType}"
+      "InstanceId": "\$${aws:InstanceId}"
     },
     "metrics_collected": {
       "disk": {
@@ -98,7 +91,7 @@ cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<- EOF
         ],
         "metrics_collection_interval": 60,
         "resources": [
-          "*"
+          "/"
         ]
       },
       "mem": {

@@ -64,6 +64,7 @@ inspec_profiles/**/terraform.json
 *.plan
 **/backend.tf
 **/provider.tf
+!ecs-cluster/provider.tf
 Makefile
 utils
 .env
