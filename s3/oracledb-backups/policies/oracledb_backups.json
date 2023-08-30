@@ -1,0 +1,15 @@
+{
+    "Version": "2012-10-17",
+
+    "Statement": [
+        {
+            "Sid": "ModernisationPlatformAccessPolicy",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "${modernisation_platform_role_arn}"
+            },
+            "Action": ["s3:GetObject","s3:ListBucket"],
+            "Resource": ["${backup_s3bucket_arn}","${backup_s3bucket_arn}/*"]
+        }
+    ]
+}
