@@ -11,9 +11,7 @@ variable "region" {
 }
 
 variable "oracle_s3_backup_bucket_access" {
-  type    = map(string)
-  default = {
-    modernisation_platform_role_arn = ""
-  }
+  type    = map(list(string))
+  default = {modernisation_platform_role_arns = []}
 }
 
