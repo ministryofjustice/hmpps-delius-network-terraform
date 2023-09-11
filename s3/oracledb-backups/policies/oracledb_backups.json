@@ -6,7 +6,7 @@
             "Sid": "ModernisationPlatformAccessPolicy",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "${modernisation_platform_role_arn}"
+                "AWS": ["${modernisation_platform_role_arns}"]
             },
             "Action": ["s3:Get*","s3:List*"],
             "Resource": ["${backup_s3bucket_arn}","${backup_s3bucket_arn}/*"]
