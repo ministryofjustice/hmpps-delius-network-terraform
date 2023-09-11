@@ -39,13 +39,13 @@ resource "aws_s3_bucket" "oracledb_backups" {
 data "template_file" "oracledb_backups_policy_file" {
   template = file("./policies/oracledb_backups.json")
   vars = {
-    backup_s3bucket_arn             = aws_s3_bucket.oracledb_backups.arn
-    modernisation_platform_role_arn = var.oracle_s3_backup_bucket_access.modernisation_platform_role_arn
+    backup_s3bucket_arn              = aws_s3_bucket.oracledb_backups.arn
+    modernisation_platform_role_arns = trimsuffix(trimprefix(join(",",formatlist("\"%s\"",var.oracle_s3_backup_bucket_access.modernisation_platform_role_arns)),"\""),"\"")
   }
 }
 
 resource "aws_s3_bucket_policy" "oracledb_backups_policy" {
-  count  = var.oracle_s3_backup_bucket_access.modernisation_platform_role_arn != "" ? 1: 0
+  count  = length(var.oracle_s3_backup_bucket_access.modernisation_platform_role_arns) > 0 ? 1: 0
   bucket = aws_s3_bucket.oracledb_backups.id
   policy = data.template_file.oracledb_backups_policy_file.rendered
 }
