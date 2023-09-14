@@ -19,6 +19,24 @@
                     "aws:SourceArn": "${backup_s3bucket_arn}"
                 }
             }
+        },
+        {
+            "Sid": "InventoryPolicy",
+            "Effect": "Allow",   
+            "Principal": {
+                "AWS": "arn:aws:iam::${aws_account_id}:role/${short_environment_name}-ansible-oracle-build-codebuild"
+            },
+            "Action": "s3:ListBucket",
+            "Resource": "${inventory_s3bucket_arn}"
+        },
+        {
+            "Sid": "GetPolicy",
+            "Effect": "Allow",   
+            "Principal": {
+                "AWS": "arn:aws:iam::${aws_account_id}:role/${short_environment_name}-ansible-oracle-build-codebuild"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "${inventory_s3bucket_arn}/*"
         }
     ]
 }
