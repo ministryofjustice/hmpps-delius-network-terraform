@@ -70,6 +70,15 @@ resource "aws_s3_bucket" "oracledb_backups_inventory" {
 }
 data "aws_caller_identity" "current" {
 }
+
+resource "aws_s3_bucket_public_access_block" "oracledb_backups_inventory" {
+  bucket                  = aws_s3_bucket.oracledb_backups_inventory.id
+  block_public_acls       = true # Block public access to buckets and objects granted through *new* access control lists (ACLs)
+  ignore_public_acls      = true # Block public access to buckets and objects granted through any access control lists (ACLs)
+  block_public_policy     = true # Block public access to buckets and objects granted through new public bucket or access point policies
+  restrict_public_buckets = true # Block public and cross-account access to buckets and objects through any public bucket or access point policies
+}
+
 data "template_file" "oracledb_backups_inventory_policy_file" {
   template = file("./policies/oracledb_backups_inventory.json")
 
@@ -77,6 +86,7 @@ data "template_file" "oracledb_backups_inventory_policy_file" {
     backup_s3bucket_arn = aws_s3_bucket.oracledb_backups.arn
     inventory_s3bucket_arn = aws_s3_bucket.oracledb_backups_inventory.arn
     aws_account_id = data.aws_caller_identity.current.account_id
+    short_environment_name = "${var.short_environment_name}"
   }
 }
 

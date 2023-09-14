@@ -15,3 +15,6 @@ variable "oracle_s3_backup_bucket_access" {
   default = {modernisation_platform_role_arns = []}
 }
 
+variable "short_environment_name" {
+  type = string
+}
