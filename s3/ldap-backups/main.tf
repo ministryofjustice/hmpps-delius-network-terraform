@@ -4,7 +4,7 @@
 
 locals {
   bucket_name           = "${var.tiny_environment_identifier}-ldap-backups"
-  migration_bucket_name = lookup(var.ldap_migration_bucket_name, var.environment_name, null)
+  migration_bucket_name = lookup(var.ldap_migration_bucket_name, var.environment_name, "delius-core-dev-ldap-20230727141945630400000001")
   ldap_config           = merge(var.default_ldap_config, var.ldap_config)
   lambda_name           = "ldap-data-migration-lambda"
 }
