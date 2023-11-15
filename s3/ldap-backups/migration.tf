@@ -61,9 +61,13 @@ EOF
 
 # Attach the IAM policy to the Lambda role
 resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
+  for_each = toset([
+     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+     aws_iam_policy.lambda_policy.arn
+  ])
 
   role       = aws_iam_role.lambda_role.name
-  policy_arn = aws_iam_policy.lambda_policy.arn
+  policy_arn = each.value
 }
 
 # Lambda function in the source account
@@ -82,7 +86,8 @@ resource "aws_lambda_function" "data_transfer_lambda" {
   runtime       = "python3.8"
   memory_size   = 5120
   timeout       = 300
-
+  source_code_hash = data.archive_file.data_transfer_lambda.output_base64sha256
+  
   # Environment variables
   environment {
     variables = {
@@ -90,6 +95,7 @@ resource "aws_lambda_function" "data_transfer_lambda" {
       SOURCE_PREFIX      = "migration/"
       DESTINATION_BUCKET = local.migration_bucket_name
       DESTINATION_FOLDER = "migration/"
+      LOG_LEVEL          = "INFO"
     }
   }
 }
