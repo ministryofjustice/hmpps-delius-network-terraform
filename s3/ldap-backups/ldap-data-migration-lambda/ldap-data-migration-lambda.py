@@ -9,7 +9,7 @@ import logging
 
 log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 logger = logging.getLogger()
-logger.basicConfig(level=log_level)
+logging.basicConfig(level=log_level)
 
 def handler(event, context):
     logger.info('## ENVIRONMENT VARIABLES')
