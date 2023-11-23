@@ -4,7 +4,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_host_root_vol_capacity_warning" {
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   datapoints_to_alarm       = 1
   evaluation_periods        = 1
-  threshold                 = 80
+  threshold                 = 70
   alarm_actions             = [data.terraform_remote_state.alerts.outputs.aws_sns_topic_alarm_notification_arn]
   ok_actions                = [data.terraform_remote_state.alerts.outputs.aws_sns_topic_alarm_notification_arn]
   treat_missing_data        = "ignore"
@@ -26,7 +26,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_host_root_vol_capacity_critical" {
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   datapoints_to_alarm       = 1
   evaluation_periods        = 1
-  threshold                 = 90
+  threshold                 = 80
   alarm_actions             = [data.terraform_remote_state.alerts.outputs.aws_sns_topic_alarm_notification_arn]
   ok_actions                = [data.terraform_remote_state.alerts.outputs.aws_sns_topic_alarm_notification_arn]
   treat_missing_data        = "ignore"
