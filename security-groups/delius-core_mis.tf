@@ -32,6 +32,16 @@ resource "aws_security_group_rule" "delius_core_db_in_from_mis" {
   description              = "TF - Delius DB in from MIS"
 }
 
+resource "aws_security_group_rule" "delius_core_db_in_from_mp_mis" {
+  security_group_id = aws_security_group.delius_core_db_in_from_mis.id
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = "1521"
+  to_port           = "1521"
+  cidr_blocks       = [local.counterpart_mp_env_cidr[var.environment_name]]
+  description       = "TF - Delius DB in from MP MIS"
+}
+
 ### NOTE:
 ## This security group is now mis named because it enable ingress & egress of MIS* DBs
 ## with the RMAN Catalogue in the engineering platform.

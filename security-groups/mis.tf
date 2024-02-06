@@ -18,6 +18,16 @@ resource "aws_security_group" "mis_db_in" {
   }
 }
 
+resource "aws_security_group_rule" "delius_mis_db_in_from_mp_mis" {
+  security_group_id = aws_security_group.mis_db_in.id
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = "1521"
+  to_port           = "1521"
+  cidr_blocks       = [local.counterpart_mp_env_cidr[var.environment_name]]
+  description       = "TF - MIS DB in from MP MIS"
+}
+
 #Common
 resource "aws_security_group" "mis_common" {
   name        = "${var.environment_name}-delius-core-${var.mis_app_name}-common-in"
