@@ -61,13 +61,13 @@ EOF
 
 # Attach the IAM policy to the Lambda role
 resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
-  for_each = toset([
-     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-     aws_iam_policy.lambda_policy.arn
-  ])
-
   role       = aws_iam_role.lambda_role.name
-  policy_arn = each.value
+  policy_arn = aws_iam_policy.lambda_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_execution_policy_attachment" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 # Lambda function in the source account
@@ -87,7 +87,7 @@ resource "aws_lambda_function" "data_transfer_lambda" {
   memory_size   = 5120
   timeout       = 300
   source_code_hash = data.archive_file.data_transfer_lambda.output_base64sha256
-  
+
   # Environment variables
   environment {
     variables = {
