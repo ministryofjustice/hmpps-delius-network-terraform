@@ -52,7 +52,7 @@ resource "aws_iam_policy" "lambda_policy" {
                 "s3:ListBucket",
                 "s3:GetObject"
             ],
-            "Resource": "arn:aws:s3:::${local.migration_bucket_name}/*"
+            "Resource": "arn:aws:s3:::${lookup(local.migration_buckets_target, var.environment_name)}/*"
         }
     ]
 }
@@ -93,7 +93,7 @@ resource "aws_lambda_function" "data_transfer_lambda" {
     variables = {
       SOURCE_BUCKET      = local.bucket_name
       SOURCE_PREFIX      = "migration/"
-      DESTINATION_BUCKET = local.migration_bucket_name
+      DESTINATION_BUCKET = lookup(local.migration_buckets_target, var.environment_name)
       DESTINATION_FOLDER = "migration/"
       LOG_LEVEL          = "INFO"
     }
