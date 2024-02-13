@@ -93,7 +93,7 @@ resource "aws_lambda_function" "data_transfer_lambda" {
     variables = {
       SOURCE_BUCKET      = local.bucket_name
       SOURCE_PREFIX      = "migration/"
-      DESTINATION_BUCKET = local.migration_bucket_name
+      DESTINATION_BUCKET = lookup(local.migration_buckets_target, var.environment_name)
       DESTINATION_FOLDER = "migration/"
       LOG_LEVEL          = "INFO"
     }
