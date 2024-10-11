@@ -67,8 +67,10 @@ def handler(event, context):
             # Join the unzipped chunks into a single byte string
             unzipped_data = b"".join(unzipped_chunks)
 
+            # Extract object name and remove file ext
+            object_name = os.path.basename(object_key[:-3])
             # Upload the unzipped data to the destination bucket
-            destination_key = os.getenv("DESTINATION_FOLDER") + object_key[:-3]
+            destination_key = os.getenv("DESTINATION_FOLDER") + object_name
             logger.info(f"Uploading unzipped data to {destination_bucket}/{destination_key}")
 
             # Create a file like object from the unzipped data
