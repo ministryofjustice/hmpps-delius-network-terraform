@@ -79,17 +79,13 @@ data "archive_file" "data_transfer_lambda" {
 
 resource "aws_lambda_function" "data_transfer_lambda" {
 
-  filename      = data.archive_file.data_transfer_lambda.output_path
-  function_name = local.lambda_name
-  role          = aws_iam_role.lambda_role.arn
-  handler       = "${local.lambda_name}.handler"
-  runtime       = "python3.8"
-  memory_size   = 10240
-  timeout       = 900
-  ephemeral_storage {
-    size = 10240
-  }
-
+  filename         = data.archive_file.data_transfer_lambda.output_path
+  function_name    = local.lambda_name
+  role             = aws_iam_role.lambda_role.arn
+  handler          = "${local.lambda_name}.handler"
+  runtime          = "python3.8"
+  memory_size      = 10240
+  timeout          = 900
   source_code_hash = data.archive_file.data_transfer_lambda.output_base64sha256
 
   # Environment variables
