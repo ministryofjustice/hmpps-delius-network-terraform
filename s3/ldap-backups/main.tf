@@ -3,14 +3,15 @@
 # "region-environment_name" prepended
 
 locals {
-  bucket_name           = "${var.tiny_environment_identifier}-ldap-backups"
-  ldap_config           = merge(var.default_ldap_config, var.ldap_config)
-  lambda_name           = "ldap-data-migration-lambda"
+  bucket_name = "${var.tiny_environment_identifier}-ldap-backups"
+  ldap_config = merge(var.default_ldap_config, var.ldap_config)
+  lambda_name = "ldap-data-migration-lambda"
 
   migration_buckets_target = {
-    "delius-mis-dev"   = "delius-core-dev-ldap-20230727141945630400000001"
-    "delius-test"  = "ldap-test-migration20240131110317239900000004"
-    "delius-stage"  = "ldap-stage-migration20240604101528500700000003"
+    "delius-mis-dev"  = "delius-core-dev-ldap-20230727141945630400000001"
+    "delius-test"     = "ldap-test-migration20240131110317239900000004"
+    "delius-stage"    = "ldap-stage-migration20240604101528500700000003"
+    "delius-pre-prod" = "ldap-preprod-migration20240604101528337700000002"
   }
 }
 
