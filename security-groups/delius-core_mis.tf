@@ -85,8 +85,8 @@ resource "aws_security_group_rule" "mis_out_to_mp_dev_vpc" {
   protocol                 = "tcp"
   from_port                = "1521"
   to_port                  = "1522"
-  cidr_blocks              = ["10.26.24.0/21"]
-  description              = "TF - MIS out to MP Dev VPC"
+  cidr_blocks              = [local.counterpart_mp_env_cidr[var.environment_name]]
+  description              = "TF - MIS out to MP VPC"
 }
 
 resource "aws_security_group_rule" "db_to_eng_rman_catalog_out" {
