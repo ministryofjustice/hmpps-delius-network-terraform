@@ -12,6 +12,7 @@ locals {
     "delius-test"     = "ldap-test-migration20240131110317239900000004"
     "delius-stage"    = "ldap-stage-migration20240604101528500700000003"
     "delius-pre-prod" = "ldap-preprod-migration20240604101528337700000002"
+    "delius-prod"     = "ldap-prod-migration20250115134159341400000003"
   }
 }
 
