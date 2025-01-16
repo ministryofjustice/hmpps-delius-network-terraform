@@ -79,7 +79,7 @@ resource "aws_security_group_rule" "mis_out_to_delius_db" {
   description              = "TF - MIS out to Delius Database"
 }
 
-resource "aws_security_group_rule" "mis_out_to_mp_dev_vpc" {
+resource "aws_security_group_rule" "mis_out_to_mp_vpc" {
   security_group_id        = aws_security_group.mis_out_to_delius_db.id
   type                     = "egress"
   protocol                 = "tcp"
