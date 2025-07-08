@@ -41,6 +41,11 @@ resource "aws_iam_policy" "sqs_queue_read_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "sqs_queue_read_policy_attachment" {
-  user       = "cortex_xsiam_user"
+  user       = aws_iam_user.cortex_xsiam_user.name
   policy_arn = aws_iam_policy.sqs_queue_read_policy.arn
+}
+
+resource "aws_iam_user_policy_attachment" "securityhub_readonly" {
+  user       = aws_iam_user.cortex_xsiam_user.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSSecurityHubReadOnlyAccess"
 }
