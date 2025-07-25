@@ -19,7 +19,8 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
     resources = [
       aws_sqs_queue.cloudtrail_logging.arn,
       aws_sqs_queue.vpc_flowlogs_log_queue.arn,
-      aws_sqs_queue.aws_config.arn
+      aws_sqs_queue.aws_config.arn,
+      aws_sqs_queue.loadbalancer.arn
     ]
   }
   statement {
@@ -32,7 +33,9 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
       aws_s3_bucket.flow_logs.arn,
       "${aws_s3_bucket.flow_logs.arn}/*",
       data.aws_s3_bucket.aws_config.arn,
-      "${data.aws_s3_bucket.aws_config.arn}/*"
+      "${data.aws_s3_bucket.aws_config.arn}/*",
+      data.aws_s3_bucket.loadbalancer.arn,
+      "${data.aws_s3_bucket.loadbalancer.arn}/*"
     ]
   }
 }
