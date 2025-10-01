@@ -59,8 +59,18 @@ resource "aws_security_group_rule" "alfresco_db_in" {
   protocol          = "tcp"
   from_port         = "5432"
   to_port           = "5432"
-  cidr_blocks = [data.terraform_remote_state.vpc.outputs.eng_vpc_cidr]
-  description = "TF - alfresco_db_in"
+  cidr_blocks       = [data.terraform_remote_state.vpc.outputs.eng_vpc_cidr]
+  description       = "TF - alfresco_db_in"
+}
+
+resource "aws_security_group_rule" "alfresco_db_in_from_cp" {
+  security_group_id = aws_security_group.alfresco_db_in.id
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = "5432"
+  to_port           = "5432"
+  cidr_blocks       = ["172.20.0.0/16"]
+  description       = "Allow connections from Cloud Platform"
 }
 
 #API
