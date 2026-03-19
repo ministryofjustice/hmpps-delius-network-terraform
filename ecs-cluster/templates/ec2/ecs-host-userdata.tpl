@@ -15,6 +15,20 @@ rm -f /xray-agent.zip
 # Install the AWS OpenTelemetry Agent
 curl --location 'https://github.com/aws-observability/aws-otel-java-instrumentation/releases/latest/download/aws-opentelemetry-agent.jar' --output /xray-agent/aws-opentelemetry-agent.jar
 
+# Install the Cortex XDR Agent
+curl --location "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.27.50.zip" -o "/awscliv2.zip"
+unzip /awscliv2.zip
+/aws/install
+/usr/local/bin/aws s3 cp s3://tf-eu-west-2-hmpps-${environment}-xsiam-agent-s3bucket/Delius_${environment}_linux_8_8_0_133595_rpm.tar.gz /Delius_${environment}_linux_8_8_0_133595_rpm.tar.gz
+tar xf /Delius_${environment}_linux_8_8_0_133595_rpm.tar.gz
+mkdir /etc/panw
+cp /cortex.conf /etc/panw/
+yum install -y selinux-policy-devel
+yum install -y /cortex-8.8.0.133595.rpm
+rm -rf /usr/local/aws-cli /aws
+rm -f /usr/local/bin/aws /usr/local/bin/aws_completer
+rm -f /awscliv2.zip /Delius_preprod_linux_8_8_0_133595_rpm.tar.gz /cortex.conf /cortex-8.8.0.133595.rpm /README.md
+
 # Install the Prometheus JMX Exporter
 mkdir -p /jmx-exporter
 curl --location 'https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.16.1/jmx_prometheus_javaagent-0.16.1.jar' --output /jmx-exporter/jmx_prometheus_javaagent.jar

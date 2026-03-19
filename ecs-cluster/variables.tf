@@ -36,6 +36,17 @@ variable "ecs_instance_type" {
   default     = "m5.large"
 }
 
+variable "create_weblogic_capacity_provider" {
+  description = "True if Weblogic ECS tasks hosted on own EC2 instances"
+  type        = bool
+  default     = false
+}
+
+variable "weblogic_ecs_instance_type" {
+  description = "EC2 instance type for Weblogic ECS Hosts"
+  default     = "m5.large"
+}
+
 variable "node_max_count" {
   description = "maximum ec2 instance count for shared ecs cluster"
   default     = 50

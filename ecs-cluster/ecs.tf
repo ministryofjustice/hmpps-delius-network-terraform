@@ -44,7 +44,9 @@ resource "aws_security_group" "ecs_efs_sg" {
 # ECS Cluster
 resource "aws_ecs_cluster" "ecs" {
   name = local.ecs_cluster_name
-  capacity_providers = [aws_ecs_capacity_provider.ecs_capacity_provider.name]
+  capacity_providers = compact([
+    aws_ecs_capacity_provider.ecs_capacity_provider.name,
+    try(aws_ecs_capacity_provider.weblogic_capacity_provider[0].name, null)])
   default_capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.ecs_capacity_provider.name
     weight            = 1
@@ -125,6 +127,15 @@ resource "aws_autoscaling_group" "ecs_asg" {
       propagate_at_launch = true
     }
   }
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+      instance_warmup        = 300
+    }
+    triggers = ["launch_configuration"]
+  }
 }
 
 resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
@@ -139,4 +150,95 @@ resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
     }
   }
   tags = merge(var.tags, { Name = "${local.name_prefix}-ecscluster-private-capacity-provider" })
+}
+
+# Weblogic EC2s
+resource "aws_launch_configuration" "weblogic_lc" {
+  count = var.create_weblogic_capacity_provider ? 1 : 0
+
+  name_prefix                 = "${local.name_prefix}-weblogic-asg"
+  associate_public_ip_address = false
+  iam_instance_profile        = aws_iam_instance_profile.ecs_host_profile.name
+  image_id                    = data.aws_ami.ecs_ami.id
+  instance_type               = var.ecs_instance_type
+
+  security_groups = [
+    aws_security_group.ecs_host_sg.id,
+    aws_security_group.ecs_efs_sg.id,
+    data.terraform_remote_state.vpc_security_groups.outputs.sg_ssh_bastion_in_id,
+  ]
+
+  user_data_base64 = base64encode(data.template_file.ecs_host_userdata_template.rendered)
+  key_name         = data.terraform_remote_state.vpc.outputs.ssh_deployer_key
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_group" "weblogic_asg" {
+  count = var.create_weblogic_capacity_provider ? 1 : 0
+
+  name                 = "${local.name_prefix}-weblogic-asg"
+  launch_configuration = aws_launch_configuration.weblogic_lc[0].id
+
+  # Not setting desired count as that could cause scale in when deployment runs and lead to resource exhaustion
+  max_size              = var.node_max_count
+  min_size              = var.node_min_count
+  protect_from_scale_in = true # scale-in is managed by ECS
+
+  vpc_zone_identifier = local.private_subnet_ids
+
+  enabled_metrics = [
+    "GroupMinSize",
+    "GroupMaxSize",
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances",
+    "GroupPendingInstances",
+    "GroupStandbyInstances",
+    "GroupTerminatingInstances",
+    "GroupTotalInstances",
+  ]
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [desired_capacity]
+  }
+
+  dynamic "tag" {
+    for_each = merge(var.tags, {
+      Name             = "${local.name_prefix}-weblogic-asg"
+      AmazonECSManaged = "" # Required when using ecs_capacity_provider for scaling
+    })
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+      instance_warmup        = 300
+    }
+    triggers = ["launch_configuration"]
+  }
+}
+
+resource "aws_ecs_capacity_provider" "weblogic_capacity_provider" {
+  count = var.create_weblogic_capacity_provider ? 1 : 0
+
+  name = "${local.name_prefix}-weblogic-capacity-provider"
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = aws_autoscaling_group.weblogic_asg[0].arn
+    managed_termination_protection = "ENABLED"
+    managed_scaling {
+      status                    = "ENABLED"
+      target_capacity           = var.ecs_cluster_target_capacity
+      maximum_scaling_step_size = 10
+    }
+  }
+  tags = merge(var.tags, { Name = "${local.name_prefix}-weblogic-capacity-provider" })
 }

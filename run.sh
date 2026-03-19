@@ -15,7 +15,7 @@ set -e
 ##  * COMPONENT          Optional. Sub-directory containing the Terraform code to apply.
 ##                                 Defaults to current directory.
 ##  * CONTAINER          Optional. The container to run the Terragrunt commands in. Defaults to
-##                                 mojdigitalstudio/hmpps-terraform-builder-0-12.
+##                                 mojdigitalstudio/hmpps-terraform-builder-0-13.
 ## Any environment variables prefixed with AWS_ will also be passed to the Terragrunt container.
 ##
 ##
@@ -45,7 +45,7 @@ if [ -z "${TF_IN_AUTOMATION}" ]; then
   fi
 
   heading Starting container...
-  CONTAINER=${CONTAINER:-mojdigitalstudio/hmpps-terraform-builder-0-12}
+  CONTAINER=${CONTAINER:-mojdigitalstudio/hmpps-terraform-builder-0-13}
   echo "${CONTAINER}"
   aws_env="$(env | grep ^AWS_ | sed 's/^/-e /')"
   docker run \
