@@ -71,3 +71,8 @@ variable "ecs_cluster_namespace_name" {
   description = "Private namespace domain name value"
   default     = "ecs.cluster"
 }
+
+variable "install_xdr_agent" {
+  description = "Install XSIAM's XDR agent on ECS hosts"
+  default     = false
+}
