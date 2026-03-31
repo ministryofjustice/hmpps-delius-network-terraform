@@ -25,3 +25,10 @@ output "capacity_provider" {
   }
 }
 
+output "weblogic_capacity_provider" {
+  value = try({
+    arn  = aws_ecs_capacity_provider.weblogic_capacity_provider[0].arn
+    name = aws_ecs_capacity_provider.weblogic_capacity_provider[0].name
+  }, null)
+}
+

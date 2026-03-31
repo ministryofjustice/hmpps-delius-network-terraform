@@ -14,7 +14,6 @@ resource "aws_cloudwatch_metric_alarm" "ecs_host_root_vol_capacity_warning" {
     expression  = "SELECT MAX(disk_used_percent) FROM SCHEMA(CWAgent, AutoScalingGroupName,InstanceId,device,fstype,path) WHERE AutoScalingGroupName = '${aws_autoscaling_group.ecs_asg.name}'"
     label       = "highest_ecs_container_instance_root_vol_usage_percentage"
     return_data = "true"
-    period      = 300
   }
 
   tags = var.tags
@@ -36,7 +35,6 @@ resource "aws_cloudwatch_metric_alarm" "ecs_host_root_vol_capacity_critical" {
     expression  = "SELECT MAX(disk_used_percent) FROM SCHEMA(CWAgent, AutoScalingGroupName,InstanceId,device,fstype,path) WHERE AutoScalingGroupName = '${aws_autoscaling_group.ecs_asg.name}'"
     label       = "highest_ecs_container_instance_root_vol_usage_percentage"
     return_data = "true"
-    period      = 300
   }
 
   tags = var.tags

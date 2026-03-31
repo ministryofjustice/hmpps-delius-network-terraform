@@ -78,9 +78,11 @@ data "template_file" "ecs_host_userdata_template" {
   template = file("${path.module}/templates/ec2/ecs-host-userdata.tpl")
 
   vars = {
+    environment              = var.environment_name
     ecs_cluster_name         = local.ecs_cluster_name
     region                   = var.region
     efs_sg                   = aws_security_group.ecs_efs_sg.id
     log_group_name           = "${var.environment_name}/shared-ecs-cluster"
+    install_xdr_agent        = var.install_xdr_agent
   }
 }
