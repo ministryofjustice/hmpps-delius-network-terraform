@@ -46,7 +46,9 @@ resource "aws_ecs_cluster" "ecs" {
   name = local.ecs_cluster_name
   capacity_providers = compact([
     aws_ecs_capacity_provider.ecs_capacity_provider.name,
-    try(aws_ecs_capacity_provider.weblogic_capacity_provider[0].name, null)])
+    try(aws_ecs_capacity_provider.weblogic_capacity_provider[0].name, null),
+    try(aws_ecs_capacity_provider.weblogic_eis_capacity_provider[0].name, null)
+  ])
   default_capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.ecs_capacity_provider.name
     weight            = 1
@@ -241,4 +243,71 @@ resource "aws_ecs_capacity_provider" "weblogic_capacity_provider" {
     }
   }
   tags = merge(var.tags, { Name = "${local.name_prefix}-weblogic-capacity-provider" })
+}
+
+resource "aws_autoscaling_group" "weblogic_eis_asg" {
+  count = var.create_weblogic_capacity_provider ? 1 : 0
+
+  name                 = "${local.name_prefix}-weblogic-eis-asg"
+  launch_configuration = aws_launch_configuration.weblogic_lc[0].id
+
+  # Not setting desired count as that could cause scale in when deployment runs and lead to resource exhaustion
+  max_size              = var.node_max_count
+  min_size              = var.node_min_count
+  protect_from_scale_in = true # scale-in is managed by ECS
+
+  vpc_zone_identifier = local.private_subnet_ids
+
+  enabled_metrics = [
+    "GroupMinSize",
+    "GroupMaxSize",
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances",
+    "GroupPendingInstances",
+    "GroupStandbyInstances",
+    "GroupTerminatingInstances",
+    "GroupTotalInstances",
+  ]
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [desired_capacity]
+  }
+
+  dynamic "tag" {
+    for_each = merge(var.tags, {
+      Name             = "${local.name_prefix}-weblogic-eis-asg"
+      AmazonECSManaged = "" # Required when using ecs_capacity_provider for scaling
+    })
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+      instance_warmup        = 300
+    }
+    triggers = ["launch_configuration"]
+  }
+}
+
+resource "aws_ecs_capacity_provider" "weblogic_eis_capacity_provider" {
+  count = var.create_weblogic_capacity_provider ? 1 : 0
+
+  name = "${local.name_prefix}-weblogic-eis-capacity-provider"
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = aws_autoscaling_group.weblogic_eis_asg[0].arn
+    managed_termination_protection = "ENABLED"
+    managed_scaling {
+      status                    = "ENABLED"
+      target_capacity           = var.ecs_cluster_target_capacity
+      maximum_scaling_step_size = 10
+    }
+  }
+  tags = merge(var.tags, { Name = "${local.name_prefix}-weblogic-eis-capacity-provider" })
 }
